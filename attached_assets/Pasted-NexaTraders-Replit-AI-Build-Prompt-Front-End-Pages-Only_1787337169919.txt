@@ -1,0 +1,118 @@
+NexaTraders — Replit AI Build Prompt (Front-End Pages Only)
+
+Copy-paste this whole prompt into Replit AI.
+
+PROJECT BRIEF
+
+Build a modern, highly interactive front-end website for NexaTraders — an AI-powered crypto arbitrage trading platform. The site must visually communicate "AI is actively scanning exchanges and executing arbitrage trades in real time" — not a generic crypto landing page. Think live data feeds, glowing accents, subtle motion, and a "trading terminal" energy mixed with a clean, trustworthy fintech look.
+
+Tech stack: React + Vite, Tailwind CSS, Framer Motion (for animations), Recharts or Lightweight-Charts (for live-style price charts). Fully responsive (mobile-first). Single-page app with React Router for the pages listed below.
+
+Brand theme:
+
+Primary: Black (
+#0A0A0A / 
+#111111 backgrounds)
+Accent: Yellow/Gold (
+#FFC700 or 
+#F5B700 — buttons, highlights, glowing borders, chart up-candles)
+Base/Text: White (
+#FFFFFF) and light gray (
+#B3B3B3) for secondary text
+Style direction: dark-mode fintech, glassmorphism cards with subtle yellow glow on hover, thin gradient borders, monospace font accents for numbers/tickers (e.g., "Space Mono" or "JetBrains Mono") paired with a clean sans-serif for body copy (e.g., "Inter" or "Manrope")
+
+Only build these public-facing pages now (do NOT build the post-login dashboard pages — Bot Dashboard, User Profile, Wallet, My Subscriptions, KYC, Customer Support — those come later as a separate authenticated admin/user dashboard build):
+
+Home Page
+Subscription Packages (pricing) Page
+About Us Page
+Blog Page
+Privacy Policy Page
+Contact Us Page
+Global Footer (shared across all pages) + Global Navbar with "Login" and "Get Started / Register" buttons (buttons can be non-functional placeholders for now, just route to a blank /login and /register page)
+1. HOME PAGE
+Hero Section
+Full-width dark hero with an animated background (subtle moving grid lines, particle network, or animated candlestick silhouettes in the background at low opacity — should feel "alive")
+Platform name "NexaTraders" in bold, large type, with a glowing yellow accent on part of the wordmark
+Tagline: something like "AI-Powered Crypto Arbitrage. Real Markets. Real Returns." (feel free to refine)
+Short description of crypto arbitrage in 1-2 lines
+Live-feeling animated stat counters (count-up animation on scroll): Total Users, Total Payouts, Active Subscriptions, Trades Executed Today — use placeholder numbers, but animate them counting up
+Two CTA buttons: "Get Started" (solid yellow, glowing hover) and "Learn More" (outlined, white/yellow border) — smooth scroll to Project Details section
+Project Details Section
+Mission/vision short intro
+"How the Arbitrage Bot Works" — build as a 3-4 step horizontal (desktop) / vertical (mobile) animated process flow with icons: e.g. "Scan Exchanges → Detect Price Gap → Execute Trade → Profit Credited to Wallet" — each step animates in on scroll (fade+slide, staggered)
+Key stats row: Supported Exchanges, Supported Cryptocurrencies, Uptime % — animated counters again
+Optional: simple icon-based "Technology Highlights" cards (AI Engine, Low-Latency Execution, Multi-Exchange Coverage, Cold Storage Security)
+FAQ Section
+Accordion-style collapsible FAQ, smooth expand/collapse animation
+Include all 8 questions from the doc (what is crypto arbitrage, how bot generates profit, risks, withdrawals, KYC requirement, time to see returns, referral program, security)
+Security Protocols Section
+Grid of 6 cards (SSL/TLS encryption, 2FA, Cold storage, third-party audits, anti-phishing/fraud detection, KYC/AML compliance) — each card with an icon, subtle yellow glow border on hover, slight lift animation
+Newsletter Subscription
+Simple email input + "Subscribe" button (yellow), with a success checkmark animation on submit (client-side only, no backend needed yet)
+Privacy microcopy underneath
+Real-Time Crypto Exchange Graph Section
+This is the centerpiece — make it feel like a real trading terminal:
+Live-looking price ticker strip scrolling horizontally (BTC/USDT, ETH/USDT, BNB/USDT, SOL/USDT, etc.) with green/red % change colors
+Interactive candlestick or line chart (use Lightweight-Charts or Recharts) with mock/randomized live-updating data (update every few seconds via a JS interval to simulate live movement)
+Timeframe toggle buttons: 1H / 1D / 1W / 1M
+24h change %, market cap, and volume displayed near the chart
+Yellow glow accent on the chart line/candles
+2. SUBSCRIPTION PACKAGES PAGE
+Page header with short intro copy about the 5 investment tiers
+Build 5 pricing cards in a responsive grid (Spark, Boost, Rise, Titan, Supreme) using this exact data:
+Package	Price	Max Slots	Total ROI	Total Return	Duration	Daily ROI
+Spark	$100	2	85%	$185	6 Months	$1/day
+Boost	$300	4	90%	$570	5 Months	$3.8/day
+Rise	$1,000	5	95%	$2,000	5 Months	$13/day
+Titan	$5,000	6	100%	$10,000	5 Months	$66/day
+Supreme	$10,000	8	120%	$22,000	4 Months	$183/day
+Middle-tier card (Rise or Titan) should be visually highlighted as "Most Popular" with a yellow ribbon/badge and slightly larger scale
+Each card: hover lift + glow effect, "Subscribe Now" button (can route to a placeholder /login page since purchase requires auth)
+Below the cards, add a "Subscription Rules" info section (bullet list from the doc: independent subscriptions, daily wallet credit, "Burn" status on completion, multiple active subscriptions allowed, no cancellation, KYC required first)
+3. ABOUT US PAGE
+Hero banner: "About NexaTraders"
+Company story / founding background (short placeholder paragraph)
+Mission: "To democratize access to institutional-grade crypto arbitrage strategies"
+Vision: "To become the most trusted and transparent crypto investment platform globally"
+Core values as 4 animated icon cards: Transparency, Security, Innovation, User-First
+Leadership team section: 3-4 placeholder profile cards (photo placeholder, name, role, short bio) in a grid
+Milestones/timeline section: horizontal animated timeline (scroll-reveal) with 3-4 placeholder milestones
+Compliance/partnership strip at the bottom
+4. BLOG PAGE
+Featured article block at top (large image placeholder + title + excerpt)
+Category filter tabs: Market Analysis / Tutorials / Platform Updates / Crypto News (filter cards client-side, no backend needed — use mock data array)
+Grid of article cards below (title, date, author, thumbnail placeholder, short excerpt), hover lift animation
+Search bar at top filtering the mock articles by keyword
+Pagination controls at the bottom (mock/static)
+Individual article page template: title, author, date, content body, "Related Articles" section, social share icons (Twitter/X, Telegram, Facebook)
+5. PRIVACY POLICY PAGE
+Clean, readable typography layout (not card-heavy — this is a legal document)
+Sticky sidebar table of contents (desktop) that scroll-links to sections: Introduction, Data Collected, How Data is Collected, Purpose of Processing, Data Retention, User Rights, Third-Party Sharing, Cookie Policy, Security Measures, Contact, Last Updated
+Use placeholder legal text for each section matching the structure in the doc
+"Last updated" date at the top
+6. CONTACT US PAGE
+Two-column layout: Contact form on left, Contact info on right
+Contact Form fields: Full Name, Email, Subject/Topic dropdown, Message textarea, File attachment input, Submit button
+On submit (client-side only): show an animated success confirmation message
+Contact Info side: support email, "Estimated response time: 24-48 business hours", social media icon links, link to FAQ section on Home page
+Optional: subtle background pattern matching the dark theme
+7. GLOBAL NAVBAR + FOOTER
+
+Navbar: Sticky/fixed on scroll, transparent → solid black on scroll (with a smooth transition), logo left, nav links center (Home, Packages, About, Blog, Contact), "Login" (outlined) + "Get Started" (solid yellow) buttons right. Mobile: hamburger menu with slide-in drawer.
+
+Footer (all pages):
+
+Nav links: About Us, Blog, Privacy Policy, Contact Us, Terms of Service, FAQ
+Social icons row: Facebook, Instagram, Twitter/X, Telegram, TikTok, Discord, Medium, Quora, CoinMarketCap (use recognizable icon set, e.g. lucide-react or react-icons, styled in yellow with hover glow)
+Bottom bar: "© 2026 NexaTraders. All Rights Reserved." + risk disclaimer text ("Investment involves risk. Past performance is not indicative of future results.") + "Back to Top" button (smooth scroll)
+GENERAL INTERACTIVITY & POLISH REQUIREMENTS
+Use Framer Motion for scroll-reveal animations (fade+slide-up) on every major section across all pages
+Smooth page transitions between routes
+Hover states everywhere: buttons glow/scale, cards lift with a soft yellow shadow
+Custom cursor or subtle particle/grid background on the Home hero is a nice-to-have if time allows
+Ensure the live chart/ticker components use randomized incrementing mock data via setInterval so it visually feels alive without needing a real backend yet
+Fully responsive: test at mobile (375px), tablet (768px), and desktop (1440px) breakpoints
+Keep all copy/placeholder content easy to find and edit later (e.g., store mock data like blog posts, FAQs, and stats in separate JS/TS data files, not hardcoded inline)
+
+Do not build any authentication logic, database, or the restricted post-login pages (Bot Dashboard, Profile, Wallet, Subscriptions Dashboard, KYC, Support) — just leave "Login" and "Get Started" as routes to placeholder blank pages for now.
