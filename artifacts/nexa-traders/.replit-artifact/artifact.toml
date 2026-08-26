@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Nexa Traders"
+description = "A premium AI-powered crypto arbitrage platform website with live-feeling market intelligence, pricing packages, educational content, company information, legal pages, and contact flows."
+version = "1.0.0"
+id = "artifacts/nexa-traders"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25814
+
+[services.development]
+run = "pnpm --filter @workspace/nexa-traders run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/nexa-traders", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/nexa-traders/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25814"
+BASE_PATH = "/"
