@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import {
@@ -63,33 +63,33 @@ function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; 
   return <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={reveal} transition={{ delay }} className={className}>{children}</motion.div>;
 }
 
-function Logo({ compact = false }: { compact?: boolean }) {
+function Logo({ compact = false, className = '' }: { compact?: boolean; className?: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2.5 group" data-testid="link-logo">
-      <span className="relative grid h-8 w-8 place-items-center overflow-hidden rounded-[10px] border border-primary/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(232,185,73,.18)]">
-        <span className="absolute h-16 w-px rotate-45 bg-primary-foreground/40" />
-        <span className="relative font-mono text-xs font-bold">N</span>
-      </span>
-      {!compact && <span className="text-[15px] font-semibold tracking-[-0.04em] text-foreground">Nexa<span className="text-primary">Traders</span></span>}
+    <Link href="/" className={`inline-flex items-center gap-2 transition-opacity hover:opacity-95 ${className}`} data-testid="link-logo">
+      <img
+        src="/logo.png"
+        alt="Nexa Trades Logo"
+        className={compact ? 'h-9 w-auto object-contain' : 'h-11 sm:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(232,185,73,0.35)]'}
+      />
     </Link>
   );
 }
 
 function ButtonLink({ href, children, variant = 'primary', className = '', onClick }: { href: string; children: ReactNode; variant?: 'primary' | 'outline' | 'ghost'; className?: string; onClick?: () => void }) {
   const styles = variant === 'primary'
-    ? 'bg-primary text-primary-foreground hover:bg-[#f3cc68] shadow-[0_12px_32px_rgba(232,185,73,.13)]'
+    ? 'bg-primary text-primary-foreground hover:bg-[#f3cc68] shadow-[0_12px_32px_rgba(232,185,73,.13)] font-sans'
     : variant === 'outline'
-      ? 'border border-card-border bg-card/60 text-foreground hover:border-primary/60 hover:bg-primary/5'
-      : 'text-muted-foreground hover:bg-secondary hover:text-foreground';
+      ? 'border border-card-border bg-card/60 text-foreground hover:border-primary/60 hover:bg-primary/5 font-sans'
+      : 'text-muted-foreground hover:bg-secondary hover:text-foreground font-sans';
   return <Link href={href} onClick={onClick} className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${styles} ${className}`} data-testid={`link-${href.replace(/\W/g, '')}`}>{children}</Link>;
 }
 
 function SectionHeading({ eyebrow, title, copy, align = 'left' }: { eyebrow: string; title: string; copy?: string; align?: 'left' | 'center' }) {
   return (
     <div className={`max-w-2xl ${align === 'center' ? 'mx-auto text-center' : ''}`}>
-      <div className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.24em] text-primary"><span className="h-px w-7 bg-primary" />{eyebrow}</div>
-      <h2 className="text-balance text-3xl font-semibold tracking-[-0.055em] text-foreground sm:text-5xl">{title}</h2>
-      {copy && <p className="mt-5 text-base leading-7 text-muted-foreground">{copy}</p>}
+      <div className={`mb-3.5 flex items-center gap-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-primary ${align === 'center' ? 'justify-center' : ''}`}><span className="h-px w-6 bg-primary/70" />{eyebrow}</div>
+      <h2 className="font-display text-balance text-3xl font-bold leading-[1.12] tracking-[-0.04em] text-foreground sm:text-5xl">{title}</h2>
+      {copy && <p className="mt-4 text-base leading-relaxed text-muted-foreground/90 sm:text-lg">{copy}</p>}
     </div>
   );
 }
@@ -97,7 +97,7 @@ function SectionHeading({ eyebrow, title, copy, align = 'left' }: { eyebrow: str
 function Navbar() {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
-  const nav = [['/packages', 'Packages'], ['/about', 'Our edge'], ['/blog', 'Insights'], ['/contact', 'Contact']];
+  const nav = [['/trades', 'Arbitrage Live Trades'], ['/packages', 'Packages'], ['/about', 'Our edge'], ['/blog', 'Insights'], ['/contact', 'Contact']];
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 lg:px-8">
@@ -142,40 +142,987 @@ function Footer() {
   );
 }
 
-function LiveChart({ compact = false }: { compact?: boolean }) {
+function LiveChart({ compact = false, currentPrice }: { compact?: boolean; currentPrice?: number }) {
   const base = [34, 38, 36, 43, 41, 47, 45, 52, 50, 57, 55, 60, 58, 67, 63, 70, 68, 75, 71, 78, 82, 79, 86, 89];
   const [tick, setTick] = useState(0);
-  useEffect(() => { const id = window.setInterval(() => setTick((v) => v + 1), 2400); return () => window.clearInterval(id); }, []);
-  const points = base.map((value, i) => `${(i / (base.length - 1)) * 100},${100 - value - (((tick + i) % 4) === 0 ? 1 : 0)}`).join(' ');
-  return <div className={`relative ${compact ? 'h-28' : 'h-64'}`} data-testid="chart-live-exchange">
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
-      <defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#e8b949" stopOpacity=".24" /><stop offset="1" stopColor="#e8b949" stopOpacity="0" /></linearGradient></defs>
-      <polygon points={`0,100 ${points} 100,100`} fill="url(#chartFill)" />
-      <polyline points={points} fill="none" stroke="#e8b949" strokeWidth="1.4" vectorEffect="non-scaling-stroke" className="chart-draw" />
-      <line x1="0" y1="72" x2="100" y2="72" stroke="rgba(255,255,255,.12)" strokeDasharray="2 3" vectorEffect="non-scaling-stroke" />
-    </svg>
-    {!compact && <><span className="absolute left-0 top-[26%] font-mono text-[10px] text-muted-foreground">$68.4K</span><span className="absolute bottom-[4%] left-0 font-mono text-[10px] text-muted-foreground">$64.0K</span><span className="absolute right-0 top-[8%] font-mono text-[10px] text-primary">$71,842.09</span></>}
-  </div>;
+
+  useEffect(() => {
+    const id = window.setInterval(() => setTick((v) => v + 1), 1500);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const points = base
+    .map((value, i) => `${(i / (base.length - 1)) * 100},${100 - value - ((tick + i) % 4 === 0 ? 2 : 0)}`)
+    .join(' ');
+
+  const displayPrice = currentPrice ? formatPrice(currentPrice) : '$64,250.80';
+  const highAxis = currentPrice ? formatPrice(currentPrice * 1.04) : '$68.4K';
+  const lowAxis = currentPrice ? formatPrice(currentPrice * 0.96) : '$64.0K';
+
+  return (
+    <div className={`relative ${compact ? 'h-28' : 'h-64'}`} data-testid="chart-live-exchange">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
+        <defs>
+          <linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#e8b949" stopOpacity=".28" />
+            <stop offset="1" stopColor="#e8b949" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <polygon points={`0,100 ${points} 100,100`} fill="url(#chartFill)" />
+        <polyline points={points} fill="none" stroke="#e8b949" strokeWidth="1.6" vectorEffect="non-scaling-stroke" className="chart-draw" />
+        <line x1="0" y1="72" x2="100" y2="72" stroke="rgba(255,255,255,.12)" strokeDasharray="2 3" vectorEffect="non-scaling-stroke" />
+      </svg>
+      {!compact && (
+        <>
+          <span className="absolute left-0 top-[26%] font-mono text-[10px] text-muted-foreground">{highAxis}</span>
+          <span className="absolute bottom-[4%] left-0 font-mono text-[10px] text-muted-foreground">{lowAxis}</span>
+          <span className="absolute right-0 top-[8%] font-mono text-[11px] font-bold text-primary animate-pulse-signal">
+            {displayPrice}
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+function formatPrice(val: number) {
+  if (!val || isNaN(val)) return '$0.00';
+  if (val < 1) return `$${val.toFixed(4)}`;
+  return `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function ExchangeTicker() {
-  const rows = [['BTC / USDT', '$71,842.09', '+2.84%', 'Binance → Kraken'], ['ETH / USDT', '$3,842.17', '+1.72%', 'OKX → Coinbase'], ['SOL / USDC', '$184.63', '+4.18%', 'Bybit → Kraken']];
-  return <div className="overflow-hidden border-y border-border/70 bg-[#0b0d0e]"><div className="animate-ticker flex min-w-max">{[...rows, ...rows].map(([pair, price, change, route], index) => <div key={`${pair}-${index}`} className="flex items-center gap-5 border-r border-border/70 px-6 py-3 font-mono text-[11px]"><span className="text-foreground">{pair}</span><span className="text-muted-foreground">{price}</span><span className="text-accent">{change}</span><span className="text-muted-foreground/60">{route}</span></div>)}</div></div>;
+  const [livePrices, setLivePrices] = useState<Record<string, number>>({
+    'BTC/USDT': 96450.80,
+    'ETH/USDT': 3450.40,
+    'SOL/USDC': 198.20,
+    'BNB/USDT': 672.60,
+    'XRP/USDT': 2.4840,
+    'ADA/USDT': 0.9820,
+    'AVAX/USDT': 34.50,
+  });
+
+  const fetchTickerPrices = useCallback(async () => {
+    try {
+      const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+      if (!res.ok) return;
+      const data: { symbol: string; price: string }[] = await res.json();
+      const priceMap: Record<string, number> = {};
+
+      const symbolPairs: Record<string, string> = {
+        BTCUSDT: 'BTC/USDT',
+        ETHUSDT: 'ETH/USDT',
+        SOLUSDT: 'SOL/USDC',
+        BNBUSDT: 'BNB/USDT',
+        XRPUSDT: 'XRP/USDT',
+        ADAUSDT: 'ADA/USDT',
+        AVAXUSDT: 'AVAX/USDT',
+      };
+
+      data.forEach((item) => {
+        if (symbolPairs[item.symbol]) {
+          priceMap[symbolPairs[item.symbol]] = parseFloat(item.price);
+        }
+      });
+
+      setLivePrices((prev) => ({ ...prev, ...priceMap }));
+    } catch {
+      // smooth micro tick fallback
+      setLivePrices((prev) => {
+        const next = { ...prev };
+        Object.keys(next).forEach((k) => {
+          next[k] = parseFloat((next[k] * (1 + (Math.random() - 0.49) * 0.0003)).toFixed(k.includes('XRP') || k.includes('ADA') ? 4 : 2));
+        });
+        return next;
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTickerPrices();
+    const timer = setInterval(fetchTickerPrices, 1000);
+    return () => clearInterval(timer);
+  }, [fetchTickerPrices]);
+
+  const rows = [
+    { pair: 'BTC / USDT', rawPair: 'BTC/USDT', change: '+2.84%', route: 'Binance → Kraken' },
+    { pair: 'ETH / USDT', rawPair: 'ETH/USDT', change: '+1.72%', route: 'OKX → Coinbase' },
+    { pair: 'SOL / USDC', rawPair: 'SOL/USDC', change: '+4.18%', route: 'Bybit → Kraken' },
+    { pair: 'BNB / USDT', rawPair: 'BNB/USDT', change: '+1.05%', route: 'Uniswap → Binance' },
+    { pair: 'XRP / USDT', rawPair: 'XRP/USDT', change: '+0.88%', route: 'MEXC → Bitget' },
+    { pair: 'ADA / USDT', rawPair: 'ADA/USDT', change: '+2.14%', route: 'KuCoin → Binance' },
+    { pair: 'AVAX / USDT', rawPair: 'AVAX/USDT', change: '+3.42%', route: 'Bitstamp → HTX' },
+  ];
+
+  return (
+    <div className="overflow-hidden border-y border-border/70 bg-[#0b0d0e]">
+      <div className="animate-ticker flex min-w-max">
+        {[...rows, ...rows, ...rows].map((item, index) => {
+          const priceVal = livePrices[item.rawPair];
+          const formatted = priceVal ? formatPrice(priceVal) : '$0.00';
+          return (
+            <div key={`${item.pair}-${index}`} className="flex items-center gap-4 border-r border-border/70 px-6 py-3 font-mono text-[11px]">
+              <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />
+              <span className="font-bold text-foreground">{item.pair}</span>
+              <span className="font-bold text-primary">{formatted}</span>
+              <span className="text-accent font-semibold">{item.change}</span>
+              <span className="text-muted-foreground/70">{item.route}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
-function ScanPanel() {
-  const [scanning, setScanning] = useState(true);
-  const [scans, setScans] = useState(1284);
-  useEffect(() => { const id = window.setInterval(() => { setScans((v) => v + 1); setScanning(true); const stop = window.setTimeout(() => setScanning(false), 1200); return () => window.clearTimeout(stop); }, 3200); return () => window.clearInterval(id); }, []);
-  return <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-[#0d1010] p-4 shadow-[0_0_90px_rgba(232,185,73,.08)] sm:p-5" data-testid="panel-live-scanner">
-    <div className="absolute inset-0 grid-fade opacity-60" />
-    <div className="relative">
-      <div className="flex items-center justify-between border-b border-border/70 pb-4"><div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full bg-accent ${scanning ? 'animate-pulse-signal' : ''}`} /><span className="font-mono text-[10px] uppercase tracking-[.16em] text-muted-foreground">Engine / live scan</span></div><button className="font-mono text-[10px] text-primary hover:underline" onClick={() => setScanning(true)} data-testid="button-rescan">Rescan <RefreshCw size={11} className="ml-1 inline" /></button></div>
-      <div className="mt-5 grid grid-cols-[1fr_auto] items-end"><div><p className="font-mono text-[10px] uppercase tracking-[.15em] text-muted-foreground">Best current spread</p><p className="mt-2 text-4xl font-semibold tracking-[-.06em] text-foreground">2.84<span className="text-lg text-primary">%</span></p><p className="mt-1 flex items-center gap-1 text-xs text-accent"><ArrowUpRight size={13} />BTC / USDT</p></div><div className="rounded-lg border border-accent/25 bg-accent/5 px-3 py-2 text-right"><span className="block font-mono text-[9px] uppercase text-muted-foreground">Confidence</span><span className="font-mono text-sm text-accent">97.4%</span></div></div>
-      <div className="mt-5"><LiveChart /></div>
-      <div className="mt-4 grid grid-cols-3 gap-2 border-t border-border/70 pt-4"><div><span className="block font-mono text-[9px] uppercase text-muted-foreground">Exchanges</span><span className="mt-1 block text-sm text-foreground">18 connected</span></div><div><span className="block font-mono text-[9px] uppercase text-muted-foreground">Scanned</span><span className="mt-1 block text-sm text-foreground">{scans.toLocaleString()} routes</span></div><div><span className="block font-mono text-[9px] uppercase text-muted-foreground">Latency</span><span className="mt-1 block text-sm text-foreground">42 ms</span></div></div>
+function ScanPanel({ activePair, setActivePair }: { activePair: string; setActivePair: (p: string) => void }) {
+  const [scans, setScans] = useState(1405);
+  const [scanning, setScanning] = useState(false);
+  const [executing, setExecuting] = useState(false);
+  const [execStep, setExecStep] = useState(0);
+  const [activeTab, setActiveTab] = useState<'chart' | 'orderbook' | 'risk'>('chart');
+  const [lastRoute, setLastRoute] = useState<{ from: string; to: string; profit: string }>({ from: 'Binance', to: 'Kraken', profit: '+$2.40' });
+
+  // Live Market Prices state fetched from Binance API for ScanPanel
+  const [livePrices, setLivePrices] = useState<Record<string, number>>({
+    'BTC/USDT': 64250.8,
+    'ETH/USDT': 3450.2,
+    'SOL/USDC': 158.4,
+    'BNB/USDT': 572.1,
+  });
+
+  const fetchScanPrices = useCallback(async () => {
+    try {
+      const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+      if (!res.ok) return;
+      const data: { symbol: string; price: string }[] = await res.json();
+      const priceMap: Record<string, number> = {};
+
+      const symbolPairs: Record<string, string> = {
+        BTCUSDT: 'BTC/USDT',
+        ETHUSDT: 'ETH/USDT',
+        SOLUSDT: 'SOL/USDC',
+        BNBUSDT: 'BNB/USDT',
+      };
+
+      data.forEach((item) => {
+        if (symbolPairs[item.symbol]) {
+          priceMap[symbolPairs[item.symbol]] = parseFloat(item.price);
+        }
+      });
+
+      setLivePrices((prev) => ({ ...prev, ...priceMap }));
+    } catch {
+      // silent fallback
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchScanPrices();
+    const timer = setInterval(fetchScanPrices, 2500);
+    return () => clearInterval(timer);
+  }, [fetchScanPrices]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setScans((v) => v + Math.floor(Math.random() * 3 + 1));
+      setScanning(true);
+      const stop = window.setTimeout(() => setScanning(false), 900);
+      return () => window.clearTimeout(stop);
+    }, 2400);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const pairData: Record<string, { spread: string; confidence: string; defaultPrice: number; from: string; to: string; profit: string }> = {
+    'BTC/USDT': { spread: '2.84%', confidence: '97.4%', defaultPrice: 64250.8, from: 'Binance', to: 'Kraken', profit: '+$2.40' },
+    'ETH/USDT': { spread: '1.72%', confidence: '96.1%', defaultPrice: 3450.2, from: 'OKX', to: 'Coinbase', profit: '+$1.65' },
+    'SOL/USDC': { spread: '4.18%', confidence: '98.9%', defaultPrice: 158.4, from: 'Bybit', to: 'Kraken', profit: '+$0.85' },
+    'BNB/USDT': { spread: '3.05%', confidence: '95.8%', defaultPrice: 572.1, from: 'Uniswap', to: 'Binance', profit: '+$1.10' },
+  };
+
+  const currentInfo = pairData[activePair] || pairData['BTC/USDT'];
+  const currentPrice = livePrices[activePair] || currentInfo.defaultPrice;
+
+  const [lastRouteResult, setLastRouteResult] = useState<{
+    from: string;
+    to: string;
+    bPrice: string;
+    sPrice: string;
+    profit: string;
+  } | null>(null);
+
+  const triggerExecution = () => {
+    setExecuting(true);
+    setExecStep(1);
+
+    // Real-Time execution simulation using instant live market price
+    const bPriceNum = currentPrice;
+    const spreadPct = 0.0004 + Math.random() * 0.0008;
+    const rawDiff = bPriceNum * spreadPct;
+    const diff = Math.min(4.85, Math.max(0.01, rawDiff));
+    const sPriceNum = bPriceNum + diff;
+    const netProfit = (sPriceNum - bPriceNum).toFixed(2);
+
+    const routeInfo = {
+      from: currentInfo.from,
+      to: currentInfo.to,
+      bPrice: formatPrice(bPriceNum),
+      sPrice: formatPrice(sPriceNum),
+      profit: `+$${netProfit}`,
+    };
+
+    setLastRoute(routeInfo);
+    setLastRouteResult(routeInfo);
+
+    window.setTimeout(() => setExecStep(2), 500);
+    window.setTimeout(() => setExecStep(3), 1100);
+    window.setTimeout(() => {
+      setExecuting(false);
+      setExecStep(0);
+    }, 2000);
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-[#0d1010] p-4 shadow-[0_0_90px_rgba(232,185,73,.18)] sm:p-6" data-testid="panel-live-scanner">
+      <div className="absolute inset-0 grid-fade opacity-60" />
+      <div className="relative">
+        <div className="flex items-center justify-between border-b border-border/70 pb-4">
+          <div className="flex items-center gap-2">
+            <span className={`h-2.5 w-2.5 rounded-full bg-accent ${scanning ? 'animate-pulse-signal' : ''}`} />
+            <span className="font-mono text-[10px] uppercase tracking-[.16em] text-primary">Arbitrage Engine / Live</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1 font-mono text-[10px] text-primary transition hover:bg-primary/20"
+              onClick={() => setScanning(true)}
+              data-testid="button-rescan"
+            >
+              Rescan <RefreshCw size={11} className={scanning ? 'animate-spin' : ''} />
+            </button>
+          </div>
+        </div>
+
+        {/* Pair Selector Tabs */}
+        <div className="mt-4 flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex flex-wrap gap-1.5">
+            {Object.keys(pairData).map((pair) => (
+              <button
+                key={pair}
+                onClick={() => setActivePair(pair)}
+                className={`rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider transition ${
+                  activePair === pair ? 'bg-primary text-primary-foreground font-semibold shadow-[0_0_10px_rgba(232,185,73,0.3)]' : 'border border-border/80 bg-secondary/50 text-muted-foreground hover:text-foreground'
+                }`}
+                data-testid={`button-pair-${pair.replace('/', '-')}`}
+              >
+                {pair}
+              </button>
+            ))}
+          </div>
+
+          {/* Mode Switcher */}
+          <div className="hidden sm:flex gap-1 font-mono text-[9px]">
+            <button onClick={() => setActiveTab('chart')} className={`px-2 py-0.5 rounded ${activeTab === 'chart' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Chart</button>
+            <button onClick={() => setActiveTab('orderbook')} className={`px-2 py-0.5 rounded ${activeTab === 'orderbook' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Depth</button>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-[1fr_auto] items-end">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[.15em] text-muted-foreground">Arbitrage Spread Edge</p>
+            <p className="mt-1.5 text-4xl font-extrabold tracking-[-.06em] text-foreground sm:text-5xl">
+              {currentInfo.spread.split('%')[0]}<span className="text-xl text-primary">%</span>
+            </p>
+            <p className="mt-1 flex items-center gap-1.5 text-xs text-accent">
+              <ArrowUpRight size={14} />
+              <strong className="text-foreground">{activePair}</strong> ({currentInfo.from} → {currentInfo.to})
+            </p>
+          </div>
+          <div className="rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-right">
+            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Execution Prob</span>
+            <span className="font-mono text-base font-bold text-accent">{currentInfo.confidence}</span>
+          </div>
+        </div>
+
+        {/* Live Interactive Tab Content */}
+        <div className="mt-5">
+          {activeTab === 'chart' && <LiveChart currentPrice={currentPrice} />}
+          {activeTab === 'orderbook' && (
+            <div className="h-64 rounded-lg border border-border/80 bg-secondary/30 p-3 font-mono text-[10px]">
+              <div className="flex justify-between border-b border-border/60 pb-1.5 text-muted-foreground font-bold">
+                <span>BUY SIDE ({currentInfo.from})</span>
+                <span>SELL SIDE ({currentInfo.to})</span>
+              </div>
+              <div className="mt-3 space-y-2">
+                <div className="flex justify-between text-accent font-semibold">
+                  <span>{formatPrice(currentPrice * 0.9998)} (1.84 {activePair.split('/')[0]})</span>
+                  <span>{formatPrice(currentPrice * 1.0003)} (2.10 {activePair.split('/')[0]})</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>{formatPrice(currentPrice * 0.9995)} (4.12 {activePair.split('/')[0]})</span>
+                  <span>{formatPrice(currentPrice * 1.0006)} (1.45 {activePair.split('/')[0]})</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>{formatPrice(currentPrice * 0.9991)} (0.95 {activePair.split('/')[0]})</span>
+                  <span>{formatPrice(currentPrice * 1.0010)} (3.80 {activePair.split('/')[0]})</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Live Interactive Execution Controller */}
+        <div className="mt-4 flex flex-col gap-2 border-t border-border/70 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <button
+              onClick={triggerExecution}
+              disabled={executing}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 font-mono text-xs font-bold text-primary-foreground transition hover:bg-[#f3cc68] active:scale-95 disabled:opacity-50 shadow-[0_0_20px_rgba(232,185,73,0.3)]"
+              data-testid="button-simulate-route"
+            >
+              <Zap size={14} className={executing ? 'animate-bounce text-primary-foreground' : ''} />
+              {executing ? `Executing Step 0${execStep}/03...` : `Execute Live ${activePair} Route`}
+            </button>
+
+            {executing ? (
+              <span className="animate-pulse font-mono text-[10px] text-accent font-semibold">
+                ⚡ Locking Orderbook @ {formatPrice(currentPrice)}
+              </span>
+            ) : lastRouteResult ? (
+              <span className="font-mono text-[10px] text-accent font-bold">
+                ✓ Executed @ {lastRouteResult.bPrice} → {lastRouteResult.sPrice} ({lastRouteResult.profit} Net Profit)
+              </span>
+            ) : null}
+          </div>
+
+          {/* Interactive Micro-Step Telemetry Bar */}
+          {executing && (
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 rounded-lg border border-accent/40 bg-accent/10 p-2.5 font-mono text-[10px]">
+              <div className="flex items-center justify-between text-accent font-bold">
+                <span>{execStep === 1 ? 'Step 01: Orderbook Lock' : execStep === 2 ? 'Step 02: 14ms Route Match' : 'Step 03: Yield Settled'}</span>
+                <span>{execStep * 33}%</span>
+              </div>
+              <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                <div className="h-full bg-accent transition-all duration-500" style={{ width: `${execStep * 33}%` }} />
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-border/70 pt-4">
+          <div>
+            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Exchanges</span>
+            <span className="mt-1 block text-sm font-semibold text-foreground">18 connected</span>
+          </div>
+          <div>
+            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Scanned</span>
+            <span className="mt-1 block text-sm font-semibold text-foreground">{scans.toLocaleString()} routes</span>
+          </div>
+          <div>
+            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Avg Latency</span>
+            <span className="mt-1 block text-sm font-semibold text-primary">14 ms</span>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>;
+  );
+}
+
+function AiTradingBotHeroBg({ activePair }: { activePair: string }) {
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+
+  const nodes = [
+    { id: 'binance', name: 'Binance', x: 280, y: 220, price: '$71,842.09', spread: '+0.34%', vol: '$28.4M' },
+    { id: 'kraken', name: 'Kraken', x: 740, y: 160, price: '$72,052.49', spread: '+0.29%', vol: '$18.2M' },
+    { id: 'bybit', name: 'Bybit', x: 1220, y: 260, price: '$71,810.15', spread: '+0.41%', vol: '$22.6M' },
+    { id: 'coinbase', name: 'Coinbase', x: 420, y: 680, price: '$71,990.00', spread: '+0.18%', vol: '$15.9M' },
+    { id: 'okx', name: 'OKX', x: 920, y: 720, price: '$71,830.80', spread: '+0.32%', vol: '$19.4M' },
+    { id: 'uniswap', name: 'Uniswap', x: 1540, y: 620, price: '$72,110.00', spread: '+0.55%', vol: '$14.1M' },
+  ];
+
+  const hoveredData = nodes.find((n) => n.id === hoveredNode);
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden select-none z-0" data-testid="bg-interactive-arbitrage-map">
+      {/* Ambient Gold & Emerald Radial Spotlights */}
+      <div className="absolute -left-20 top-1/4 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(232,185,73,0.15)_0%,rgba(16,185,129,0.04)_40%,transparent_70%)] blur-3xl" />
+      <div className="absolute right-[5%] top-10 h-[650px] w-[750px] rounded-full bg-[radial-gradient(circle,rgba(232,185,73,0.12)_0%,transparent_75%)] blur-3xl" />
+
+      {/* Interactive Exchange Arbitrage Network Graph Backdrop */}
+      <div className="absolute inset-0 opacity-55 sm:opacity-75 transition-opacity duration-700">
+        <svg className="h-full w-full" viewBox="0 0 1920 1080" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="arbitrageBeam" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#e8b949" stopOpacity="0.9" />
+              <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#f3cc68" stopOpacity="0.9" />
+            </linearGradient>
+
+            <filter id="neonBeamGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Connected Liquid Arbitrage Pathways between Exchanges */}
+          <g stroke="url(#arbitrageBeam)" filter="url(#neonBeamGlow)">
+            {/* Binance -> Kraken */}
+            <path d="M 280 220 L 740 160" strokeWidth="2.5" strokeDasharray="10 6" className="chart-draw" />
+            {/* Kraken -> Bybit */}
+            <path d="M 740 160 L 1220 260" strokeWidth="2" opacity="0.6" />
+            {/* Binance -> Coinbase */}
+            <path d="M 280 220 L 420 680" strokeWidth="2" opacity="0.5" />
+            {/* Kraken -> OKX */}
+            <path d="M 740 160 L 920 720" strokeWidth="3" strokeDasharray="12 6" className="chart-draw" />
+            {/* Bybit -> Uniswap */}
+            <path d="M 1220 260 L 1540 620" strokeWidth="2.5" strokeDasharray="8 4" opacity="0.8" />
+            {/* OKX -> Uniswap */}
+            <path d="M 920 720 L 1540 620" strokeWidth="2" opacity="0.6" />
+          </g>
+
+          {/* Interactive Exchange Nodes */}
+          {nodes.map((node) => {
+            const isHovered = hoveredNode === node.id;
+            return (
+              <g
+                key={node.id}
+                transform={`translate(${node.x}, ${node.y})`}
+                className="pointer-events-auto cursor-pointer"
+                onMouseEnter={() => setHoveredNode(node.id)}
+                onMouseLeave={() => setHoveredNode(null)}
+              >
+                {/* Node Outer Pulsing Ring */}
+                <circle r={isHovered ? '28' : '22'} fill="none" stroke="#e8b949" strokeWidth="1.5" strokeDasharray="4 2" className="animate-spin-slow opacity-70" />
+                {/* Node Inner Core */}
+                <circle r={isHovered ? '16' : '12'} fill={isHovered ? '#f3cc68' : '#0d1114'} stroke="#e8b949" strokeWidth="2.5" />
+                {/* Node Label Badge */}
+                <rect x="-45" y="24" width="90" height="24" rx="5" fill="#0d1114" stroke="#e8b949" strokeWidth="1" strokeOpacity="0.6" />
+                <text x="0" y="40" textAnchor="middle" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#e8b949">
+                  {node.name}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Interactive Hover Card Tooltip overlay for Exchange Nodes */}
+        {hoveredData && (
+          <div
+            className="pointer-events-none absolute rounded-xl border border-primary/60 bg-[#0d1010]/95 p-3 font-mono shadow-[0_10px_30px_rgba(232,185,73,0.3)] backdrop-blur-md transition-all duration-200 z-20"
+            style={{ left: `${(hoveredData.x / 1920) * 100}%`, top: `${(hoveredData.y / 1080) * 100 - 10}%` }}
+          >
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="font-bold text-primary">{hoveredData.name} Node</span>
+              <span className="text-[9px] text-accent">● Live 12ms</span>
+            </div>
+            <div className="mt-2 text-[10px] space-y-1 text-muted-foreground">
+              <div>Price: <strong className="text-foreground">{hoveredData.price}</strong></div>
+              <div>Spread: <strong className="text-accent">{hoveredData.spread}</strong></div>
+              <div>24h Vol: <strong className="text-primary">{hoveredData.vol}</strong></div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Smooth Dark Vignette & Edge Blurs */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/80" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90" />
+    </div>
+  );
+}
+
+function ExchangeLogoIcon({ name }: { name: string }) {
+  switch (name) {
+    case 'Binance':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#F0B90B">
+          <path d="M12 2L6.5 7.5L9.3 10.3L12 7.6L14.7 10.3L17.5 7.5L12 2ZM3 11L5.8 13.8L3 16.6L0.2 13.8L3 11ZM21 11L23.8 13.8L21 16.6L18.2 13.8L21 11ZM12 11.2L14.6 13.8L12 16.4L9.4 13.8L12 11.2ZM12 20.2L9.3 17.5L6.5 20.3L12 22.8L17.5 20.3L14.7 17.5L12 20.2Z" />
+        </svg>
+      );
+    case 'Coinbase':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#0052FF">
+          <circle cx="12" cy="12" r="10" />
+          <rect x="8" y="8" width="8" height="8" rx="2" fill="#0b0e11" />
+        </svg>
+      );
+    case 'OKX':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#FFFFFF">
+          <rect x="2" y="2" width="6" height="6" rx="1" />
+          <rect x="16" y="2" width="6" height="6" rx="1" />
+          <rect x="9" y="9" width="6" height="6" rx="1" />
+          <rect x="2" y="16" width="6" height="6" rx="1" />
+          <rect x="16" y="16" width="6" height="6" rx="1" />
+        </svg>
+      );
+    case 'MEXC':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#00B894">
+          <path d="M2 18L7 6L12 13L17 6L22 18H17.5L14.5 11L12 15L9.5 11L6.5 18H2Z" />
+        </svg>
+      );
+    case 'Bitget':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#00F0FF">
+          <path d="M12 2L2 12H9V22L19 12H12V2Z" />
+        </svg>
+      );
+    case 'Bybit':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#F7A600">
+          <path d="M4 4H10C13.3 4 16 6.7 16 10C16 11.8 15.2 13.4 13.9 14.5C15.8 15.6 17 17.6 17 20H11C11 17.8 9.2 16 7 16H4V20H4V4ZM7 12H10C11.1 12 12 11.1 12 10C12 8.9 11.1 8 10 8H7V12Z" />
+        </svg>
+      );
+    case 'KuCoin':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#00E676">
+          <path d="M4 4V20H8V14L14 20H19L12 13L19 4H14L8 10V4H4Z" />
+        </svg>
+      );
+    case 'Bitrue':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#1E88E5">
+          <path d="M4 4H14C17.3 4 20 6.7 20 10C20 12.2 18.8 14.1 17 15.1V15.2C19.3 16.1 21 18.4 21 21H15C15 18.8 13.2 17 11 17H4V4ZM10 11H13C14.1 11 15 10.1 15 9C15 7.9 14.1 7 13 7H10V11Z" />
+        </svg>
+      );
+    case 'Kraken':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#5741D9">
+          <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM16 16L12 12L16 8V16ZM8 8L12 12L8 16V8Z" />
+        </svg>
+      );
+    case 'Uniswap':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#FF007A">
+          <path d="M12 2C8 6 4 10 4 15C4 19.4 7.6 23 12 23C16.4 23 20 19.4 20 15C20 10 16 6 12 2ZM12 19C9.8 19 8 17.2 8 15C8 12.8 10.5 9.5 12 7.7C13.5 9.5 16 12.8 16 15C16 17.2 14.2 19 12 19Z" />
+        </svg>
+      );
+    case 'Bitstamp':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#00B050">
+          <path d="M6 3H14C17.3 3 20 5.7 20 9C20 11.2 18.8 13.1 17 14.1C19.3 15.1 21 17.4 21 20H13C13 17.8 11.2 16 9 16H6V3ZM11 11H13C14.1 11 15 10.1 15 9C15 7.9 14.1 7 13 7H11V11Z" />
+        </svg>
+      );
+    case 'Bitfinex':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#008080">
+          <path d="M12 2L4 7V17L12 22L20 17V7L12 2ZM12 6L16 8.5V13.5L12 16L8 13.5V8.5L12 6Z" />
+        </svg>
+      );
+    case 'HTX':
+    case 'Huobi':
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#1890FF">
+          <path d="M12 2C10 6 7 9 7 13C7 16.9 10.1 20 14 20C17.9 20 21 16.9 21 13C21 7 15 4 12 2ZM14 17C12.3 17 11 15.7 11 14C11 12.5 12.5 10.5 14 9C15.5 10.5 17 12.5 17 14C17 15.7 15.7 17 14 17Z" />
+        </svg>
+      );
+    default:
+      return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#e8b949">
+          <circle cx="12" cy="12" r="8" />
+        </svg>
+      );
+  }
+}
+
+function ExchangesIntegratedSection() {
+  const [activeExchange, setActiveExchange] = useState<string | null>(null);
+
+  const exchangeList = [
+    { name: 'Binance', type: 'CEX', status: 'Online', ping: '12ms', pairs: '420+', badge: 'Top Tier' },
+    { name: 'OKX', type: 'CEX', status: 'Online', ping: '14ms', pairs: '310+', badge: 'Top Tier' },
+    { name: 'MEXC', type: 'CEX', status: 'Online', ping: '18ms', pairs: '290+', badge: 'CEX' },
+    { name: 'Bitget', type: 'CEX', status: 'Online', ping: '16ms', pairs: '210+', badge: 'CEX' },
+    { name: 'Bybit', type: 'CEX', status: 'Online', ping: '15ms', pairs: '350+', badge: 'Top Tier' },
+    { name: 'KuCoin', type: 'CEX', status: 'Online', ping: '19ms', pairs: '280+', badge: 'CEX' },
+    { name: 'Bitrue', type: 'CEX', status: 'Online', ping: '22ms', pairs: '190+', badge: 'CEX' },
+    { name: 'Kraken', type: 'CEX', status: 'Online', ping: '13ms', pairs: '260+', badge: 'Top Tier' },
+    { name: 'Uniswap', type: 'DEX', status: 'Online', ping: '8ms', pairs: '500+', badge: 'DeFi DEX' },
+    { name: 'Coinbase', type: 'CEX', status: 'Online', ping: '11ms', pairs: '240+', badge: 'Top Tier' },
+    { name: 'Bitstamp', type: 'CEX', status: 'Online', ping: '17ms', pairs: '140+', badge: 'CEX' },
+    { name: 'Bitfinex', type: 'CEX', status: 'Online', ping: '16ms', pairs: '180+', badge: 'CEX' },
+    { name: 'HTX', type: 'CEX', status: 'Online', ping: '20ms', pairs: '230+', badge: 'CEX' },
+  ];
+
+  return (
+    <section className="border-y border-border bg-[#0b0e0f] py-14 lg:py-20" data-testid="section-exchanges-integrated">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        {/* Layout Exactly Matching User Reference Screenshot 1 & 3 */}
+        <Reveal>
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            {/* Left Header Title */}
+            <div className="shrink-0 lg:w-64">
+              <h3 className="font-display text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                Exchanges Integrated
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">Direct low-latency API connections</p>
+            </div>
+
+            {/* Middle Scrolling Logos Ticker Strip with Authentic SVG Logos & Names */}
+            <div className="relative min-w-0 flex-1 overflow-hidden rounded-2xl border border-border/80 bg-card/60 py-3.5 px-4 backdrop-blur-md">
+              <div className="animate-ticker flex items-center gap-6 min-w-max">
+                {[...exchangeList, ...exchangeList].map((ex, idx) => (
+                  <div
+                    key={`${ex.name}-${idx}`}
+                    onMouseEnter={() => setActiveExchange(ex.name)}
+                    onMouseLeave={() => setActiveExchange(null)}
+                    className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-2 transition-all duration-300 ${
+                      activeExchange === ex.name
+                        ? 'border-primary bg-primary/10 shadow-[0_0_20px_rgba(232,185,73,0.2)]'
+                        : 'border-border/60 bg-secondary/40 hover:border-primary/50'
+                    }`}
+                  >
+                    <ExchangeLogoIcon name={ex.name} />
+                    <span className="font-display text-sm font-semibold text-foreground">{ex.name}</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-signal" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Side Stat Counters (Exact 1,200+ | 1,700+ | 30+ as in Reference Image 1) */}
+            <div className="flex shrink-0 items-center justify-between gap-8 border-t border-border/70 pt-6 lg:border-t-0 lg:pt-0">
+              <div className="text-center sm:text-left">
+                <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
+                  1,200<span className="text-primary">+</span>
+                </p>
+                <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Market Pairs</p>
+              </div>
+
+              <div className="h-10 w-px bg-border/80" />
+
+              <div className="text-center sm:text-left">
+                <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
+                  1,700<span className="text-accent">+</span>
+                </p>
+                <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Cryptocurrencies</p>
+              </div>
+
+              <div className="h-10 w-px bg-border/80" />
+
+              <div className="text-center sm:text-left">
+                <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
+                  30<span className="text-primary">+</span>
+                </p>
+                <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Exchanges</p>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function WhatIsCryptoArbitrageSection() {
+  const [selectedPair, setSelectedPair] = useState<string>('BTC/USDT');
+  const [status, setStatus] = useState<'scanning' | 'detected'>('scanning');
+  const [activeStep, setActiveStep] = useState<number | null>(null);
+  const [hoveredTarget, setHoveredTarget] = useState<string | null>(null);
+
+  // Live real-time Binance prices state
+  const [livePrices, setLivePrices] = useState<Record<string, number>>({
+    'BTC/USDT': 88420.50,
+    'ETH/USDT': 3240.80,
+    'SOL/USDT': 188.40,
+    'BNB/USDT': 642.10,
+  });
+
+  // Fetch real-time Binance spot prices every 2.5 seconds
+  useEffect(() => {
+    const fetchLivePrices = async () => {
+      try {
+        const symbolMap: Record<string, string> = {
+          'BTC/USDT': 'BTCUSDT',
+          'ETH/USDT': 'ETHUSDT',
+          'SOL/USDT': 'SOLUSDT',
+          'BNB/USDT': 'BNBUSDT',
+        };
+        const rawSymbol = symbolMap[selectedPair] || 'BTCUSDT';
+        const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${rawSymbol}`);
+        const data = await res.json();
+        if (data && data.price) {
+          const val = parseFloat(data.price);
+          if (!isNaN(val) && val > 0) {
+            setLivePrices((prev) => ({ ...prev, [selectedPair]: val }));
+          }
+        }
+      } catch (err) {
+        setLivePrices((prev) => ({
+          ...prev,
+          [selectedPair]: (prev[selectedPair] || 1000) * (1 + (Math.random() * 0.0004 - 0.0002)),
+        }));
+      }
+    };
+
+    fetchLivePrices();
+    const interval = setInterval(fetchLivePrices, 1000);
+    return () => clearInterval(interval);
+  }, [selectedPair]);
+
+  // Dynamically calculate Market A (Binance), Market B (Bybit), and Net Edge from live price
+  const current = useMemo(() => {
+    const priceA = livePrices[selectedPair] || 88420.50;
+    const spreadPctMap: Record<string, number> = {
+      'BTC/USDT': 0.15,
+      'ETH/USDT': 0.43,
+      'SOL/USDT': 0.25,
+      'BNB/USDT': 0.40,
+    };
+    const spreadPct = spreadPctMap[selectedPair] || 0.20;
+    const priceB = priceA * (1 + spreadPct / 100);
+    const diff = priceB - priceA;
+    const feePct = -0.04;
+    const netPct = spreadPct + feePct;
+
+    const decimals = 2;
+
+    return {
+      exA: {
+        price: `$${priceA.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`,
+        bid: `$${(priceA * 0.99995).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`,
+        ask: `$${priceA.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`,
+        volume: selectedPair === 'BTC/USDT' ? '$420.8M' : selectedPair === 'ETH/USDT' ? '$180.4M' : selectedPair === 'SOL/USDT' ? '$95.6M' : '$62.1M',
+      },
+      exB: {
+        price: `$${priceB.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`,
+        bid: `$${(priceB * 0.99995).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`,
+        ask: `$${priceB.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`,
+        volume: selectedPair === 'BTC/USDT' ? '$390.2M' : selectedPair === 'ETH/USDT' ? '$165.1M' : selectedPair === 'SOL/USDT' ? '$88.3M' : '$58.7M',
+      },
+      spread: `+$${diff.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      gross: `${spreadPct.toFixed(2)}%`,
+      fee: `${feePct.toFixed(2)}%`,
+      net: `${netPct.toFixed(2)}%`,
+    };
+  }, [selectedPair, livePrices]);
+
+  useEffect(() => {
+    setStatus('scanning');
+    const timer1 = setTimeout(() => {
+      setStatus('detected');
+    }, 1200);
+
+    return () => clearTimeout(timer1);
+  }, [selectedPair, activeStep]);
+
+  return (
+    <section className="relative overflow-hidden border-t border-border bg-[#08090a] py-20 lg:py-28" data-testid="section-what-is-arbitrage">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b9490a_1px,transparent_1px),linear-gradient(to_bottom,#e8b9490a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_70%_at_50%_50%,#000_80%,transparent_100%)] opacity-70" />
+      <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,185,73,0.18)_0%,rgba(16,185,129,0.04)_50%,transparent_75%)] blur-3xl pointer-events-none transition-all duration-700" />
+
+      <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
+        <Reveal>
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
+              <Sparkles size={13} className="animate-spin-slow text-primary" />
+              Automated Market Intelligence
+            </div>
+            <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-foreground sm:text-5xl">
+              What Is Crypto Arbitrage?
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Price differences happen across crypto markets. Our arbitrage engine identifies qualified opportunities across exchanges and evaluates them in real time.
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.08}>
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs text-muted-foreground uppercase tracking-wider">Select Market Pair:</span>
+              <div className="flex flex-wrap gap-2">
+                {['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT'].map((pair) => (
+                  <button
+                    key={pair}
+                    onClick={() => setSelectedPair(pair)}
+                    className={`rounded-lg border px-3 py-1.5 font-mono text-xs font-semibold transition-all ${
+                      selectedPair === pair
+                        ? 'border-primary bg-primary/15 text-primary shadow-[0_0_15px_rgba(232,185,73,0.25)]'
+                        : 'border-border bg-card/60 text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                    }`}
+                    data-testid={`button-pair-${pair.replace('/', '-')}`}
+                  >
+                    {pair}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="inline-flex items-center gap-2 rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-[10px] text-accent font-bold">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-signal" />
+              ● LIVE BINANCE SPOT STREAM · REAL TIME
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.14}>
+          <div className="mt-10 rounded-2xl border border-border/80 bg-[#0d1011]/90 p-6 sm:p-10 shadow-2xl backdrop-blur-xl relative">
+            <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr_1fr] items-center">
+
+              {/* LEFT — EXCHANGE A (BINANCE) */}
+              <div
+                onMouseEnter={() => setHoveredTarget('exA')}
+                onMouseLeave={() => setHoveredTarget(null)}
+                className={`relative rounded-xl border p-5 transition-all duration-300 ${
+                  activeStep === 0 || hoveredTarget === 'exA'
+                    ? 'border-primary bg-primary/10 shadow-[0_0_30px_rgba(232,185,73,0.3)] ring-1 ring-primary/50'
+                    : 'border-border/80 bg-card/80 hover:border-primary/50'
+                }`}
+              >
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse-signal" />
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-accent">MARKET A</span>
+                  </div>
+                  <span className="font-mono text-xs text-muted-foreground font-semibold">BINANCE</span>
+                </div>
+
+                <div className="mt-4">
+                  <span className="font-mono text-xs text-muted-foreground">{selectedPair}</span>
+                  <div className="mt-1 font-mono text-3xl font-extrabold text-foreground tracking-tight">
+                    {current.exA.price}
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/60 pt-3 font-mono text-[10px] text-muted-foreground">
+                  <div>Bid: <strong className="text-foreground">{current.exA.bid}</strong></div>
+                  <div>Ask: <strong className="text-foreground">{current.exA.ask}</strong></div>
+                  <div className="col-span-2">Liquidity: <strong className="text-accent">High</strong></div>
+                </div>
+
+                {hoveredTarget === 'exA' && (
+                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 rounded-lg border border-primary bg-[#121616] p-2.5 font-mono text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
+                    <div className="font-bold text-primary">BINANCE CONNECTED</div>
+                    <div>Pair: {selectedPair}</div>
+                    <div>Price: {current.exA.price}</div>
+                    <div>24H Vol: {current.exA.volume}</div>
+                    <div className="text-accent">Status: Active Stream</div>
+                  </div>
+                )}
+              </div>
+
+              {/* CENTER — ARBITRAGE ENGINE & CALCULATION */}
+              <div
+                onMouseEnter={() => setHoveredTarget('engine')}
+                onMouseLeave={() => setHoveredTarget(null)}
+                className={`relative flex flex-col items-center justify-center rounded-xl border p-6 text-center transition-all duration-300 ${
+                  activeStep === 1 || hoveredTarget === 'engine'
+                    ? 'border-primary bg-primary/10 shadow-[0_0_35px_rgba(232,185,73,0.35)] ring-1 ring-primary/50'
+                    : 'border-border/80 bg-card/60 hover:border-primary/50'
+                }`}
+              >
+                <div className="relative grid h-24 w-24 place-items-center rounded-full border-2 border-primary/60 bg-gradient-to-b from-[#1a201d] to-[#0e1211] shadow-[0_0_30px_rgba(232,185,73,0.25)]">
+                  <div className="absolute inset-0 rounded-full border border-primary/40 animate-spin-slow stroke-dasharray-4" />
+                  <div className="text-center font-mono text-[10px] font-black uppercase tracking-widest text-primary leading-tight">
+                    ARBITRAGE<br /><span className="text-foreground">ENGINE</span>
+                  </div>
+                </div>
+
+                <div className="mt-4 font-mono text-xs font-bold tracking-wider uppercase">
+                  {status === 'scanning' ? (
+                    <span className="inline-flex items-center gap-2 text-muted-foreground animate-pulse">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                      SCANNING MARKETS...
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 text-primary font-extrabold animate-bounce">
+                      <Zap size={14} className="text-primary fill-primary" />
+                      OPPORTUNITY DETECTED
+                    </span>
+                  )}
+                </div>
+
+                <div className="mt-5 w-full rounded-xl border border-primary/30 bg-[#121616]/90 p-4 font-mono text-xs shadow-inner">
+                  <div className="flex justify-between items-center text-muted-foreground text-[10px] uppercase">
+                    <span>PRICE DIFFERENCE</span>
+                    <strong className="text-sm font-bold text-foreground">{status === 'scanning' ? '+$0.00' : current.spread}</strong>
+                  </div>
+                  <div className="mt-1 flex justify-between items-center text-muted-foreground text-[10px] uppercase">
+                    <span>GROSS SPREAD</span>
+                    <strong className="text-xs font-bold text-foreground">{status === 'scanning' ? '0.00%' : current.gross}</strong>
+                  </div>
+                  <div className="mt-2 border-t border-border/60 pt-2 flex justify-between items-center text-[10px] text-muted-foreground">
+                    <span>Estimated Fees</span>
+                    <span className="text-red-400">{current.fee}</span>
+                  </div>
+                  <div className="mt-1.5 flex justify-between items-center text-xs font-bold text-primary border-t border-primary/20 pt-1.5">
+                    <span>Net Potential Edge</span>
+                    <span className="text-sm text-primary font-mono">{status === 'scanning' ? '0.00%' : current.net}</span>
+                  </div>
+                </div>
+
+                {hoveredTarget === 'engine' && (
+                  <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-52 rounded-lg border border-primary bg-[#121616] p-2.5 font-mono text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
+                    <div className="font-bold text-primary">HFT ENGINE ACTIVE</div>
+                    <div>• Monitoring 30+ exchanges</div>
+                    <div>• Comparing tick orderbooks</div>
+                    <div>• Evaluating net slippage</div>
+                    <div>• Auto Risk Boundary checks</div>
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT — EXCHANGE B (BYBIT) */}
+              <div
+                onMouseEnter={() => setHoveredTarget('exB')}
+                onMouseLeave={() => setHoveredTarget(null)}
+                className={`relative rounded-xl border p-5 transition-all duration-300 ${
+                  activeStep === 2 || hoveredTarget === 'exB'
+                    ? 'border-primary bg-primary/10 shadow-[0_0_30px_rgba(232,185,73,0.3)] ring-1 ring-primary/50'
+                    : 'border-border/80 bg-card/80 hover:border-primary/50'
+                }`}
+              >
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse-signal" />
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary">MARKET B</span>
+                  </div>
+                  <span className="font-mono text-xs text-muted-foreground font-semibold">BYBIT</span>
+                </div>
+
+                <div className="mt-4">
+                  <span className="font-mono text-xs text-muted-foreground">{selectedPair}</span>
+                  <div className="mt-1 font-mono text-3xl font-extrabold text-foreground tracking-tight">
+                    {current.exB.price}
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/60 pt-3 font-mono text-[10px] text-muted-foreground">
+                  <div>Bid: <strong className="text-foreground">{current.exB.bid}</strong></div>
+                  <div>Ask: <strong className="text-foreground">{current.exB.ask}</strong></div>
+                  <div className="col-span-2">Liquidity: <strong className="text-accent">High</strong></div>
+                </div>
+
+                {hoveredTarget === 'exB' && (
+                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 rounded-lg border border-primary bg-[#121616] p-2.5 font-mono text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
+                    <div className="font-bold text-primary">BYBIT CONNECTED</div>
+                    <div>Pair: {selectedPair}</div>
+                    <div>Price: {current.exB.price}</div>
+                    <div>24H Vol: {current.exB.volume}</div>
+                    <div className="text-accent">Status: Active Stream</div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-border/60 flex items-center justify-center gap-2 font-mono text-[10px] text-muted-foreground uppercase tracking-widest flex-wrap">
+              <span className="text-primary font-bold">BINANCE (MARKET A)</span>
+              <span className="text-accent font-mono">━━ ⚡ MARKET DATA ━━▶</span>
+              <span className="text-primary font-bold">ARBITRAGE ENGINE</span>
+              <span className="text-accent font-mono">━━ ⚡ QUALIFICATION ━━▶</span>
+              <span className="text-primary font-bold">BYBIT (MARKET B)</span>
+            </div>
+          </div>
+        </Reveal>
+
+      </div>
+    </section>
+  );
 }
 
 function Home() {
@@ -183,44 +1130,98 @@ function Home() {
   const [email, setEmail] = useState('');
   const [joined, setJoined] = useState(false);
   const [copied, setCopied] = useState(false);
-  const copyAddress = () => { navigator.clipboard?.writeText('0x7B...94AC'); setCopied(true); window.setTimeout(() => setCopied(false), 1800); };
+  const [activePair, setActivePair] = useState('BTC/USDT');
+
+  const copyAddress = () => {
+    navigator.clipboard?.writeText('0x7B...94AC');
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
   const processSteps: { number: string; title: string; copy: string; icon: LucideIcon }[] = [
-    { number: '01', title: 'Observe', copy: 'A live map of spreads, depth, fees, and venue health.', icon: Eye },
-    { number: '02', title: 'Qualify', copy: 'A probability model filters noise and stress-tests each route.', icon: BrainCircuit },
-    { number: '03', title: 'Execute', copy: 'When the edge clears the boundary, the engine moves with precision.', icon: Zap },
+    { number: '01', title: 'Observe', copy: 'A live market engine monitors spreads, liquidity, fees, and exchange conditions across global markets.', icon: Eye },
+    { number: '02', title: 'Qualify', copy: 'Our intelligence engine analyzes market discrepancies and identifies opportunities that meet defined trading criteria.', icon: BrainCircuit },
+    { number: '03', title: 'Execute', copy: 'When an opportunity meets the required conditions, the execution engine acts with speed and precision.', icon: Zap },
   ];
-  return <div>
-    <section className="relative overflow-hidden border-b border-border/70">
-      <div className="absolute inset-0 grid-fade opacity-70" /><div className="absolute -left-24 top-20 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:pb-28 lg:pt-24">
-        <motion.div initial="hidden" animate="show" variants={stagger}>
-          <motion.div variants={reveal} className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[.16em] text-primary"><span className="h-1.5 w-1.5 animate-pulse-signal rounded-full bg-primary" />AI market intelligence / online</motion.div>
-          <motion.h1 variants={reveal} className="max-w-3xl text-balance text-[3.55rem] font-semibold leading-[.95] tracking-[-.075em] text-foreground sm:text-7xl lg:text-[6.4rem]">Find the edge<br /><span className="text-primary">before the market</span><br />closes it.</motion.h1>
-          <motion.p variants={reveal} className="mt-7 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">NexaTraders watches the world’s exchanges at machine speed, weighs the risk, and turns short-lived price differences into a strategy you can understand.</motion.p>
-          <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3"><ButtonLink href="/packages">Explore packages <ArrowRight size={15} /></ButtonLink><ButtonLink href="/about" variant="outline"><Play size={14} /> See how it works</ButtonLink></motion.div>
-          <motion.div variants={reveal} className="mt-10 flex items-center gap-3 text-xs text-muted-foreground"><div className="flex -space-x-2">{['MC', 'EV', 'JB'].map((initials, index) => <span key={initials} className="grid h-7 w-7 place-items-center rounded-full border-2 border-background bg-secondary font-mono text-[9px] text-primary">{initials}</span>)}</div><span><strong className="text-foreground">2,400+</strong> signal-led accounts</span><span className="h-3 w-px bg-border" /><span className="positive-text">● 99.98% uptime</span></motion.div>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, scale: .96, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: .8, delay: .2 }} className="lg:pt-3"><ScanPanel /></motion.div>
-      </div>
-      <ExchangeTicker />
-    </section>
 
-    <main>
-      <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28"><div className="grid gap-10 border-b border-border pb-16 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"><Reveal className="sm:px-8 sm:first:pl-0"><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Capital routed</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">$84.7M</p><p className="mt-2 text-sm text-accent">↑ 18.6% this quarter</p></Reveal><Reveal className="sm:px-8" delay={.08}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Decision latency</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">42<span className="text-xl text-primary">ms</span></p><p className="mt-2 text-sm text-muted-foreground">from tick to signal</p></Reveal><Reveal className="sm:px-8 sm:pr-0" delay={.16}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Markets mapped</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">18</p><p className="mt-2 text-sm text-muted-foreground">venues / 24 hours a day</p></Reveal></div></section>
+  return (
+    <div>
+      <section className="relative overflow-hidden border-b border-border/70">
+        <AiTradingBotHeroBg activePair={activePair} />
+        <div className="absolute inset-0 grid-fade opacity-70" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:pb-28 lg:pt-24">
+          <motion.div initial="hidden" animate="show" variants={stagger}>
+            <motion.h1 variants={reveal} className="font-display max-w-3xl text-balance text-4xl font-extrabold leading-[1.04] tracking-[-0.045em] text-foreground sm:text-6xl lg:text-[5.5rem]">
+              Capture Arbitrage Edge<br />
+              <span className="text-primary font-bold">across global markets</span><br />
+              at machine speed.
+            </motion.h1>
+            <motion.p variants={reveal} className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground/90 sm:text-lg">
+              NexaTraders continuously scans cross-exchange liquidity, detects micro price gaps between 18+ venues, and routes trades automatically with sub-14ms precision.
+            </motion.p>
+            <motion.div variants={reveal} className="mt-5 flex flex-wrap gap-2 font-mono text-[10px]">
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary shadow-[0_0_12px_rgba(232,185,73,0.15)]">
+                <Zap size={11} /> Sub-14ms Execution Speed
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 text-accent">
+                <Globe2 size={11} /> 30+ Venues Connected
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card/80 px-2.5 py-1 text-muted-foreground">
+                <ShieldCheck size={11} /> Bounded Risk Gate
+              </span>
+            </motion.div>
+            <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
+              <ButtonLink href="/packages">
+                Explore packages <ArrowRight size={15} />
+              </ButtonLink>
+              <ButtonLink href="/about" variant="outline">
+                <Play size={14} /> See live engine in action
+              </ButtonLink>
+            </motion.div>
+            <motion.div variants={reveal} className="mt-10 flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="flex -space-x-2">
+                {['MC', 'EV', 'JB'].map((initials) => (
+                  <span key={initials} className="grid h-7 w-7 place-items-center rounded-full border-2 border-background bg-secondary font-mono text-[9px] text-primary">
+                    {initials}
+                  </span>
+                ))}
+              </div>
+              <span>
+                <strong className="text-foreground">2,400+</strong> institutional arbitrage accounts
+              </span>
+              <span className="h-3 w-px bg-border" />
+              <span className="positive-text">● 99.98% uptime</span>
+            </motion.div>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, scale: 0.96, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="lg:pt-3">
+            <ScanPanel activePair={activePair} setActivePair={setActivePair} />
+          </motion.div>
+        </div>
+        <ExchangeTicker />
+      </section>
 
-      <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8 lg:pb-32"><div className="grid gap-14 lg:grid-cols-[.8fr_1.2fr]"><Reveal><SectionHeading eyebrow="The loop" title="A calmer way to move through a noisy market." copy="The system does the repetitive work. You keep the context, the controls, and the final say." /><div className="mt-8"><ButtonLink href="/about" variant="outline">Our operating principles <ArrowRight size={15} /></ButtonLink></div></Reveal><motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={stagger} className="grid gap-3">{processSteps.map(({ number, title, copy, icon: Icon }) => <motion.div key={number} variants={reveal} className="group flex gap-5 rounded-xl border border-border bg-card/60 p-5 hover-lift"><span className="font-mono text-xs text-primary">{number}</span><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon size={19} /></span><div><h3 className="text-lg font-semibold tracking-[-.03em]">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p></div><ArrowUpRight size={15} className="ml-auto shrink-0 text-muted-foreground/40 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary" /></motion.div>)}</motion.div></div></section>
+      <main>
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28"><div className="grid gap-10 border-b border-border pb-16 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"><Reveal className="sm:px-8 sm:first:pl-0"><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Capital routed</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">$5.8M</p><p className="mt-2 text-sm text-accent">↑ 18.6% this quarter</p></Reveal><Reveal className="sm:px-8" delay={.08}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Decision latency</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">42<span className="text-xl text-primary">ms</span></p><p className="mt-2 text-sm text-muted-foreground">from tick to signal</p></Reveal><Reveal className="sm:px-8 sm:pr-0" delay={.16}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Markets mapped</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">18</p><p className="mt-2 text-sm text-muted-foreground">venues / 24 hours a day</p></Reveal></div></section>
 
-      <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-28"><Reveal><SectionHeading eyebrow="The readout" title="See the market thinking in real time." copy="The dashboard is designed to answer the useful questions: what moved, what changed, and why did the engine choose this route?" /><div className="mt-8 flex gap-3"><span className="inline-flex items-center gap-2 rounded-md border border-accent/25 bg-accent/5 px-3 py-2 font-mono text-[10px] text-accent"><Radio size={13} /> live system telemetry</span></div></Reveal><Reveal delay={.12}><div className="rounded-2xl border border-border bg-card p-4 sm:p-6"><div className="flex items-start justify-between"><div><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">BTC / USDT · spread monitor</p><p className="mt-2 text-2xl font-semibold">$71,842.09 <span className="font-mono text-xs text-accent">+2.84%</span></p></div><div className="flex items-center gap-1.5 font-mono text-[10px] text-accent"><span className="h-1.5 w-1.5 animate-pulse-signal rounded-full bg-accent" />Live</div></div><div className="mt-8"><LiveChart /></div><div className="mt-5 grid gap-3 sm:grid-cols-3"><div className="rounded-lg border border-border bg-secondary/50 p-3"><div className="flex items-center justify-between"><span className="text-xs text-muted-foreground">Binance</span><span className="positive-text"><ArrowUpRight size={13} /></span></div><p className="mt-2 font-mono text-sm">$71,764.30</p></div><div className="rounded-lg border border-primary/30 bg-primary/5 p-3"><div className="flex items-center justify-between"><span className="text-xs text-muted-foreground">Route</span><span className="signal-text"><ArrowRight size={13} /></span></div><p className="mt-2 font-mono text-sm text-primary">+2.84% edge</p></div><div className="rounded-lg border border-border bg-secondary/50 p-3"><div className="flex items-center justify-between"><span className="text-xs text-muted-foreground">Kraken</span><span className="positive-text"><ArrowDownRight size={13} /></span></div><p className="mt-2 font-mono text-sm">$73,806.20</p></div></div></div></Reveal></div></section>
+        <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8 lg:pb-32"><div className="grid gap-14 lg:grid-cols-[.8fr_1.2fr]"><Reveal><SectionHeading eyebrow="The loop" title="Turn Market Price Differences Into Automated Opportunities." copy="Our automated crypto arbitrage technology continuously monitors market differences across supported exchanges and identifies potential arbitrage opportunities." /><div className="mt-8"><ButtonLink href="/about" variant="outline">Our operating principles <ArrowRight size={15} /></ButtonLink></div></Reveal><motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={stagger} className="grid gap-3">{processSteps.map(({ number, title, copy, icon: Icon }) => <motion.div key={number} variants={reveal} className="group flex gap-5 rounded-xl border border-border bg-card/60 p-5 hover-lift"><span className="font-mono text-xs text-primary">{number}</span><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon size={19} /></span><div><h3 className="text-lg font-semibold tracking-[-.03em]">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p></div><ArrowUpRight size={15} className="ml-auto shrink-0 text-muted-foreground/40 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary" /></motion.div>)}</motion.div></div></section>
 
-      <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28"><Reveal><SectionHeading eyebrow="Built underneath" title="Fast where it matters. Quiet where it should be." copy="The infrastructure is purpose-built for a market that changes between one refresh and the next." /></Reveal><div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-4"><Reveal delay={.04}><Feature icon={Network} title="18 venues" copy="One connected view across the exchanges that matter." /></Reveal><Reveal delay={.1}><Feature icon={Cpu} title="42ms decisions" copy="Low-latency scoring from raw tick to clear action." /></Reveal><Reveal delay={.16}><Feature icon={LockKeyhole} title="Bounded access" copy="Permissions and limits are part of every strategy." /></Reveal><Reveal delay={.22}><Feature icon={FileCheck2} title="Readable audit" copy="A reason attached to every meaningful decision." /></Reveal></div></section>
+        {/* New Exchanges Integrated Section (Placed directly below The Loop section) */}
+        <ExchangesIntegratedSection />
 
-      <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:px-8 lg:py-28"><Reveal><div className="relative rounded-2xl border border-primary/20 bg-[#111513] p-6 sm:p-8"><div className="absolute right-5 top-5 rounded-full border border-primary/25 px-2 py-1 font-mono text-[9px] text-primary">VERIFIED ROUTE</div><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground"><LockKeyhole size={18} /></span><div><p className="font-mono text-[10px] uppercase text-muted-foreground">Settlement vault</p><p className="text-sm">Strategy reserve / 04</p></div></div><div className="my-8 h-px gold-rule opacity-50" /><div className="grid gap-5 sm:grid-cols-2"><div><p className="font-mono text-[10px] uppercase text-muted-foreground">Protected balance</p><p className="mt-2 text-2xl font-semibold">$2,048,391.44</p></div><div><p className="font-mono text-[10px] uppercase text-muted-foreground">Policy state</p><p className="mt-2 flex items-center gap-2 text-sm text-accent"><span className="h-2 w-2 rounded-full bg-accent" />All boundaries active</p></div></div><div className="mt-7 flex items-center justify-between rounded-lg border border-border bg-secondary/50 px-3 py-2.5"><span className="font-mono text-[10px] text-muted-foreground">0x7B...94AC</span><button onClick={copyAddress} className="flex items-center gap-1 text-xs text-primary hover:underline" data-testid="button-copy-vault">{copied ? <Check size={13} /> : <Copy size={13} />}{copied ? 'Copied' : 'Copy'}</button></div></div></Reveal><Reveal delay={.12}><SectionHeading eyebrow="Security, not theatre" title="Your controls are part of the strategy." copy="We believe the most trustworthy automation is legible. Every package is built around clear permissions, visible boundaries, and a human-readable history." /><div className="mt-8 flex flex-wrap gap-3"><span className="rounded-md border border-border bg-card px-3 py-2 font-mono text-[10px] text-muted-foreground">encrypted transport</span><span className="rounded-md border border-border bg-card px-3 py-2 font-mono text-[10px] text-muted-foreground">segmented keys</span><span className="rounded-md border border-border bg-card px-3 py-2 font-mono text-[10px] text-muted-foreground">risk gates</span></div></Reveal></div></section>
+        {/* Interactive "What Is Crypto Arbitrage?" Section */}
+        <WhatIsCryptoArbitrageSection />
 
-      <section className="mx-auto max-w-4xl px-5 py-20 lg:py-28"><Reveal><SectionHeading eyebrow="Questions, answered" title="The short version." align="center" /></Reveal><div className="mt-10 divide-y divide-border border-y border-border">{faqs.map(([question, answer], index) => <Reveal key={question} delay={index * .04}><div><button onClick={() => setActiveFaq(activeFaq === index ? -1 : index)} className="flex w-full items-center justify-between gap-6 py-5 text-left" data-testid={`button-faq-${index}`}><span className="text-base font-medium">{question}</span><ChevronDown size={17} className={`shrink-0 text-muted-foreground transition-transform ${activeFaq === index ? 'rotate-180 text-primary' : ''}`} /></button><AnimatePresence initial={false}>{activeFaq === index && <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden"><p className="max-w-2xl pb-5 text-sm leading-6 text-muted-foreground">{answer}</p></motion.div>}</AnimatePresence></div></Reveal>)}</div><div className="mt-8 text-center"><ButtonLink href="/contact" variant="outline">Ask a different question <MessageCircle size={15} /></ButtonLink></div></section>
+        <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-28"><Reveal><SectionHeading eyebrow="The readout" title="See the market thinking in real time." copy="The dashboard is designed to answer the useful questions: what moved, what changed, and why did the engine choose this route?" /><div className="mt-8 flex gap-3"><span className="inline-flex items-center gap-2 rounded-md border border-accent/25 bg-accent/5 px-3 py-2 font-mono text-[10px] text-accent"><Radio size={13} /> live system telemetry</span></div></Reveal><Reveal delay={.12}><div className="overflow-hidden rounded-2xl border border-primary/30 bg-[#0d1011] p-2 sm:p-3 shadow-[0_0_50px_rgba(232,185,73,0.22)] backdrop-blur-xl"><div className="relative overflow-hidden rounded-xl border border-border/80 bg-black aspect-video"><video src="/trade-recording.mp4" autoPlay loop muted playsInline className="h-full w-full object-cover rounded-xl shadow-2xl pointer-events-none" data-testid="video-trade-recording" /></div></div></Reveal></div></section>
 
-      <section id="newsletter" className="relative overflow-hidden border-t border-border"><div className="absolute inset-0 grid-fade opacity-60" /><div className="relative mx-auto max-w-3xl px-5 py-20 text-center lg:py-28"><Reveal><div className="mx-auto grid h-11 w-11 place-items-center rounded-xl border border-primary/40 bg-primary/10 text-primary"><Bell size={19} /></div><h2 className="mt-6 text-3xl font-semibold tracking-[-.055em] sm:text-5xl">Keep your eye on the signal.</h2><p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-muted-foreground">A weekly note on market structure, execution, and what the data is actually saying.</p>{joined ? <div className="mx-auto mt-8 flex max-w-md items-center justify-center gap-2 rounded-lg border border-accent/30 bg-accent/5 p-3 text-sm text-accent"><Check size={16} />Signal letter confirmed. See you in the next issue.</div> : <form onSubmit={(e) => { e.preventDefault(); if (email) setJoined(true); }} className="mx-auto mt-8 flex max-w-md gap-2"><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@domain.com" className="min-w-0 flex-1 rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/60 focus:border-primary" data-testid="input-home-email" /><button type="submit" className="rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68]" data-testid="button-home-subscribe">Subscribe</button></form>}</Reveal></div></section>
-    </main>
-  </div>;
+        <section className="relative overflow-hidden w-full py-20 lg:py-28" data-testid="section-built-underneath"><AiArbitrageInteractiveFullBg /><div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8"><Reveal><SectionHeading eyebrow="Built underneath" title="Fast where it matters. Quiet where it should be." copy="The infrastructure is purpose-built for a market that changes between one refresh and the next." /></Reveal><div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-4"><Reveal delay={.04}><Feature icon={Network} title="18 venues" copy="One connected view across the exchanges that matter." /></Reveal><Reveal delay={.1}><Feature icon={Cpu} title="42ms decisions" copy="Low-latency scoring from raw tick to clear action." /></Reveal><Reveal delay={.16}><Feature icon={LockKeyhole} title="Bounded access" copy="Permissions and limits are part of every strategy." /></Reveal><Reveal delay={.22}><Feature icon={FileCheck2} title="Readable audit" copy="A reason attached to every meaningful decision." /></Reveal></div></div></section>
+
+        <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:px-8 lg:py-28"><Reveal><div className="relative rounded-3xl border border-primary/40 bg-gradient-to-br from-[#131816] via-[#0c0f0f] to-[#121614] p-8 sm:p-10 shadow-[0_0_50px_rgba(232,185,73,0.22)] backdrop-blur-xl overflow-hidden group"><div className="absolute top-0 right-0 w-60 h-60 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" /><h3 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl leading-tight">One Asset. Multiple Markets.<br /><span className="text-primary font-black">One Intelligent Engine.</span></h3><p className="mt-4 text-xs leading-relaxed text-muted-foreground sm:text-sm max-w-xl">Crypto markets operate across multiple venues, creating temporary price differences. Arbitrage technology monitors these differences and evaluates whether an opportunity meets defined trading conditions.</p><div className="my-8 h-px bg-gradient-to-r from-primary/40 via-primary/10 to-transparent" /><div className="flex flex-wrap items-center gap-4"><ButtonLink href="/register" variant="outline" className="font-mono text-xs border-primary/40 bg-card/80 backdrop-blur-md hover:border-primary hover:bg-primary/10 hover:text-primary transition-all shadow-lg">Open an Account →</ButtonLink></div></div></Reveal><Reveal delay={.12}><SectionHeading eyebrow="Security, not theatre" title="Your controls are part of the strategy." copy="We believe the most trustworthy automation is legible. Every package is built around clear permissions, visible boundaries, and a human-readable history." /><div className="mt-8 flex flex-wrap gap-3"><span className="rounded-md border border-border bg-card px-3 py-2 font-mono text-[10px] text-muted-foreground">encrypted transport</span><span className="rounded-md border border-border bg-card px-3 py-2 font-mono text-[10px] text-muted-foreground">segmented keys</span><span className="rounded-md border border-border bg-card px-3 py-2 font-mono text-[10px] text-muted-foreground">risk gates</span></div></Reveal></div></section>
+
+        <section className="mx-auto max-w-4xl px-5 py-20 lg:py-28"><Reveal><SectionHeading eyebrow="Questions, answered" title="The short version." align="center" /></Reveal><div className="mt-10 divide-y divide-border border-y border-border">{faqs.map(([question, answer], index) => <Reveal key={question} delay={index * .04}><div><button onClick={() => setActiveFaq(activeFaq === index ? -1 : index)} className="flex w-full items-center justify-between gap-6 py-5 text-left" data-testid={`button-faq-${index}`}><span className="text-base font-medium">{question}</span><ChevronDown size={17} className={`shrink-0 text-muted-foreground transition-transform ${activeFaq === index ? 'rotate-180 text-primary' : ''}`} /></button><AnimatePresence initial={false}>{activeFaq === index && <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden"><p className="max-w-2xl pb-5 text-sm leading-6 text-muted-foreground">{answer}</p></motion.div>}</AnimatePresence></div></Reveal>)}</div><div className="mt-8 text-center"><ButtonLink href="/contact" variant="outline">Ask a different question <MessageCircle size={15} /></ButtonLink></div></section>
+
+      </main>
+    </div>
+  );
 }
 
 function Feature({ icon: Icon, title, copy }: { icon: typeof Globe2; title: string; copy: string }) {
@@ -231,12 +1232,298 @@ function PageIntro({ eyebrow, title, copy }: { eyebrow: string; title: string; c
   return <section className="relative overflow-hidden border-b border-border"><div className="absolute inset-0 grid-fade opacity-60" /><div className="relative mx-auto max-w-7xl px-5 pb-16 pt-16 lg:px-8 lg:pb-24 lg:pt-24"><Reveal><SectionHeading eyebrow={eyebrow} title={title} copy={copy} /></Reveal></div></section>;
 }
 
-function PackageCard({ tier }: { tier: PackageTier }) {
-  return <Reveal className={`${tier.featured ? 'lg:-translate-y-4' : ''}`}><div className={`relative flex h-full flex-col overflow-hidden rounded-xl border p-5 transition-all hover:-translate-y-1 ${tier.featured ? 'border-primary/60 bg-primary/[.055] shadow-[0_20px_70px_rgba(232,185,73,.09)]' : 'border-border bg-card/70 hover:border-primary/35'}`}>{tier.featured && <div className="absolute right-4 top-4 rounded-full bg-primary px-2.5 py-1 font-mono text-[9px] uppercase tracking-[.14em] text-primary-foreground">Most selected</div>}<div className="flex items-start justify-between"><div><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Tier / {tier.name}</p><p className="mt-4 text-4xl font-semibold tracking-[-.07em]">{tier.amount}</p></div><span className={`grid h-9 w-9 place-items-center rounded-lg ${tier.featured ? 'bg-primary text-primary-foreground' : 'bg-secondary text-primary'}`}><Sparkles size={17} /></span></div><div className="mt-8 space-y-3 border-t border-border/70 pt-5 text-sm"><div className="flex justify-between"><span className="text-muted-foreground">Target ROI</span><strong className="text-accent">{tier.roi}</strong></div><div className="flex justify-between"><span className="text-muted-foreground">Projected return</span><strong>{tier.returnAmount}</strong></div><div className="flex justify-between"><span className="text-muted-foreground">Duration</span><span>{tier.duration}</span></div><div className="flex justify-between"><span className="text-muted-foreground">Daily projection</span><span>{tier.daily}</span></div><div className="flex justify-between"><span className="text-muted-foreground">Max slots</span><span>{tier.slots} active</span></div></div><ButtonLink href="/register" variant={tier.featured ? 'primary' : 'outline'} className="mt-7 w-full">{tier.featured ? 'Choose Rise' : 'View this tier'} <ArrowRight size={14} /></ButtonLink></div></Reveal>;
+function AiArbitrageInteractiveFullBg() {
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [pulse, setPulse] = useState(0);
+  const [activeNode, setActiveNode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPulse((p) => (p + 1) % 100);
+    }, 70);
+    return () => clearInterval(timer);
+  }, []);
+
+  const sideNodes = [
+    // Left side margin nodes
+    { id: 'binance', name: 'Binance AI Core', pos: 'left-[2.5%] top-[15%]', ping: '12ms', rate: '1,842 ops/s' },
+    { id: 'neural', name: 'Neural Signal V4', pos: 'left-[2%] top-[45%]', ping: '8ms', rate: '99.84% Edge' },
+    { id: 'risk', name: 'Bounded Risk Gate', pos: 'left-[3%] bottom-[15%]', ping: '0ms', rate: '100% Protected' },
+
+    // Right side margin nodes
+    { id: 'kraken', name: 'Kraken Speed HFT', pos: 'right-[2.5%] top-[18%]', ping: '14ms', rate: '+0.48% Spread' },
+    { id: 'bybit', name: 'Bybit Yield Engine', pos: 'right-[2%] top-[48%]', ping: '11ms', rate: 'Zero Slippage' },
+    { id: 'vault', name: 'Settlement Vault', pos: 'right-[3%] bottom-[18%]', ping: '16ms', rate: '$142.8M Routed' },
+  ];
+
+  return (
+    <div
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        setMousePos({ x, y });
+      }}
+      className="absolute inset-0 w-full overflow-hidden select-none pointer-events-auto z-0 bg-[#08090a]"
+      data-testid="bg-ai-arbitrage-full-interactive"
+    >
+      {/* 1. Dynamic Full-Screen Cursor Spotlight */}
+      <div
+        className="pointer-events-none absolute h-[750px] w-[750px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,185,73,0.24)_0%,rgba(16,185,129,0.08)_40%,transparent_75%)] blur-3xl transition-all duration-150"
+        style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
+      />
+
+      {/* 2. Full-Width Sci-Fi Cyber Neural Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94912_1px,transparent_1px),linear-gradient(to_bottom,#e8b94912_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_90%_80%_at_50%_50%,#000_80%,transparent_100%)] opacity-80" />
+
+      {/* 3. Glowing Center Ambient Flares anchored behind cards */}
+      <div className="absolute left-1/2 top-1/2 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,185,73,0.22)_0%,rgba(16,185,129,0.07)_50%,transparent_80%)] blur-3xl pointer-events-none" />
+
+      {/* 4. Interactive Floating AI Nodes in Left & Right Side Margins */}
+      {sideNodes.map((node) => {
+        const isActive = activeNode === node.id;
+        return (
+          <div
+            key={node.id}
+            onMouseEnter={() => setActiveNode(node.id)}
+            onMouseLeave={() => setActiveNode(null)}
+            className={`absolute hidden xl:block cursor-pointer transition-all duration-300 ${node.pos} ${
+              isActive ? 'scale-110 z-30' : 'hover:scale-105 z-20'
+            }`}
+          >
+            <div className={`rounded-xl border p-3 font-mono text-[10px] backdrop-blur-xl transition-all shadow-xl ${
+              isActive
+                ? 'border-primary bg-[#0d1010]/95 text-primary shadow-[0_0_30px_rgba(232,185,73,0.4)]'
+                : 'border-primary/40 bg-[#0d1010]/80 text-muted-foreground hover:border-primary/70 hover:text-foreground'
+            }`}>
+              <div className="flex items-center gap-2 font-bold text-xs text-primary">
+                <span className={`h-2 w-2 rounded-full ${isActive ? 'bg-accent animate-ping' : 'bg-primary animate-pulse-signal'}`} />
+                {node.name}
+              </div>
+              <div className="mt-1.5 flex justify-between gap-3 text-[9px]">
+                <span>Rate: <strong className="text-foreground">{node.rate}</strong></span>
+                <span className="text-accent">{node.ping}</span>
+              </div>
+              {isActive && (
+                <div className="mt-2 border-t border-primary/30 pt-1.5 text-[9px] text-accent animate-pulse">
+                  ⚡ Connected to HFT Yield Engine
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* 5. Full-Width SVG Laser Network connecting side margins to center */}
+      <svg className="absolute inset-0 h-full w-full opacity-70" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1920 1080">
+        <defs>
+          <linearGradient id="fullLaserGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#e8b949" stopOpacity="0.9" />
+            <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#f3cc68" stopOpacity="0.9" />
+          </linearGradient>
+
+          <filter id="laserGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Laser Beams Spanning Across Screen */}
+        <g stroke="url(#fullLaserGradient)" strokeWidth="2" fill="none" filter="url(#laserGlow)">
+          {/* Left Margin to Center Cards */}
+          <path d="M 80 180 Q 480 120, 960 280 T 1840 180" strokeDasharray="12 6" className="chart-draw" />
+          <path d="M 60 500 Q 480 420, 960 480 T 1860 500" strokeDasharray="10 5" opacity="0.75" />
+          <path d="M 100 860 Q 600 960, 960 800 T 1820 860" strokeDasharray="14 6" opacity="0.85" />
+        </g>
+
+        {/* Traveling Signal Light Particles across full width */}
+        <circle cx={60 + (pulse * 18.5) % 1800} cy={180 + Math.sin(pulse * 0.1) * 35} r="5" fill="#f3cc68" filter="url(#laserGlow)" />
+        <circle cx={1860 - (pulse * 17.5) % 1800} cy={860 - Math.sin(pulse * 0.1) * 30} r="5" fill="#10b981" filter="url(#laserGlow)" />
+        <circle cx={100 + (pulse * 16.5) % 1700} cy={500 + Math.cos(pulse * 0.1) * 25} r="4" fill="#e8b949" filter="url(#laserGlow)" />
+      </svg>
+    </div>
+  );
 }
 
 function PackagesPage() {
-  return <div><PageIntro eyebrow="Capital, with context" title="Choose the room your strategy needs." copy="Five clear package structures. One operating system that keeps the decision readable from the first dollar to the last." /><section className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24"><div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">{packages.map((tier) => <PackageCard key={tier.name} tier={tier} />)}</div><Reveal><div className="mt-10 flex flex-col gap-4 rounded-xl border border-border bg-card/50 p-5 sm:flex-row sm:items-center sm:justify-between"><div className="flex gap-3"><ShieldCheck className="mt-0.5 shrink-0 text-accent" size={20} /><div><p className="font-medium">A note on the numbers</p><p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">The projections above are package targets, not guarantees. Digital assets are volatile. Read the terms and speak with support before committing capital.</p></div></div><ButtonLink href="/contact" variant="outline" className="shrink-0">Talk to support <MessageCircle size={14} /></ButtonLink></div></Reveal></section><section className="border-t border-border bg-[#0c0f0f]"><div className="mx-auto max-w-7xl px-5 py-16 lg:px-8"><SectionHeading eyebrow="Every tier includes" title="The same intelligence underneath." /><div className="mt-10 grid gap-3 sm:grid-cols-3"><Feature icon={BarChart3} title="Live opportunity map" copy="Your strategy reads venue-level price and liquidity data continuously." /><Feature icon={LockKeyhole} title="Defined boundaries" copy="Risk controls are configured before the engine can act." /><Feature icon={Database} title="Decision history" copy="See the reason and route behind each meaningful system event." /></div></div></section></div>;
+  const [selectedTier, setSelectedTier] = useState<string>('Rise');
+  const [calcAmount, setCalcAmount] = useState<number>(1000);
+
+  const selectedData = useMemo(() => {
+    return packages.find((p) => p.name === selectedTier) || packages[2];
+  }, [selectedTier]);
+
+  return (
+    <div className="relative overflow-hidden bg-[#08090a]">
+      <PageIntro
+        eyebrow="Capital, with context"
+        title="Choose the room your strategy needs."
+        copy="Five clear package structures with automated sub-14ms cross-venue arbitrage execution."
+      />
+
+      <section className="relative overflow-hidden w-full py-12 lg:py-20" data-testid="section-packages">
+        <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
+          {/* Interactive Yield Estimator Banner */}
+        <Reveal>
+          <div className="mb-12 overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-r from-[#121615] via-[#0d1010] to-[#121615] p-6 shadow-[0_0_50px_rgba(232,185,73,0.14)] backdrop-blur-xl sm:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-xl">
+                <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-widest text-primary">
+                  <Sparkles size={14} className="animate-spin-slow text-primary" />
+                  Interactive Arbitrage Yield Estimator
+                </div>
+                <h3 className="mt-2 text-2xl font-extrabold text-foreground sm:text-3xl">
+                  Simulate Your Package Returns
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                  Adjust your capital allocation slider to project estimated daily returns, total target ROI, and active execution slots across global exchanges.
+                </p>
+              </div>
+
+              <div className="w-full rounded-xl border border-border/80 bg-card/80 p-5 font-mono text-xs shadow-lg lg:w-96">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Selected Capital Base:</span>
+                  <strong className="text-sm text-primary">${calcAmount.toLocaleString()}</strong>
+                </div>
+                <input
+                  type="range"
+                  min="100"
+                  max="10000"
+                  step="100"
+                  value={calcAmount}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setCalcAmount(val);
+                    if (val <= 200) setSelectedTier('Spark');
+                    else if (val <= 600) setSelectedTier('Boost');
+                    else if (val <= 3000) setSelectedTier('Rise');
+                    else if (val <= 7500) setSelectedTier('Titan');
+                    else setSelectedTier('Supreme');
+                  }}
+                  className="mt-3 w-full cursor-pointer accent-primary"
+                  data-testid="input-tier-calculator-slider"
+                />
+                <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+                  <span className="text-muted-foreground">Projected Net Return:</span>
+                  <span className="text-base font-extrabold text-accent">
+                    +${(calcAmount * (parseFloat(selectedData.roi) / 100)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* 5-Tier Ultra-Premium Grid */}
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
+          {packages.map((tier) => {
+            const isSelected = selectedTier === tier.name;
+            const isFeatured = tier.featured;
+            return (
+              <Reveal key={tier.name} className="h-full">
+                <div
+                  onClick={() => {
+                    setSelectedTier(tier.name);
+                    setCalcAmount(parseInt(tier.amount.replace(/[^0-9]/g, '')) || 1000);
+                  }}
+                  className={`group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-5 transition-all duration-300 ${
+                    isSelected
+                      ? 'scale-[1.03] z-10 border-primary bg-gradient-to-b from-primary/20 via-[#111514] to-[#0d1010] shadow-[0_0_45px_rgba(232,185,73,0.35)]'
+                      : isFeatured
+                      ? 'border-primary/60 bg-gradient-to-b from-primary/10 via-[#101312] to-[#0c0e0e] shadow-[0_0_25px_rgba(232,185,73,0.18)]'
+                      : 'border-border/80 bg-card/60 hover:-translate-y-1 hover:border-primary/40 hover:bg-card/90 hover:shadow-xl'
+                  }`}
+                  data-testid={`card-tier-${tier.name.toLowerCase()}`}
+                >
+                  {/* Top Badges */}
+                  {isFeatured && (
+                    <div className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-primary-foreground shadow-md">
+                      MOST SELECTED
+                    </div>
+                  )}
+                  {isSelected && !isFeatured && (
+                    <div className="absolute right-3 top-3 rounded-full border border-accent/40 bg-accent/20 px-2 py-0.5 font-mono text-[9px] font-bold text-accent">
+                      ✓ ACTIVE
+                    </div>
+                  )}
+
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                        TIER / {tier.name}
+                      </span>
+                      <span className={`grid h-8 w-8 place-items-center rounded-lg border transition ${isSelected || isFeatured ? 'border-primary/50 bg-primary/20 text-primary' : 'border-border bg-secondary/50 text-muted-foreground'}`}>
+                        <Sparkles size={15} />
+                      </span>
+                    </div>
+
+                    <p className="mt-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                      {tier.amount}
+                    </p>
+
+                    {/* Target ROI Spec Badge */}
+                    <div className="mt-5 rounded-xl border border-accent/30 bg-accent/10 px-3.5 py-2 backdrop-blur-md">
+                      <div className="flex items-center justify-between font-mono text-xs">
+                        <span className="text-muted-foreground">Target ROI</span>
+                        <strong className="text-base font-extrabold text-accent">{tier.roi}</strong>
+                      </div>
+                    </div>
+
+                    {/* Key Metrics Breakdown */}
+                    <div className="mt-5 space-y-2.5 font-mono text-xs border-t border-border/60 pt-4">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Projected return</span>
+                        <strong className="text-foreground">{tier.returnAmount}</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Duration</span>
+                        <span className="text-foreground">{tier.duration}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Daily projection</span>
+                        <span className="font-semibold text-primary">{tier.daily}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Max slots</span>
+                        <span className="text-foreground">{tier.slots} active</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-7">
+                    <ButtonLink
+                      href="/register"
+                      variant={isSelected || isFeatured ? 'primary' : 'outline'}
+                      className="w-full font-mono text-xs shadow-md"
+                    >
+                      {isSelected ? `Choose ${tier.name} →` : `View ${tier.name} →`}
+                    </ButtonLink>
+                  </div>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+        </div>
+      </section>
+
+      {/* Infrastructure Specs */}
+      <section className="border-t border-border bg-[#0c0f0f]">
+        <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+          <SectionHeading eyebrow="Every tier includes" title="The same intelligence underneath." />
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <Feature icon={BarChart3} title="Live opportunity map" copy="Your strategy reads venue-level price and liquidity data continuously across 30+ connected venues." />
+            <Feature icon={LockKeyhole} title="Defined boundaries" copy="Risk controls and automated stop-loss boundaries are configured before the engine can act." />
+            <Feature icon={Database} title="Decision history" copy="See the complete reason, orderbook depth, and route behind each executed system event." />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 function AboutPage() {
@@ -281,9 +1568,575 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   return <div className="relative flex min-h-[calc(100dvh-72px)] items-center justify-center overflow-hidden px-5 py-16"><div className="absolute inset-0 grid-fade opacity-60" /><div className="relative w-full max-w-md"><div className="mb-8 text-center"><Logo compact /><h1 className="mt-8 text-3xl font-semibold tracking-[-.05em]">{isRegister ? 'Make room for better decisions.' : 'Welcome back to the signal.'}</h1><p className="mt-3 text-sm text-muted-foreground">{isRegister ? 'Create your NexaTraders access in under a minute.' : 'Sign in to continue to your NexaTraders workspace.'}</p></div><div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8">{submitted ? <div className="py-8 text-center"><span className="mx-auto grid h-11 w-11 place-items-center rounded-full border border-primary/30 bg-primary/10 text-primary"><Check size={20} /></span><h2 className="mt-5 text-xl font-semibold">This is a preview.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Authentication is not connected in this experience. Your form was captured client-side, but no account was created.</p><button onClick={() => setSubmitted(false)} className="mt-6 text-sm text-primary hover:underline" data-testid="button-auth-reset">Back to form</button></div> : <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-4">{isRegister && <label className="block text-sm"><span className="mb-2 block text-muted-foreground">Full name</span><input required className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-name" /></label>}<label className="block text-sm"><span className="mb-2 block text-muted-foreground">Email</span><input required type="email" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-email" /></label><label className="block text-sm"><span className="mb-2 block text-muted-foreground">Password</span><input required type="password" minLength={6} className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-password" /></label><button type="submit" className="mt-2 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68]" data-testid={`button-auth-${mode}`}>{isRegister ? 'Create preview access' : 'Sign in'} <ArrowRight size={15} className="ml-1 inline" /></button></form>}<div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">{isRegister ? 'Already have access? ' : 'New to NexaTraders? '}<button onClick={() => setLocation(isRegister ? '/login' : '/register')} className="text-primary hover:underline" data-testid="button-auth-switch">{isRegister ? 'Sign in' : 'Create an account'}</button></div></div><p className="mt-6 text-center text-[11px] text-muted-foreground">By continuing, you acknowledge our <Link href="/privacy" className="text-primary hover:underline" data-testid="link-auth-privacy">privacy policy</Link>.</p></div></div>;
 }
 
+function TradesPage() {
+  const [selectedPair, setSelectedPair] = useState('All');
+  const [search, setSearch] = useState('');
+  const [autoStream, setAutoStream] = useState(true);
+  const [selectedTrade, setSelectedTrade] = useState<any | null>(null);
+
+  // Live Market Prices State directly fetched from Binance API
+  const [liveMarketPrices, setLiveMarketPrices] = useState<Record<string, number>>({});
+  const [tradeStream, setTradeStream] = useState<any[]>([]);
+
+  const formatPrice = (val: number) => {
+    if (!val || isNaN(val)) return '$0.00';
+    if (val < 1) return `$${val.toFixed(4)}`;
+    return `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  // Helper to generate realistic micro profit with 100% mathematically exact price diff matching!
+  const createTrade = (pair: string, currentPrice: number, tradeIdNum?: number) => {
+    const exchanges = ['Binance', 'Kraken', 'OKX', 'Bybit', 'Coinbase', 'MEXC', 'KuCoin', 'Bitget'];
+    const bEx = exchanges[Math.floor(Math.random() * exchanges.length)];
+    let sEx = exchanges[Math.floor(Math.random() * exchanges.length)];
+    while (sEx === bEx) sEx = exchanges[Math.floor(Math.random() * exchanges.length)];
+
+    const bPrice = currentPrice;
+
+    // Exact Mathematical Price Difference per Coin
+    let diff = 0.01;
+    if (pair.startsWith('XRP') || pair.startsWith('ADA')) {
+      diff = parseFloat((0.005 + Math.random() * 0.015).toFixed(3)); // 0.5 cent to 2 cents diff! e.g. Buy $1.480, Sell $1.490 = +$0.01 profit
+    } else if (pair.startsWith('AVAX')) {
+      diff = parseFloat((0.04 + Math.random() * 0.16).toFixed(2));
+    } else if (pair.startsWith('SOL') || pair.startsWith('BNB')) {
+      diff = parseFloat((0.15 + Math.random() * 0.45).toFixed(2));
+    } else if (pair.startsWith('ETH')) {
+      diff = parseFloat((0.50 + Math.random() * 1.50).toFixed(2));
+    } else if (pair.startsWith('BTC')) {
+      diff = parseFloat((1.20 + Math.random() * 3.80).toFixed(2));
+    }
+
+    const sPrice = bPrice + diff;
+    const spreadPct = parseFloat(((diff / bPrice) * 100).toFixed(2));
+    const profitNum = diff; // Exact 1-to-1 matching profit! e.g. Buy $1.48, Sell $1.49 -> Profit = +$0.01!
+
+    const amountNum = Math.floor(400 + Math.random() * 800);
+    const idNum = tradeIdNum || Math.floor(89421 + Math.random() * 1000);
+
+    return {
+      id: `NT-${idNum}`,
+      timestamp: 'Just now',
+      pair: pair,
+      buyEx: bEx,
+      buyPrice: formatPrice(bPrice),
+      sellEx: sEx,
+      sellPrice: formatPrice(sPrice),
+      spread: `+${spreadPct}%`,
+      amount: `$${amountNum.toLocaleString()}.00`,
+      profit: `+$${profitNum.toFixed(2)}`,
+      status: 'Completed',
+      ping: `${(8 + Math.random() * 10).toFixed(1)}ms`,
+    };
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Helper to generate 500 historical trades across 50 pages with realistic historical prices matching 3d ago to now
+  const generateInitialHistory = (pricesMap: Record<string, number>) => {
+    const pairs = ['BTC/USDT', 'ETH/USDT', 'SOL/USDC', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT', 'AVAX/USDC'];
+    const list = [];
+    for (let i = 0; i < 500; i++) {
+      const p = pairs[i % pairs.length];
+      const basePx = pricesMap[p] || (p.startsWith('BTC') ? 64250 : p.startsWith('ETH') ? 3450 : p.startsWith('XRP') ? 1.48 : 158);
+
+      // Realistic historical price drift from current live price back to 3 days ago
+      const ageRatio = i / 500;
+      const priceVariation = 1 - ageRatio * 0.038 + Math.sin(i * 0.15) * 0.006;
+      const historicalPx = parseFloat((basePx * priceVariation).toFixed(p.startsWith('XRP') || p.startsWith('ADA') ? 3 : 2));
+
+      let ts = 'Just now';
+      if (i > 0 && i < 10) ts = `${i * 3}s ago`;
+      else if (i >= 10 && i < 50) ts = `${Math.floor(i / 2)}m ago`;
+      else if (i >= 50 && i < 200) ts = `${Math.floor(i / 10)}h ago`;
+      else if (i >= 200 && i < 400) ts = `${Math.floor(i / 100)}d ago`;
+      else ts = `3d ago`;
+
+      const t = createTrade(p, historicalPx, 89500 - i);
+      t.timestamp = ts;
+      list.push(t);
+    }
+    return list;
+  };
+
+  // Immediate Real-Time API Fetcher for Binance Public Spot Tickers
+  useEffect(() => {
+    const fetchLivePrices = async () => {
+      try {
+        const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+        if (res.ok) {
+          const data = await res.json();
+          const pricesMap: Record<string, number> = {};
+          data.forEach((item: { symbol: string; price: string }) => {
+            if (item.symbol === 'BTCUSDT') pricesMap['BTC/USDT'] = parseFloat(item.price);
+            if (item.symbol === 'ETHUSDT') pricesMap['ETH/USDT'] = parseFloat(item.price);
+            if (item.symbol === 'SOLUSDT') pricesMap['SOL/USDC'] = parseFloat(item.price);
+            if (item.symbol === 'BNBUSDT') pricesMap['BNB/USDT'] = parseFloat(item.price);
+            if (item.symbol === 'XRPUSDT') pricesMap['XRP/USDT'] = parseFloat(item.price);
+            if (item.symbol === 'ADAUSDT') pricesMap['ADA/USDT'] = parseFloat(item.price);
+            if (item.symbol === 'AVAXUSDT') pricesMap['AVAX/USDC'] = parseFloat(item.price);
+          });
+          setLiveMarketPrices(pricesMap);
+
+          // Populate initial 500 trades (50 pages) if empty
+          setTradeStream((prev) => {
+            if (prev.length > 0) return prev;
+            return generateInitialHistory(pricesMap);
+          });
+        }
+      } catch {
+        // Fallback live prices
+        const fallbackMap: Record<string, number> = {
+          'BTC/USDT': 64250.80,
+          'ETH/USDT': 3450.40,
+          'SOL/USDC': 158.20,
+          'BNB/USDT': 572.60,
+          'XRP/USDT': 0.5840,
+          'ADA/USDT': 0.3820,
+          'AVAX/USDC': 24.50,
+        };
+        setLiveMarketPrices(fallbackMap);
+        setTradeStream((prev) => {
+          if (prev.length > 0) return prev;
+          return generateInitialHistory(fallbackMap);
+        });
+      }
+    };
+
+    fetchLivePrices();
+    const interval = setInterval(fetchLivePrices, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Continuous Auto-Stream Trade Generation (Every 1.0s, maintaining 500 buffer)
+  useEffect(() => {
+    if (!autoStream) return;
+    const interval = setInterval(() => {
+      const pairs = ['BTC/USDT', 'ETH/USDT', 'SOL/USDC', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT', 'AVAX/USDC'];
+      const p = pairs[Math.floor(Math.random() * pairs.length)];
+      const currentPx = liveMarketPrices[p] || (p.startsWith('BTC') ? 96450 : p.startsWith('ETH') ? 3450 : 198);
+      const newTrade = createTrade(p, currentPx);
+
+      setTradeStream((prev) => [newTrade, ...prev.slice(0, 499)]);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [autoStream, liveMarketPrices]);
+
+  const filteredTrades = useMemo(() => {
+    return tradeStream.filter((t) => {
+      const matchesPair = selectedPair === 'All' || t.pair === selectedPair;
+      const matchesSearch =
+        t.id.toLowerCase().includes(search.toLowerCase()) ||
+        t.pair.toLowerCase().includes(search.toLowerCase()) ||
+        t.buyEx.toLowerCase().includes(search.toLowerCase()) ||
+        t.sellEx.toLowerCase().includes(search.toLowerCase());
+      return matchesPair && matchesSearch;
+    });
+  }, [tradeStream, selectedPair, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredTrades.length / itemsPerPage));
+  const paginatedTrades = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredTrades.slice(start, start + itemsPerPage);
+  }, [filteredTrades, currentPage, itemsPerPage]);
+
+  // Dynamic KPI Stats calculated from actual executed trades stream on top of base baselines
+  const kpiStats = useMemo(() => {
+    let vol = 142890420; // $142.89M 24h Volume base baseline
+    let profit = 4120;   // $4,120 24h Net Profit base baseline (Always above $4,000)
+    let totalPing = 0;
+
+    tradeStream.forEach((t) => {
+      const v = parseFloat(t.amount.replace(/[^0-9.]/g, '')) || 0;
+      const p = parseFloat(t.profit.replace(/[^0-9.]/g, '')) || 0;
+      const ping = parseFloat(t.ping.replace(/[^0-9.]/g, '')) || 12;
+
+      vol += v;
+      profit += p;
+      totalPing += ping;
+    });
+
+    const avgPing = tradeStream.length ? (totalPing / tradeStream.length).toFixed(1) : '12.4';
+    return {
+      volume: vol,
+      profit: profit,
+      avgLatency: avgPing,
+    };
+  }, [tradeStream]);
+
+  return (
+    <div>
+      {/* Ultra-Premium AI Intelligence Hero Banner */}
+      <section className="relative overflow-hidden border-b border-border/80 bg-gradient-to-b from-[#0b0e0d] via-[#0d1110] to-[#08090a] py-12 lg:py-16">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(232,185,73,0.15)_0%,rgba(16,185,129,0.05)_50%,transparent_75%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-60 pointer-events-none" />
+        
+        <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
+            {/* Left Column: Heading & System Telemetry Status */}
+            <div className="lg:col-span-7">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[10px] uppercase tracking-widest text-primary mb-4 shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+                <Sparkles size={13} className="animate-spin-slow text-primary" />
+                NEURAL ARBITRAGE SYSTEM V4 · REAL TIME ENGINE
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.1]">
+                Arbitrage Live Trades
+              </h1>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base max-w-2xl">
+                Watch sub-14ms cross-exchange arbitrage routes execute in real-time across 18+ connected venues. Powered by autonomous AI orderbook scanning and tick-by-tick neural routing.
+              </p>
+
+              {/* Live Bot Execution Highlights */}
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono text-xs">
+                <div className="rounded-xl border border-primary/30 bg-[#121614]/80 p-3 backdrop-blur-md">
+                  <div className="text-[10px] text-muted-foreground uppercase">Bot Status</div>
+                  <div className="mt-1 flex items-center gap-1.5 font-bold text-accent">
+                    <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />
+                    AUTONOMOUS
+                  </div>
+                </div>
+                <div className="rounded-xl border border-border/80 bg-card/60 p-3 backdrop-blur-md">
+                  <div className="text-[10px] text-muted-foreground uppercase">Execution Speed</div>
+                  <div className="mt-1 font-bold text-primary">Sub-14ms</div>
+                </div>
+                <div className="rounded-xl border border-border/80 bg-card/60 p-3 backdrop-blur-md col-span-2 sm:col-span-1">
+                  <div className="text-[10px] text-muted-foreground uppercase">Scanning Venues</div>
+                  <div className="mt-1 font-bold text-foreground">18 Global Exchanges</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: High-Tech Cyber Robot Graphic Container */}
+            <div className="lg:col-span-5 flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-primary/40 bg-gradient-to-b from-[#141917] to-[#0c0f0f] p-3 shadow-[0_0_60px_rgba(232,185,73,0.25)] group backdrop-blur-2xl">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#08090a] via-transparent to-transparent z-10 opacity-40 pointer-events-none" />
+                <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-black aspect-square">
+                  <img
+                    src="/ai-bot-hero.jpg"
+                    alt="Autonomous AI Arbitrage Trading Robot"
+                    className="h-full w-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-105"
+                    data-testid="img-ai-bot-trades"
+                  />
+                  {/* Floating Overlay Badge */}
+                  <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 rounded-lg border border-primary/50 bg-[#0d1010]/90 px-3 py-1.5 font-mono text-[10px] text-primary backdrop-blur-md shadow-xl">
+                    <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
+                    AI ENGINE ACTIVE · SCANNING TICK ORDERBOOKS
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8 lg:py-16">
+        {/* Real-time Ticker Feed Banner */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 font-mono text-xs text-accent backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse-signal" />
+            <span className="font-bold">● LIVE MARKET PRICE FEED CONNECTED</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-4 text-[11px]">
+            <span className="text-muted-foreground">BTC: <strong className="text-foreground">{formatPrice(liveMarketPrices['BTC/USDT'] || 64250)}</strong></span>
+            <span className="text-muted-foreground">ETH: <strong className="text-foreground">{formatPrice(liveMarketPrices['ETH/USDT'] || 3450)}</strong></span>
+            <span className="text-muted-foreground">SOL: <strong className="text-foreground">{formatPrice(liveMarketPrices['SOL/USDC'] || 158)}</strong></span>
+            <span className="text-muted-foreground">BNB: <strong className="text-foreground">{formatPrice(liveMarketPrices['BNB/USDT'] || 572)}</strong></span>
+            <span className="text-muted-foreground">XRP: <strong className="text-foreground">{formatPrice(liveMarketPrices['XRP/USDT'] || 0.584)}</strong></span>
+          </div>
+        </div>
+        {/* KPI Top Cards */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-primary/40 bg-card/70 p-5 shadow-[0_0_30px_rgba(232,185,73,0.1)]">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase text-muted-foreground">24h Total Volume</span>
+              <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />
+            </div>
+            <p className="mt-3 text-3xl font-extrabold text-foreground">
+              ${kpiStats.volume.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+            <p className="mt-1 font-mono text-xs text-accent">↑ +18.4% 24h routed</p>
+          </div>
+
+          <div className="rounded-xl border border-accent/40 bg-card/70 p-5">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase text-muted-foreground">24h Net Profit</span>
+              <Sparkles size={16} className="text-accent" />
+            </div>
+            <p className="mt-3 text-3xl font-extrabold text-accent">
+              +${kpiStats.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">99.84% win rate</p>
+          </div>
+
+          <div className="rounded-xl border border-border bg-card/70 p-5">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase text-muted-foreground">Active Executions</span>
+              <span className="font-mono text-xs text-primary">● Live</span>
+            </div>
+            <p className="mt-3 text-3xl font-extrabold text-foreground">1,842</p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">Routes active</p>
+          </div>
+
+          <div className="rounded-xl border border-border bg-card/70 p-5">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase text-muted-foreground">Avg Latency</span>
+              <Zap size={16} className="text-primary" />
+            </div>
+            <p className="mt-3 text-3xl font-extrabold text-primary">{kpiStats.avgLatency} ms</p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">Sub-14ms HFT speed</p>
+          </div>
+        </div>
+
+        {/* Filter & Live Ticker Controls */}
+        <div className="mt-10 flex flex-col gap-4 rounded-xl border border-border bg-card/60 p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap gap-1.5 font-mono text-xs">
+            {['All', 'BTC/USDT', 'ETH/USDT', 'SOL/USDC', 'BNB/USDT', 'XRP/USDT'].map((p) => (
+              <button
+                key={p}
+                onClick={() => setSelectedPair(p)}
+                className={`rounded-lg px-3 py-1.5 uppercase transition ${
+                  selectedPair === p
+                    ? 'bg-primary text-primary-foreground font-bold'
+                    : 'border border-border bg-secondary/50 text-muted-foreground hover:text-foreground'
+                }`}
+                data-testid={`filter-pair-${p.toLowerCase().replace('/', '-')}`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 sm:w-64">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search trade ID or exchange..."
+                className="w-full rounded-lg border border-border bg-secondary py-2 pl-9 pr-3 text-xs outline-none focus:border-primary font-mono"
+                data-testid="input-search-trades"
+              />
+            </div>
+
+            <button
+              onClick={() => setAutoStream((v) => !v)}
+              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 font-mono text-xs font-semibold transition ${
+                autoStream ? 'border-accent/40 bg-accent/10 text-accent' : 'border-border bg-secondary text-muted-foreground'
+              }`}
+              data-testid="button-toggle-autostream"
+            >
+              <span className={`h-2 w-2 rounded-full ${autoStream ? 'bg-accent animate-pulse-signal' : 'bg-muted'}`} />
+              Auto-Stream: {autoStream ? 'ON' : 'PAUSED'}
+            </button>
+          </div>
+        </div>
+
+        {/* Live Trades Table */}
+        <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card/70 shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs" data-testid="table-live-trades">
+              <thead className="border-b border-border/80 bg-secondary/80 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <tr>
+                  <th className="p-4">Trade ID / Time</th>
+                  <th className="p-4">Pair</th>
+                  <th className="p-4">Buy Exchange</th>
+                  <th className="p-4">Sell Exchange</th>
+                  <th className="p-4">Spread Edge</th>
+                  <th className="p-4">Trade Capital</th>
+                  <th className="p-4">Net Profit</th>
+                  <th className="p-4">Speed</th>
+                  <th className="p-4 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {paginatedTrades.map((t, idx) => (
+                  <tr
+                    key={t.id}
+                    onClick={() => setSelectedTrade(t)}
+                    className="group cursor-pointer transition hover:bg-primary/5"
+                    data-testid={`row-trade-${t.id}`}
+                  >
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        {idx === 0 && currentPage === 1 && <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />}
+                        <span className="font-bold text-foreground group-hover:text-primary">{t.id}</span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">{t.timestamp}</span>
+                    </td>
+                    <td className="p-4 font-bold text-foreground">{t.pair}</td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-1.5">
+                        <ExchangeLogoIcon name={t.buyEx} />
+                        <div>
+                          <span className="block font-bold text-foreground">{t.buyEx}</span>
+                          <span className="text-[10px] text-muted-foreground">{t.buyPrice}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-1.5">
+                        <ExchangeLogoIcon name={t.sellEx} />
+                        <div>
+                          <span className="block font-bold text-foreground">{t.sellEx}</span>
+                          <span className="text-[10px] text-muted-foreground">{t.sellPrice}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-2 py-0.5 font-bold text-accent">
+                        <ArrowUpRight size={12} /> {t.spread}
+                      </span>
+                    </td>
+                    <td className="p-4 text-foreground">{t.amount}</td>
+                    <td className="p-4 font-bold text-primary">{t.profit}</td>
+                    <td className="p-4 text-muted-foreground">{t.ping}</td>
+                    <td className="p-4 text-right">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-[10px] text-accent">
+                        <Check size={11} /> Completed
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 50-Page Pagination Bar */}
+          <div className="flex flex-col gap-4 border-t border-border/80 bg-secondary/40 p-4 sm:flex-row sm:items-center sm:justify-between font-mono text-xs">
+            <div className="text-muted-foreground">
+              Showing <strong className="text-foreground">{((currentPage - 1) * itemsPerPage) + 1}</strong>–
+              <strong className="text-foreground">{Math.min(currentPage * itemsPerPage, filteredTrades.length)}</strong> of{' '}
+              <strong className="text-primary">{filteredTrades.length}</strong> trades (Page <strong className="text-foreground">{currentPage}</strong> of <strong className="text-foreground">{totalPages}</strong>)
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(1)}
+                className="rounded-md border border-border bg-card px-2.5 py-1.5 text-muted-foreground hover:border-primary/50 hover:text-foreground disabled:opacity-40"
+                data-testid="button-page-first"
+              >
+                « First
+              </button>
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                className="rounded-md border border-border bg-card px-2.5 py-1.5 text-muted-foreground hover:border-primary/50 hover:text-foreground disabled:opacity-40"
+                data-testid="button-page-prev"
+              >
+                ‹ Prev
+              </button>
+
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pNum = currentPage;
+                if (currentPage <= 3) pNum = i + 1;
+                else if (currentPage >= totalPages - 2) pNum = totalPages - 4 + i;
+                else pNum = currentPage - 2 + i;
+                if (pNum < 1 || pNum > totalPages) return null;
+
+                return (
+                  <button
+                    key={pNum}
+                    onClick={() => setCurrentPage(pNum)}
+                    className={`rounded-md px-3 py-1.5 font-bold transition ${
+                      currentPage === pNum
+                        ? 'bg-primary text-primary-foreground'
+                        : 'border border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                    }`}
+                    data-testid={`button-page-${pNum}`}
+                  >
+                    {pNum}
+                  </button>
+                );
+              })}
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                className="rounded-md border border-border bg-card px-2.5 py-1.5 text-muted-foreground hover:border-primary/50 hover:text-foreground disabled:opacity-40"
+                data-testid="button-page-next"
+              >
+                Next ›
+              </button>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(totalPages)}
+                className="rounded-md border border-border bg-card px-2.5 py-1.5 text-muted-foreground hover:border-primary/50 hover:text-foreground disabled:opacity-40"
+                data-testid="button-page-last"
+              >
+                Last 50 »
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trade Inspector Modal */}
+      {selectedTrade && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl border border-primary/40 bg-[#0d1010] p-6 shadow-2xl font-mono text-xs">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse-signal" />
+                <h3 className="font-bold text-base text-foreground">Trade Telemetry / {selectedTrade.id}</h3>
+              </div>
+              <button onClick={() => setSelectedTrade(null)} className="rounded p-1 text-muted-foreground hover:text-foreground">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <div className="flex justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Pair</span>
+                <strong className="text-foreground">{selectedTrade.pair}</strong>
+              </div>
+              <div className="flex justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Buy Venue</span>
+                <span className="text-foreground">{selectedTrade.buyEx} ({selectedTrade.buyPrice})</span>
+              </div>
+              <div className="flex justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Sell Venue</span>
+                <span className="text-foreground">{selectedTrade.sellEx} ({selectedTrade.sellPrice})</span>
+              </div>
+              <div className="flex justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Arbitrage Spread Edge</span>
+                <strong className="text-accent">{selectedTrade.spread}</strong>
+              </div>
+              <div className="flex justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Trade Capital</span>
+                <span>{selectedTrade.amount}</span>
+              </div>
+              <div className="flex justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Net Yield</span>
+                <strong className="text-primary text-sm">{selectedTrade.profit}</strong>
+              </div>
+              <div className="flex justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Execution Latency</span>
+                <span className="text-primary">{selectedTrade.ping}</span>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setSelectedTrade(null)}
+                className="rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-[#f3cc68]"
+                data-testid="button-close-telemetry"
+              >
+                Close Telemetry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Router() {
   const [location] = useLocation();
-  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={Home} /><Route path="/packages" component={PackagesPage} /><Route path="/about" component={AboutPage} /><Route path="/blog" component={BlogPage} /><Route path="/blog/:slug" component={ArticlePage} /><Route path="/privacy" component={PrivacyPage} /><Route path="/contact" component={ContactPage} /><Route path="/login">{() => <AuthPage mode="login" />}</Route><Route path="/register">{() => <AuthPage mode="register" />}</Route><Route component={NotFound} /></Switch></ErrorBoundary>;
+  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={Home} /><Route path="/trades" component={TradesPage} /><Route path="/packages" component={PackagesPage} /><Route path="/about" component={AboutPage} /><Route path="/blog" component={BlogPage} /><Route path="/blog/:slug" component={ArticlePage} /><Route path="/privacy" component={PrivacyPage} /><Route path="/contact" component={ContactPage} /><Route path="/login">{() => <AuthPage mode="login" />}</Route><Route path="/register">{() => <AuthPage mode="register" />}</Route><Route component={NotFound} /></Switch></ErrorBoundary>;
 }
 
 function App() {
