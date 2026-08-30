@@ -2,6 +2,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import {
+  Activity,
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
@@ -10,19 +11,24 @@ import {
   BookOpen,
   BrainCircuit,
   Check,
+  CheckCircle2,
   ChevronDown,
+  ChevronRight,
   CircleHelp,
   Clock3,
   Code2,
   Copy,
   Cpu,
+  Crown,
   Database,
   ExternalLink,
   Eye,
   Facebook,
   FileCheck2,
   Globe2,
+  Info,
   Instagram,
+  Layers,
   Linkedin,
   LockKeyhole,
   Mail,
@@ -35,6 +41,7 @@ import {
   Search,
   Send,
   ShieldCheck,
+  Sliders,
   Sparkles,
   TerminalSquare,
   TrendingUp,
@@ -1350,178 +1357,872 @@ function AiArbitrageInteractiveFullBg() {
 }
 
 function PackagesPage() {
+  const [, setLocation] = useLocation();
   const [selectedTier, setSelectedTier] = useState<string>('Rise');
-  const [calcAmount, setCalcAmount] = useState<number>(1000);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalTier, setModalTier] = useState<string>('Rise');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'TARGET ROI' | 'PROJECTED RETURN' | 'DURATION' | 'MAX SLOTS'>('OVERVIEW');
+  const [sliderIndex, setSliderIndex] = useState<number>(2); // Default to Rise ($1,000)
+  const [journeyIndex, setJourneyIndex] = useState<number>(2);
+  const [fitCategory, setFitCategory] = useState<'START' | 'SCALE' | 'ADVANCE'>('SCALE');
+  const [faqActiveIndex, setFaqActiveIndex] = useState<number>(-1);
 
-  const selectedData = useMemo(() => {
-    return packages.find((p) => p.name === selectedTier) || packages[2];
-  }, [selectedTier]);
+  const sliderTierData = packages[sliderIndex] || packages[2];
+  const modalTierData = useMemo(() => packages.find((p) => p.name === modalTier) || packages[2], [modalTier]);
+
+  const openTerminalModal = (tierName: string) => {
+    setModalTier(tierName);
+    setSelectedTier(tierName);
+    setModalOpen(true);
+  };
+
+  const packageFaqs = [
+    [
+      'What is the difference between the five tiers?',
+      'Each tier has a different allocation level, target ROI, projected return, duration, daily projection and maximum active-slot capacity.',
+    ],
+    [
+      'Which tier is most selected?',
+      'Rise ($1,000) is currently marked as the Most Selected tier.',
+    ],
+    [
+      'Can I compare the packages before selecting one?',
+      'Yes. Use the interactive comparison section to review the available tiers side by side.',
+    ],
+    [
+      'Are the projected returns guaranteed?',
+      'No. Projected or target figures are not guaranteed returns. Actual outcomes may vary depending on market and execution conditions.',
+    ],
+    [
+      'What information should I review before selecting a package?',
+      'Review the package details, applicable fees, terms, conditions and risk disclosure before proceeding.',
+    ],
+  ];
+
+  const packageFeatures = [
+    {
+      num: '01',
+      title: 'MARKET MONITORING',
+      desc: 'Monitor supported markets and relevant pricing conditions.',
+      icon: Network,
+    },
+    {
+      num: '02',
+      title: 'OPPORTUNITY ANALYSIS',
+      desc: 'Evaluate potential arbitrage opportunities using defined platform criteria.',
+      icon: Cpu,
+    },
+    {
+      num: '03',
+      title: 'AUTOMATED TECHNOLOGY',
+      desc: 'Use automated systems to process market information and identify potential opportunities.',
+      icon: BrainCircuit,
+    },
+    {
+      num: '04',
+      title: 'PERFORMANCE VIEW',
+      desc: 'Review relevant package and platform information through the dashboard.',
+      icon: BarChart3,
+    },
+  ];
 
   return (
-    <div className="relative overflow-hidden bg-[#08090a]">
-      <PageIntro
-        eyebrow="Capital, with context"
-        title="Choose the room your strategy needs."
-        copy="Five clear package structures with automated sub-14ms cross-venue arbitrage execution."
-      />
+    <div className="relative overflow-hidden bg-[#08090a] text-foreground">
+      {/* 2. PAGE HERO */}
+      <section className="relative overflow-hidden border-b border-border/80 bg-gradient-to-b from-[#0b0e0d] via-[#0d1010] to-[#08090a] py-20 lg:py-28">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(232,185,73,0.12)_0%,rgba(16,185,129,0.04)_50%,transparent_75%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-60 pointer-events-none" />
+        
+        <div className="relative mx-auto max-w-7xl px-5 lg:px-8 text-center">
+          <Reveal>
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+              <Sparkles size={13} className="animate-spin-slow text-primary" />
+              NEXA TRADERS / ACCESS TIERS
+            </div>
+            
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.05]">
+              CHOOSE YOUR EDGE.<br />
+              <span className="text-primary font-black">SELECT YOUR TIER.</span>
+            </h1>
+            
+            <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Explore structured access tiers designed around automated crypto-arbitrage technology.
+            </p>
 
-      <section className="relative overflow-hidden w-full py-12 lg:py-20" data-testid="section-packages">
+            <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 font-mono text-xs text-muted-foreground">
+              <span className="flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-bold text-accent">
+                <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />
+                SYSTEM ONLINE
+              </span>
+              <span className="h-3 w-px bg-border" />
+              <span className="rounded-full border border-border bg-card/60 px-3 py-1 text-foreground">
+                5 TIERS AVAILABLE
+              </span>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <button
+                onClick={() => {
+                  document.getElementById('package-cards')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="rounded-xl bg-primary px-7 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] transition-all hover:bg-[#f3cc68] hover:shadow-[0_0_35px_rgba(232,185,73,0.5)]"
+                data-testid="button-hero-explore-tiers"
+              >
+                EXPLORE TIERS →
+              </button>
+              <button
+                onClick={() => {
+                  document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="rounded-xl border border-border/80 bg-card/80 px-7 py-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-foreground backdrop-blur-md transition-all hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                data-testid="button-hero-compare-plans"
+              >
+                COMPARE PLANS
+              </button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 3. MAIN PACKAGE SECTION */}
+      <section id="package-cards" className="relative overflow-hidden w-full py-20 lg:py-28" data-testid="section-packages">
         <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
-          {/* Interactive Yield Estimator Banner */}
-        <Reveal>
-          <div className="mb-12 overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-r from-[#121615] via-[#0d1010] to-[#121615] p-6 shadow-[0_0_50px_rgba(232,185,73,0.14)] backdrop-blur-xl sm:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-xl">
-                <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-widest text-primary">
-                  <Sparkles size={14} className="animate-spin-slow text-primary" />
-                  Interactive Arbitrage Yield Estimator
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                STRUCTURED ALLOCATION
+              </div>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                FIND YOUR TIER
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Five tiers. One intelligent trading platform.
+              </p>
+            </div>
+          </Reveal>
+
+          {/* 4 & 5 & 6. PREMIUM PACKAGE CARDS GRID */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 items-stretch">
+            {packages.map((tier) => {
+              const isSelected = selectedTier === tier.name;
+              const isRise = tier.name === 'Rise';
+
+              return (
+                <Reveal key={tier.name} className="h-full">
+                  <div
+                    onClick={() => openTerminalModal(tier.name)}
+                    className={`group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-6 transition-all duration-300 ${
+                      isRise
+                        ? 'border-primary/80 bg-gradient-to-b from-[#181d1a] via-[#111514] to-[#0c0f0e] shadow-[0_0_50px_rgba(232,185,73,0.3)] -translate-y-2'
+                        : isSelected
+                        ? 'border-primary/60 bg-gradient-to-b from-primary/15 via-[#101312] to-[#0c0e0e] shadow-[0_0_30px_rgba(232,185,73,0.2)]'
+                        : 'border-border/80 bg-card/60 hover:-translate-y-2 hover:border-primary/50 hover:bg-card/90 hover:shadow-[0_0_30px_rgba(232,185,73,0.15)]'
+                    }`}
+                    data-testid={`card-tier-${tier.name.toLowerCase()}`}
+                  >
+                    {/* Background Waveform Graph & Glow Effect */}
+                    <div className="absolute inset-0 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                      <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 200 100">
+                        <path
+                          d="M 0 70 Q 50 30, 100 60 T 200 20"
+                          fill="none"
+                          stroke={isRise ? '#e8b949' : '#10b981'}
+                          strokeWidth="1.5"
+                          strokeDasharray="4 2"
+                        />
+                        <circle cx="150" cy="40" r="3" fill="#f3cc68" className="animate-ping" />
+                      </svg>
+                      <div className="absolute bottom-2 right-2 font-mono text-[8px] uppercase tracking-widest text-muted-foreground/60">
+                        SIMULATION
+                      </div>
+                    </div>
+
+                    {/* Top Badges */}
+                    {isRise && (
+                      <div className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 font-mono text-[9px] font-extrabold uppercase tracking-wider text-primary-foreground shadow-md">
+                        MOST SELECTED
+                      </div>
+                    )}
+
+                    <div>
+                      {/* Header info */}
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                          TIER / {tier.name.toUpperCase()}
+                        </span>
+                        <div className={`grid h-8 w-8 place-items-center rounded-lg border transition-transform duration-300 group-hover:scale-110 ${
+                          isRise ? 'border-primary/60 bg-primary/20 text-primary' : 'border-border bg-secondary/50 text-muted-foreground group-hover:text-primary group-hover:border-primary/40'
+                        }`}>
+                          {tier.name === 'Spark' && <Zap size={15} />}
+                          {tier.name === 'Boost' && <TrendingUp size={15} />}
+                          {tier.name === 'Rise' && <Sparkles size={15} />}
+                          {tier.name === 'Titan' && <ShieldCheck size={15} />}
+                          {tier.name === 'Supreme' && <Crown size={15} />}
+                        </div>
+                      </div>
+
+                      {/* Amount */}
+                      <p className="mt-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                        {tier.amount}
+                      </p>
+
+                      <div className="my-5 h-px bg-gradient-to-r from-primary/40 via-primary/10 to-transparent" />
+
+                      {/* Stats Section */}
+                      <div className="space-y-3 font-mono text-xs">
+                        <div className="rounded-xl border border-accent/30 bg-accent/10 px-3.5 py-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground text-[11px]">Target ROI</span>
+                            <strong className="text-sm font-extrabold text-accent">{tier.roi}</strong>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 border-t border-border/60 pt-3 text-[11px]">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Projected Return</span>
+                            <strong className="text-foreground">{tier.returnAmount}</strong>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Duration</span>
+                            <span className="text-foreground">{tier.duration}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Daily Projection</span>
+                            <span className="font-semibold text-primary">{tier.daily}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Max Slots</span>
+                            <span className="text-foreground">{tier.slots} active</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <div className="mt-8">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openTerminalModal(tier.name);
+                        }}
+                        className={`w-full rounded-xl py-3 px-4 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${
+                          isRise
+                            ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:bg-[#f3cc68]'
+                            : 'border border-border/80 bg-card/80 text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary'
+                        }`}
+                        data-testid={`button-view-tier-${tier.name.toLowerCase()}`}
+                      >
+                        {isRise ? 'Choose Rise →' : 'View this tier →'}
+                      </button>
+                    </div>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 9. INTERACTIVE COMPARISON SECTION */}
+      <section id="comparison" className="relative overflow-hidden border-t border-border bg-[#0b0d0e] py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
+                COMPARATIVE ANALYTICS
+              </div>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                COMPARE YOUR OPTIONS
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Compare the available tiers across key package metrics.
+              </p>
+            </div>
+
+            {/* Metric Selector Tabs */}
+            <div className="mt-10 flex flex-wrap justify-center gap-2 border-b border-border/70 pb-4">
+              {(['OVERVIEW', 'TARGET ROI', 'PROJECTED RETURN', 'DURATION', 'MAX SLOTS'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`rounded-xl border px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
+                    activeTab === tab
+                      ? 'border-primary bg-primary/15 text-primary shadow-[0_0_15px_rgba(232,185,73,0.25)]'
+                      : 'border-border/80 bg-card/60 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                  }`}
+                  data-testid={`tab-comparison-${tab.toLowerCase().replace(/\s+/g, '-')}`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {/* Interactive Comparison Cards Grid */}
+            <div className="mt-10 grid gap-4 sm:grid-cols-5 font-mono text-xs">
+              {packages.map((tier) => {
+                const isHighlight = tier.name === selectedTier;
+                return (
+                  <div
+                    key={tier.name}
+                    onClick={() => setSelectedTier(tier.name)}
+                    className={`cursor-pointer rounded-2xl border p-5 transition-all ${
+                      isHighlight
+                        ? 'border-primary bg-primary/10 shadow-[0_0_30px_rgba(232,185,73,0.2)]'
+                        : 'border-border/80 bg-card/60 hover:border-primary/40'
+                    }`}
+                  >
+                    <div className="text-[10px] text-muted-foreground uppercase">{tier.name}</div>
+                    <div className="mt-1 text-2xl font-extrabold text-foreground">{tier.amount}</div>
+
+                    <div className="mt-6 space-y-3">
+                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'TARGET ROI' || activeTab === 'OVERVIEW' ? 'border-accent/40 bg-accent/15 font-bold text-accent scale-105' : 'border-transparent text-muted-foreground'}`}>
+                        <div className="text-[9px] uppercase text-muted-foreground">Target ROI</div>
+                        <div className="text-base text-accent font-extrabold">{tier.roi}</div>
+                      </div>
+
+                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'PROJECTED RETURN' || activeTab === 'OVERVIEW' ? 'border-primary/40 bg-primary/15 font-bold text-primary scale-105' : 'border-transparent text-muted-foreground'}`}>
+                        <div className="text-[9px] uppercase text-muted-foreground">Projected Return</div>
+                        <div className="text-sm font-bold text-foreground">{tier.returnAmount}</div>
+                      </div>
+
+                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'DURATION' || activeTab === 'OVERVIEW' ? 'border-primary/40 bg-primary/15 font-bold text-primary scale-105' : 'border-transparent text-muted-foreground'}`}>
+                        <div className="text-[9px] uppercase text-muted-foreground">Duration</div>
+                        <div className="text-xs text-foreground">{tier.duration}</div>
+                      </div>
+
+                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'MAX SLOTS' || activeTab === 'OVERVIEW' ? 'border-accent/40 bg-accent/15 font-bold text-accent scale-105' : 'border-transparent text-muted-foreground'}`}>
+                        <div className="text-[9px] uppercase text-muted-foreground">Max Slots</div>
+                        <div className="text-xs text-foreground">{tier.slots} active</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 10. INTERACTIVE TIER SCALE */}
+      <section className="relative overflow-hidden border-t border-border bg-[#08090a] py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
+                TIER SCALABILITY PIPELINE
+              </div>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                FROM SPARK TO SUPREME
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Explore how the available tiers scale across the Nexa Traders platform.
+              </p>
+            </div>
+
+            {/* Horizontal / Vertical Pipeline scale */}
+            <div className="relative mt-12 rounded-3xl border border-primary/30 bg-gradient-to-r from-[#0d100f] via-[#121614] to-[#0d100f] p-8 backdrop-blur-xl shadow-2xl">
+              {/* Connecting Line */}
+              <div className="hidden lg:block absolute top-1/2 left-12 right-12 h-1 bg-gradient-to-r from-primary/20 via-primary to-accent -translate-y-1/2 rounded-full z-0" />
+
+              <div className="relative z-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+                {packages.map((tier, idx) => {
+                  const isActive = selectedTier === tier.name;
+                  return (
+                    <div
+                      key={tier.name}
+                      onClick={() => setSelectedTier(tier.name)}
+                      className={`group cursor-pointer rounded-2xl border p-6 text-center transition-all duration-300 ${
+                        isActive
+                          ? 'border-primary bg-primary/20 shadow-[0_0_35px_rgba(232,185,73,0.3)] scale-105'
+                          : 'border-border/80 bg-card/80 hover:border-primary/50 hover:bg-card'
+                      }`}
+                    >
+                      <div className="mx-auto grid h-10 w-10 place-items-center rounded-full border border-primary/40 bg-primary/20 font-mono text-xs font-bold text-primary group-hover:scale-110 transition-transform">
+                        0{idx + 1}
+                      </div>
+                      <h3 className="mt-4 font-mono text-lg font-extrabold text-foreground">{tier.name}</h3>
+                      <p className="mt-1 font-mono text-xl font-extrabold text-primary">{tier.amount}</p>
+                      <div className="mt-4 pt-4 border-t border-border/60 text-[11px] font-mono text-muted-foreground space-y-1">
+                        <div>Target ROI: <strong className="text-accent">{tier.roi}</strong></div>
+                        <div>Return: <strong className="text-foreground">{tier.returnAmount}</strong></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 11. INTERACTIVE SLIDER SECTION */}
+      <section className="relative overflow-hidden border-t border-border bg-[#0b0d0e] py-20 lg:py-28">
+        <div className="mx-auto max-w-5xl px-5 lg:px-8">
+          <Reveal>
+            <div className="rounded-3xl border border-primary/40 bg-gradient-to-b from-[#131816] via-[#0e1211] to-[#090b0b] p-8 sm:p-12 shadow-[0_0_60px_rgba(232,185,73,0.2)] backdrop-blur-2xl">
+              <div className="text-center max-w-xl mx-auto">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
+                  <Sliders size={13} />
+                  INTERACTIVE ALLOCATION CALCULATOR
                 </div>
-                <h3 className="mt-2 text-2xl font-extrabold text-foreground sm:text-3xl">
-                  Simulate Your Package Returns
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                  Adjust your capital allocation slider to project estimated daily returns, total target ROI, and active execution slots across global exchanges.
+                <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                  FIND YOUR FIT
+                </h2>
+                <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
+                  Adjust the slider to dynamically view corresponding tier metrics and projections.
                 </p>
               </div>
 
-              <div className="w-full rounded-xl border border-border/80 bg-card/80 p-5 font-mono text-xs shadow-lg lg:w-96">
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Selected Capital Base:</span>
-                  <strong className="text-sm text-primary">${calcAmount.toLocaleString()}</strong>
+              {/* Range Slider */}
+              <div className="mt-10">
+                <div className="flex justify-between font-mono text-xs text-muted-foreground font-semibold px-2 mb-3">
+                  <span>$100</span>
+                  <span>$300</span>
+                  <span>$1,000</span>
+                  <span>$5,000</span>
+                  <span>$10,000</span>
                 </div>
                 <input
                   type="range"
-                  min="100"
-                  max="10000"
-                  step="100"
-                  value={calcAmount}
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
-                    setCalcAmount(val);
-                    if (val <= 200) setSelectedTier('Spark');
-                    else if (val <= 600) setSelectedTier('Boost');
-                    else if (val <= 3000) setSelectedTier('Rise');
-                    else if (val <= 7500) setSelectedTier('Titan');
-                    else setSelectedTier('Supreme');
-                  }}
-                  className="mt-3 w-full cursor-pointer accent-primary"
-                  data-testid="input-tier-calculator-slider"
+                  min={0}
+                  max={4}
+                  step={1}
+                  value={sliderIndex}
+                  onChange={(e) => setSliderIndex(Number(e.target.value))}
+                  className="w-full cursor-pointer accent-primary h-3 rounded-lg bg-secondary"
+                  data-testid="input-tier-slider"
                 />
-                <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
-                  <span className="text-muted-foreground">Projected Net Return:</span>
-                  <span className="text-base font-extrabold text-accent">
-                    +${(calcAmount * (parseFloat(selectedData.roi) / 100)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </span>
+              </div>
+
+              {/* Dynamic Selected Tier Summary Card */}
+              <div className="mt-10 rounded-2xl border border-primary/50 bg-[#0d1110] p-6 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 font-mono">
+                  <div>
+                    <span className="text-[10px] uppercase text-muted-foreground tracking-widest">YOUR SELECTED TIER</span>
+                    <h3 className="mt-1 text-3xl font-extrabold text-foreground">{sliderTierData.name}</h3>
+                    <p className="mt-1 text-4xl font-black text-primary">{sliderTierData.amount}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div className="rounded-xl border border-accent/30 bg-accent/10 p-3">
+                      <div className="text-[10px] text-muted-foreground uppercase">Target ROI</div>
+                      <div className="mt-1 text-lg font-extrabold text-accent">{sliderTierData.roi}</div>
+                    </div>
+                    <div className="rounded-xl border border-border bg-card/60 p-3">
+                      <div className="text-[10px] text-muted-foreground uppercase">Projected Return</div>
+                      <div className="mt-1 text-lg font-extrabold text-foreground">{sliderTierData.returnAmount}</div>
+                    </div>
+                    <div className="rounded-xl border border-border bg-card/60 p-3">
+                      <div className="text-[10px] text-muted-foreground uppercase">Duration</div>
+                      <div className="mt-1 font-bold text-foreground">{sliderTierData.duration}</div>
+                    </div>
+                    <div className="rounded-xl border border-border bg-card/60 p-3">
+                      <div className="text-[10px] text-muted-foreground uppercase">Max Active Slots</div>
+                      <div className="mt-1 font-bold text-foreground">{sliderTierData.slots} Active</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 text-center sm:text-right">
+                  <button
+                    onClick={() => openTerminalModal(sliderTierData.name)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:bg-[#f3cc68]"
+                    data-testid="button-slider-explore-tier"
+                  >
+                    EXPLORE {sliderTierData.name.toUpperCase()} →
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
+      </section>
 
-        {/* 5-Tier Ultra-Premium Grid */}
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
-          {packages.map((tier) => {
-            const isSelected = selectedTier === tier.name;
-            const isFeatured = tier.featured;
-            return (
-              <Reveal key={tier.name} className="h-full">
-                <div
-                  onClick={() => {
-                    setSelectedTier(tier.name);
-                    setCalcAmount(parseInt(tier.amount.replace(/[^0-9]/g, '')) || 1000);
-                  }}
-                  className={`group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-5 transition-all duration-300 ${
-                    isSelected
-                      ? 'scale-[1.03] z-10 border-primary bg-gradient-to-b from-primary/20 via-[#111514] to-[#0d1010] shadow-[0_0_45px_rgba(232,185,73,0.35)]'
-                      : isFeatured
-                      ? 'border-primary/60 bg-gradient-to-b from-primary/10 via-[#101312] to-[#0c0e0e] shadow-[0_0_25px_rgba(232,185,73,0.18)]'
-                      : 'border-border/80 bg-card/60 hover:-translate-y-1 hover:border-primary/40 hover:bg-card/90 hover:shadow-xl'
-                  }`}
-                  data-testid={`card-tier-${tier.name.toLowerCase()}`}
-                >
-                  {/* Top Badges */}
-                  {isFeatured && (
-                    <div className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-primary-foreground shadow-md">
-                      MOST SELECTED
-                    </div>
-                  )}
-                  {isSelected && !isFeatured && (
-                    <div className="absolute right-3 top-3 rounded-full border border-accent/40 bg-accent/20 px-2 py-0.5 font-mono text-[9px] font-bold text-accent">
-                      ✓ ACTIVE
-                    </div>
-                  )}
+      {/* 12. PACKAGE JOURNEY */}
+      <section className="relative overflow-hidden border-t border-border bg-[#08090a] py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
+                STRATEGIC ROADMAP
+              </div>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                YOUR TIER. YOUR NEXT MOVE.
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Explore each stage of tier allocation across the Nexa Traders environment.
+              </p>
+            </div>
 
-                  <div>
+            <div className="grid gap-4 sm:grid-cols-5 font-mono">
+              {packages.map((tier, idx) => {
+                const isActive = journeyIndex === idx;
+                return (
+                  <div
+                    key={tier.name}
+                    onClick={() => setJourneyIndex(idx)}
+                    className={`cursor-pointer rounded-2xl border p-6 transition-all duration-300 ${
+                      isActive
+                        ? 'border-primary bg-primary/20 shadow-[0_0_35px_rgba(232,185,73,0.3)] -translate-y-2'
+                        : 'border-border/80 bg-card/60 hover:border-primary/40'
+                    }`}
+                  >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        TIER / {tier.name}
-                      </span>
-                      <span className={`grid h-8 w-8 place-items-center rounded-lg border transition ${isSelected || isFeatured ? 'border-primary/50 bg-primary/20 text-primary' : 'border-border bg-secondary/50 text-muted-foreground'}`}>
-                        <Sparkles size={15} />
-                      </span>
+                      <span className="text-2xl font-extrabold text-primary">0{idx + 1}</span>
+                      <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
                     </div>
-
-                    <p className="mt-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-                      {tier.amount}
-                    </p>
-
-                    {/* Target ROI Spec Badge */}
-                    <div className="mt-5 rounded-xl border border-accent/30 bg-accent/10 px-3.5 py-2 backdrop-blur-md">
-                      <div className="flex items-center justify-between font-mono text-xs">
-                        <span className="text-muted-foreground">Target ROI</span>
-                        <strong className="text-base font-extrabold text-accent">{tier.roi}</strong>
-                      </div>
-                    </div>
-
-                    {/* Key Metrics Breakdown */}
-                    <div className="mt-5 space-y-2.5 font-mono text-xs border-t border-border/60 pt-4">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Projected return</span>
-                        <strong className="text-foreground">{tier.returnAmount}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Duration</span>
-                        <span className="text-foreground">{tier.duration}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Daily projection</span>
-                        <span className="font-semibold text-primary">{tier.daily}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Max slots</span>
-                        <span className="text-foreground">{tier.slots} active</span>
-                      </div>
+                    <h3 className="mt-4 text-lg font-bold text-foreground">{tier.name.toUpperCase()}</h3>
+                    <p className="mt-1 text-sm font-bold text-muted-foreground">{tier.amount}</p>
+                    <div className="mt-4 border-t border-border/60 pt-3 text-[10px] text-muted-foreground">
+                      Target: <strong className="text-accent">{tier.roi}</strong>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
-                  <div className="mt-7">
-                    <ButtonLink
-                      href="/register"
-                      variant={isSelected || isFeatured ? 'primary' : 'outline'}
-                      className="w-full font-mono text-xs shadow-md"
-                    >
-                      {isSelected ? `Choose ${tier.name} →` : `View ${tier.name} →`}
-                    </ButtonLink>
+      {/* 13. PACKAGE FEATURES */}
+      <section className="relative overflow-hidden border-t border-border bg-[#0b0d0e] py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
+                CORE SYSTEM CAPABILITIES
+              </div>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                WHAT’S INSIDE YOUR TIER?
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Four core technology layers embedded into every access tier.
+              </p>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {packageFeatures.map((feat) => {
+                const IconComponent = feat.icon;
+                return (
+                  <div
+                    key={feat.num}
+                    className="group rounded-2xl border border-border/80 bg-card/60 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/50 hover:bg-card/90 hover:shadow-[0_0_30px_rgba(232,185,73,0.15)]"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs font-bold text-primary">{feat.num}</span>
+                      <span className="grid h-10 w-10 place-items-center rounded-xl border border-primary/40 bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                        <IconComponent size={18} />
+                      </span>
+                    </div>
+                    <h3 className="mt-6 font-mono text-sm font-extrabold text-foreground tracking-wider">{feat.title}</h3>
+                    <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{feat.desc}</p>
                   </div>
+                );
+              })}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 14. HOW TO CHOOSE SECTION */}
+      <section className="relative overflow-hidden border-t border-border bg-[#08090a] py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                SELECTION GUIDANCE
+              </div>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                WHICH TIER FITS YOU?
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Explore allocation brackets based on your target scale.
+              </p>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-3 font-mono">
+              <div
+                onClick={() => {
+                  setFitCategory('START');
+                  openTerminalModal('Spark');
+                }}
+                className={`cursor-pointer rounded-2xl border p-8 transition-all ${
+                  fitCategory === 'START' ? 'border-primary bg-primary/15 shadow-xl scale-105' : 'border-border/80 bg-card/60 hover:border-primary/40'
+                }`}
+              >
+                <span className="text-xs font-bold text-primary">01 / ENTRY</span>
+                <h3 className="mt-3 text-2xl font-extrabold text-foreground">START</h3>
+                <p className="mt-3 text-xs text-muted-foreground leading-relaxed">For users exploring the platform.</p>
+                <div className="mt-6 pt-4 border-t border-border/60 text-xs text-primary font-bold">
+                  Recommended: Spark ($100) or Boost ($300) →
                 </div>
-              </Reveal>
-            );
-          })}
-        </div>
+              </div>
+
+              <div
+                onClick={() => {
+                  setFitCategory('SCALE');
+                  openTerminalModal('Rise');
+                }}
+                className={`cursor-pointer rounded-2xl border p-8 transition-all ${
+                  fitCategory === 'SCALE' ? 'border-primary bg-primary/15 shadow-xl scale-105' : 'border-border/80 bg-card/60 hover:border-primary/40'
+                }`}
+              >
+                <span className="text-xs font-bold text-primary">02 / CORE</span>
+                <h3 className="mt-3 text-2xl font-extrabold text-foreground">SCALE</h3>
+                <p className="mt-3 text-xs text-muted-foreground leading-relaxed">For users looking for a higher package tier.</p>
+                <div className="mt-6 pt-4 border-t border-border/60 text-xs text-primary font-bold">
+                  Recommended: Rise ($1,000) or Titan ($5,000) →
+                </div>
+              </div>
+
+              <div
+                onClick={() => {
+                  setFitCategory('ADVANCE');
+                  openTerminalModal('Supreme');
+                }}
+                className={`cursor-pointer rounded-2xl border p-8 transition-all ${
+                  fitCategory === 'ADVANCE' ? 'border-primary bg-primary/15 shadow-xl scale-105' : 'border-border/80 bg-card/60 hover:border-primary/40'
+                }`}
+              >
+                <span className="text-xs font-bold text-primary">03 / INSTITUTIONAL</span>
+                <h3 className="mt-3 text-2xl font-extrabold text-foreground">ADVANCE</h3>
+                <p className="mt-3 text-xs text-muted-foreground leading-relaxed">For users considering larger allocation levels.</p>
+                <div className="mt-6 pt-4 border-t border-border/60 text-xs text-primary font-bold">
+                  Recommended: Supreme ($10,000) →
+                </div>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Infrastructure Specs */}
-      <section className="border-t border-border bg-[#0c0f0f]">
-        <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-          <SectionHeading eyebrow="Every tier includes" title="The same intelligence underneath." />
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            <Feature icon={BarChart3} title="Live opportunity map" copy="Your strategy reads venue-level price and liquidity data continuously across 30+ connected venues." />
-            <Feature icon={LockKeyhole} title="Defined boundaries" copy="Risk controls and automated stop-loss boundaries are configured before the engine can act." />
-            <Feature icon={Database} title="Decision history" copy="See the complete reason, orderbook depth, and route behind each executed system event." />
-          </div>
+      {/* 15. TRANSPARENCY SECTION */}
+      <section className="relative overflow-hidden border-t border-border bg-[#0b0d0e] py-20 lg:py-28">
+        <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
+          <Reveal>
+            <div className="rounded-3xl border border-primary/30 bg-[#0e1211] p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
+              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">DISCLOSURE & GOVERNANCE</span>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                KNOW THE NUMBERS.<br />
+                <span className="text-muted-foreground font-semibold">UNDERSTAND THE TERMS.</span>
+              </h2>
+              <p className="mx-auto mt-6 max-w-2xl text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                Package figures shown on this page are target and projected figures. Actual trading outcomes may vary depending on market conditions, execution, liquidity, fees and other factors. Review all applicable package terms, conditions and risk disclosures before proceeding.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <Link
+                  href="/privacy"
+                  className="rounded-xl border border-border/80 bg-card px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:border-primary/40 hover:text-primary"
+                  data-testid="link-risk-disclosure"
+                >
+                  RISK DISCLOSURE →
+                </Link>
+                <Link
+                  href="/privacy"
+                  className="rounded-xl border border-border/80 bg-card px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:border-primary/40 hover:text-primary"
+                  data-testid="link-terms-conditions"
+                >
+                  TERMS & CONDITIONS →
+                </Link>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
+
+      {/* 16. FAQ SECTION */}
+      <section className="relative overflow-hidden border-t border-border bg-[#08090a] py-20 lg:py-28">
+        <div className="mx-auto max-w-4xl px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-xl mx-auto mb-12">
+              <span className="font-mono text-xs uppercase tracking-widest text-primary">TIER QUESTIONS</span>
+              <h2 className="mt-2 text-3xl font-extrabold text-foreground sm:text-4xl">FREQUENTLY ASKED</h2>
+            </div>
+
+            <div className="divide-y divide-border/80 border-y border-border/80">
+              {packageFaqs.map(([question, answer], idx) => (
+                <div key={question} className="py-5">
+                  <button
+                    onClick={() => setFaqActiveIndex(faqActiveIndex === idx ? -1 : idx)}
+                    className="flex w-full items-center justify-between gap-4 text-left font-medium text-base hover:text-primary transition-colors"
+                    data-testid={`button-package-faq-${idx}`}
+                  >
+                    <span>{question}</span>
+                    <ChevronDown
+                      size={18}
+                      className={`shrink-0 text-muted-foreground transition-transform duration-300 ${
+                        faqActiveIndex === idx ? 'rotate-180 text-primary' : ''
+                      }`}
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {faqActiveIndex === idx && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="mt-3 text-sm leading-relaxed text-muted-foreground max-w-3xl">
+                          {answer}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 17. FINAL CLOSING DRAMATIC CTA */}
+      <section className="relative overflow-hidden border-t border-border bg-gradient-to-b from-[#08090a] via-[#0d100f] to-[#060707] py-24 lg:py-32">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(232,185,73,0.18)_0%,transparent_70%)] pointer-events-none" />
+        
+        <div className="relative mx-auto max-w-4xl px-5 text-center lg:px-8">
+          <Reveal>
+            <span className="font-mono text-xs font-extrabold uppercase tracking-widest text-primary">
+              YOUR NEXT MOVE STARTS HERE.
+            </span>
+            <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
+              READY TO CHOOSE YOUR TIER?
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-sm text-muted-foreground sm:text-base leading-relaxed">
+              Explore the available Nexa Traders tiers and select the package that fits your objectives.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <button
+                onClick={() => openTerminalModal('Rise')}
+                className="rounded-xl bg-primary px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.4)] hover:bg-[#f3cc68]"
+                data-testid="button-final-cta-choose"
+              >
+                CHOOSE YOUR TIER →
+              </button>
+              <button
+                onClick={() => {
+                  document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="rounded-xl border border-border/80 bg-card px-8 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                data-testid="button-final-cta-compare"
+              >
+                COMPARE PACKAGES
+              </button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 7. CLICKABLE TERMINAL DETAIL MODAL */}
+      <AnimatePresence>
+        {modalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xl overflow-y-auto"
+            onClick={() => setModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-primary/50 bg-[#0d1110] p-6 sm:p-8 shadow-[0_0_60px_rgba(232,185,73,0.3)] font-mono"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setModalOpen(false)}
+                className="absolute right-5 top-5 grid h-8 w-8 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary"
+                data-testid="button-modal-close"
+              >
+                <X size={16} />
+              </button>
+
+              {/* Top Live Tier Switcher Tabs */}
+              <div className="flex flex-wrap gap-1.5 border-b border-border/80 pb-4 pr-8">
+                {packages.map((p) => (
+                  <button
+                    key={p.name}
+                    onClick={() => setModalTier(p.name)}
+                    className={`rounded-lg border px-3 py-1.5 text-[10px] font-bold uppercase transition-all ${
+                      modalTier === p.name
+                        ? 'border-primary bg-primary/20 text-primary shadow-sm'
+                        : 'border-border bg-card/60 text-muted-foreground hover:border-primary/40'
+                    }`}
+                    data-testid={`modal-tab-${p.name.toLowerCase()}`}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Selected Tier Title */}
+              <div className="mt-6 flex items-baseline justify-between">
+                <div>
+                  <span className="text-[10px] uppercase text-muted-foreground tracking-widest">SELECTED TIER</span>
+                  <h3 className="text-3xl font-extrabold text-foreground">{modalTierData.name.toUpperCase()}</h3>
+                </div>
+                <div className="text-right">
+                  <span className="text-3xl font-black text-primary">{modalTierData.amount}</span>
+                  {modalTierData.featured && (
+                    <div className="text-[9px] font-bold uppercase text-accent">● MOST SELECTED</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Detailed Breakdown */}
+              <div className="mt-6 space-y-3 rounded-2xl border border-border/80 bg-card/60 p-5 text-xs">
+                <div className="flex justify-between items-center border-b border-border/60 pb-2">
+                  <span className="text-muted-foreground">TARGET ROI</span>
+                  <strong className="text-sm font-extrabold text-accent">{modalTierData.roi}</strong>
+                </div>
+                <div className="flex justify-between items-center border-b border-border/60 pb-2">
+                  <span className="text-muted-foreground">PROJECTED RETURN</span>
+                  <strong className="text-foreground">{modalTierData.returnAmount}</strong>
+                </div>
+                <div className="flex justify-between items-center border-b border-border/60 pb-2">
+                  <span className="text-muted-foreground">DURATION</span>
+                  <span className="text-foreground">{modalTierData.duration}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-border/60 pb-2">
+                  <span className="text-muted-foreground">DAILY PROJECTION</span>
+                  <span className="font-bold text-primary">{modalTierData.daily}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">MAX ACTIVE SLOTS</span>
+                  <span className="text-foreground">{modalTierData.slots} Active</span>
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => {
+                    setModalOpen(false);
+                    setLocation('/register');
+                  }}
+                  className="flex-1 rounded-xl bg-primary py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:bg-[#f3cc68]"
+                  data-testid="button-modal-proceed"
+                >
+                  PROCEED →
+                </button>
+                <button
+                  onClick={() => {
+                    setModalOpen(false);
+                    document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="rounded-xl border border-border bg-card/80 py-3.5 px-5 text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                  data-testid="button-modal-compare"
+                >
+                  COMPARE TIERS
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
