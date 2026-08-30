@@ -1457,7 +1457,7 @@ function PackagesPage() {
           <Reveal>
             {/* Main Headline */}
             <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.08] max-w-5xl mx-auto">
-              Choose Your Trading Plan
+              Choose Your Arbitrage Trading Plan
             </h1>
             
             {/* Subheadline */}
