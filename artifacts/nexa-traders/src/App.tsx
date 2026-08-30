@@ -1431,15 +1431,8 @@ function PackagesPage() {
       {/* 2. PAGE HERO */}
       <section className="relative overflow-hidden border-b border-border/80 bg-gradient-to-b from-[#0b0e0d] via-[#0d1010] to-[#08090a] py-20 lg:py-28">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(232,185,73,0.12)_0%,rgba(16,185,129,0.04)_50%,transparent_75%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-60 pointer-events-none" />
-        
         <div className="relative mx-auto max-w-7xl px-5 lg:px-8 text-center">
           <Reveal>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary shadow-[0_0_20px_rgba(232,185,73,0.2)]">
-              <Sparkles size={13} className="animate-spin-slow text-primary" />
-              NEXA TRADERS / ACCESS TIERS
-            </div>
-            
             <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.05]">
               CHOOSE YOUR EDGE.<br />
               <span className="text-primary font-black">SELECT YOUR TIER.</span>
