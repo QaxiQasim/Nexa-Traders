@@ -1477,13 +1477,11 @@ function PackagesPage() {
                 View Packages <ArrowRight size={16} />
               </button>
               <button
-                onClick={() => {
-                  document.getElementById('deposit-section')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="rounded-full border border-primary/50 bg-primary/10 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider text-primary backdrop-blur-md transition-all hover:bg-primary/20 hover:border-primary"
-                data-testid="button-hero-deposit-start"
+                onClick={() => setLocation('/register')}
+                className="rounded-full border border-primary/50 bg-primary/10 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider text-primary backdrop-blur-md transition-all hover:bg-primary/20 hover:border-primary flex items-center gap-1.5"
+                data-testid="button-hero-open-account"
               >
-                Deposit & Start Trading
+                Open an account <ArrowUpRight size={15} />
               </button>
             </div>
           </Reveal>
