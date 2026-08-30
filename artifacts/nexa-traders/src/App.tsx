@@ -1477,10 +1477,14 @@ function PackagesPage() {
 
       {/* 3. MAIN PACKAGE SECTION */}
       <section id="package-cards" className="relative overflow-hidden w-full py-20 lg:py-28" data-testid="section-packages">
-        <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
+        {/* Ambient Gold Glass Light Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-primary/10 blur-[150px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-accent/5 blur-[120px] pointer-events-none rounded-full" />
+
+        <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10">
           <Reveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary shadow-[0_0_20px_rgba(232,185,73,0.15)]">
                 STRUCTURED ALLOCATION
               </div>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
@@ -1492,7 +1496,7 @@ function PackagesPage() {
             </div>
           </Reveal>
 
-          {/* 4 & 5 & 6. PREMIUM PACKAGE CARDS GRID */}
+          {/* 4 & 5 & 6. ULTRA-PREMIUM GLASS PACKAGE CARDS GRID */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 items-stretch">
             {packages.map((tier) => {
               const isSelected = selectedTier === tier.name;
@@ -1502,35 +1506,38 @@ function PackagesPage() {
                 <Reveal key={tier.name} className="h-full">
                   <div
                     onClick={() => openTerminalModal(tier.name)}
-                    className={`group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border p-6 transition-all duration-300 ${
+                    className={`group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl p-7 transition-all duration-500 backdrop-blur-2xl ${
                       isRise
-                        ? 'border-primary/80 bg-gradient-to-b from-[#181d1a] via-[#111514] to-[#0c0f0e] shadow-[0_0_50px_rgba(232,185,73,0.3)] -translate-y-2'
+                        ? 'border-2 border-primary/90 bg-gradient-to-b from-primary/20 via-[#18201c]/85 to-[#0c100e]/95 shadow-[0_0_60px_rgba(232,185,73,0.35)] -translate-y-3'
                         : isSelected
-                        ? 'border-primary/60 bg-gradient-to-b from-primary/15 via-[#101312] to-[#0c0e0e] shadow-[0_0_30px_rgba(232,185,73,0.2)]'
-                        : 'border-border/80 bg-card/60 hover:-translate-y-2 hover:border-primary/50 hover:bg-card/90 hover:shadow-[0_0_30px_rgba(232,185,73,0.15)]'
+                        ? 'border border-primary/70 bg-gradient-to-b from-primary/15 via-[#131916]/80 to-[#0a0e0c]/90 shadow-[0_0_35px_rgba(232,185,73,0.22)]'
+                        : 'border border-white/10 bg-gradient-to-b from-[#141a18]/70 via-[#0e1311]/65 to-[#090b0a]/80 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:border-primary/60 hover:bg-[#151c19]/80 hover:shadow-[0_0_40px_rgba(232,185,73,0.2)]'
                     }`}
                     data-testid={`card-tier-${tier.name.toLowerCase()}`}
                   >
+                    {/* Glass Specular Top Highlight */}
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                    
                     {/* Background Waveform Graph & Glow Effect */}
-                    <div className="absolute inset-0 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                    <div className="absolute inset-0 pointer-events-none opacity-25 group-hover:opacity-50 transition-opacity duration-500">
                       <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 200 100">
                         <path
-                          d="M 0 70 Q 50 30, 100 60 T 200 20"
+                          d="M 0 75 Q 50 35, 100 65 T 200 25"
                           fill="none"
                           stroke={isRise ? '#e8b949' : '#10b981'}
                           strokeWidth="1.5"
                           strokeDasharray="4 2"
                         />
-                        <circle cx="150" cy="40" r="3" fill="#f3cc68" className="animate-ping" />
+                        <circle cx="150" cy="45" r="3.5" fill="#f3cc68" className="animate-ping" />
                       </svg>
-                      <div className="absolute bottom-2 right-2 font-mono text-[8px] uppercase tracking-widest text-muted-foreground/60">
+                      <div className="absolute bottom-3 right-3 font-mono text-[8px] uppercase tracking-widest text-muted-foreground/50">
                         SIMULATION
                       </div>
                     </div>
 
                     {/* Top Badges */}
                     {isRise && (
-                      <div className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 font-mono text-[9px] font-extrabold uppercase tracking-wider text-primary-foreground shadow-md">
+                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f3cc68] to-primary px-3 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.5)]">
                         MOST SELECTED
                       </div>
                     )}
@@ -1538,52 +1545,52 @@ function PackagesPage() {
                     <div>
                       {/* Header info */}
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                           TIER / {tier.name.toUpperCase()}
                         </span>
-                        <div className={`grid h-8 w-8 place-items-center rounded-lg border transition-transform duration-300 group-hover:scale-110 ${
-                          isRise ? 'border-primary/60 bg-primary/20 text-primary' : 'border-border bg-secondary/50 text-muted-foreground group-hover:text-primary group-hover:border-primary/40'
+                        <div className={`grid h-9 w-9 place-items-center rounded-xl border backdrop-blur-md transition-all duration-300 group-hover:scale-110 ${
+                          isRise ? 'border-primary/60 bg-primary/20 text-primary shadow-[0_0_15px_rgba(232,185,73,0.3)]' : 'border-white/10 bg-white/[0.05] text-muted-foreground group-hover:text-primary group-hover:border-primary/50 group-hover:bg-primary/10'
                         }`}>
-                          {tier.name === 'Spark' && <Zap size={15} />}
-                          {tier.name === 'Boost' && <TrendingUp size={15} />}
-                          {tier.name === 'Rise' && <Sparkles size={15} />}
-                          {tier.name === 'Titan' && <ShieldCheck size={15} />}
-                          {tier.name === 'Supreme' && <Crown size={15} />}
+                          {tier.name === 'Spark' && <Zap size={16} />}
+                          {tier.name === 'Boost' && <TrendingUp size={16} />}
+                          {tier.name === 'Rise' && <Sparkles size={16} />}
+                          {tier.name === 'Titan' && <ShieldCheck size={16} />}
+                          {tier.name === 'Supreme' && <Crown size={16} />}
                         </div>
                       </div>
 
                       {/* Amount */}
-                      <p className="mt-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                      <p className="mt-5 text-4xl sm:text-5xl font-black tracking-tight text-foreground">
                         {tier.amount}
                       </p>
 
-                      <div className="my-5 h-px bg-gradient-to-r from-primary/40 via-primary/10 to-transparent" />
+                      <div className="my-6 h-px bg-gradient-to-r from-primary/50 via-white/10 to-transparent" />
 
                       {/* Stats Section */}
-                      <div className="space-y-3 font-mono text-xs">
-                        <div className="rounded-xl border border-accent/30 bg-accent/10 px-3.5 py-2">
+                      <div className="space-y-3.5 font-mono text-xs">
+                        <div className="rounded-2xl border border-accent/40 bg-accent/15 px-4 py-2.5 backdrop-blur-md shadow-inner">
                           <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground text-[11px]">Target ROI</span>
-                            <strong className="text-sm font-extrabold text-accent">{tier.roi}</strong>
+                            <span className="text-muted-foreground text-[11px] font-semibold">Target ROI</span>
+                            <strong className="text-base font-black text-accent">{tier.roi}</strong>
                           </div>
                         </div>
 
-                        <div className="space-y-2 border-t border-border/60 pt-3 text-[11px]">
-                          <div className="flex justify-between">
+                        <div className="space-y-2.5 border-t border-white/10 pt-4 text-[11px]">
+                          <div className="flex justify-between items-center">
                             <span className="text-muted-foreground">Projected Return</span>
-                            <strong className="text-foreground">{tier.returnAmount}</strong>
+                            <strong className="text-foreground font-bold">{tier.returnAmount}</strong>
                           </div>
-                          <div className="flex justify-between">
+                          <div className="flex justify-between items-center">
                             <span className="text-muted-foreground">Duration</span>
-                            <span className="text-foreground">{tier.duration}</span>
+                            <span className="text-foreground font-medium">{tier.duration}</span>
                           </div>
-                          <div className="flex justify-between">
+                          <div className="flex justify-between items-center">
                             <span className="text-muted-foreground">Daily Projection</span>
-                            <span className="font-semibold text-primary">{tier.daily}</span>
+                            <span className="font-bold text-primary">{tier.daily}</span>
                           </div>
-                          <div className="flex justify-between">
+                          <div className="flex justify-between items-center">
                             <span className="text-muted-foreground">Max Slots</span>
-                            <span className="text-foreground">{tier.slots} active</span>
+                            <span className="text-foreground font-medium">{tier.slots} active</span>
                           </div>
                         </div>
                       </div>
@@ -1596,10 +1603,10 @@ function PackagesPage() {
                           e.stopPropagation();
                           openTerminalModal(tier.name);
                         }}
-                        className={`w-full rounded-xl py-3 px-4 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${
+                        className={`w-full rounded-2xl py-3.5 px-4 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${
                           isRise
-                            ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:bg-[#f3cc68]'
-                            : 'border border-border/80 bg-card/80 text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary'
+                            ? 'bg-gradient-to-r from-primary via-[#f3cc68] to-primary text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_35px_rgba(232,185,73,0.6)]'
+                            : 'border border-white/15 bg-white/[0.05] text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary backdrop-blur-md'
                         }`}
                         data-testid={`button-view-tier-${tier.name.toLowerCase()}`}
                       >
