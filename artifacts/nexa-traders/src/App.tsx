@@ -1688,90 +1688,11 @@ function PackagesPage() {
         </div>
       </section>
 
-      {/* 3. PACKAGE DETAILS & FLAGSHIP SOLUTIONS */}
+      {/* 3. FLAGSHIP SOLUTIONS */}
       <section className="relative overflow-hidden border-t border-white/10 bg-[#0a0d0c] py-24 lg:py-32">
         <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
-          <Reveal>
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">COMPREHENSIVE SPECIFICATIONS</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-                Plan Details
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                In-depth breakdown of investment allocation, yields, and slot boundaries across all packages.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* Detailed Horizontal / Vertical Plan Specs */}
-          <div className="space-y-4 max-w-5xl mx-auto font-mono text-xs">
-            {packages.map((tier) => (
-              <Reveal key={tier.name}>
-                <div
-                  onClick={() => openTerminalModal(tier.name)}
-                  className="cursor-pointer rounded-3xl border border-white/10 bg-gradient-to-r from-[#121715]/80 via-[#0e1311]/70 to-[#0b0e0d]/80 p-6 sm:p-8 backdrop-blur-xl hover:border-primary/50 transition-all shadow-xl"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex items-center gap-4">
-                      <div className="grid h-12 w-12 place-items-center rounded-2xl border border-primary/40 bg-primary/15 text-primary">
-                        <Coins size={22} />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-extrabold text-foreground tracking-wider">{tier.name.toUpperCase()} — {tier.amount} PACKAGE</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">Investment Amount: <strong className="text-foreground">{tier.amount}</strong></p>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openTerminalModal(tier.name);
-                      }}
-                      className="rounded-xl bg-primary/15 border border-primary/40 px-5 py-2.5 text-xs font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all self-start sm:self-auto"
-                    >
-                      Select {tier.name} →
-                    </button>
-                  </div>
-
-                  {/* Icon Metric Grid */}
-                  <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-6 border-t border-white/10 text-[11px]">
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Layers size={13} className="text-primary" /> Max Subscriptions</div>
-                      <strong className="text-foreground font-bold">{tier.slots} max per user</strong>
-                    </div>
-
-                    <div className="rounded-xl border border-primary/30 bg-primary/10 p-3">
-                      <div className="flex items-center gap-1.5 text-primary mb-1"><TrendingUp size={13} /> Total ROI</div>
-                      <strong className="text-primary font-black text-sm">{tier.roi}</strong>
-                    </div>
-
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Coins size={13} className="text-accent" /> User Receives</div>
-                      <strong className="text-foreground font-bold">{tier.returnAmount} total</strong>
-                    </div>
-
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Clock size={13} className="text-primary" /> Duration</div>
-                      <strong className="text-foreground font-bold">{tier.duration}</strong>
-                    </div>
-
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Zap size={13} className="text-primary" /> Daily ROI</div>
-                      <strong className="text-primary font-bold">{tier.daily}</strong>
-                    </div>
-
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><CheckCircle2 size={13} className="text-accent" /> Status</div>
-                      <strong className="text-accent font-bold">Active Ready</strong>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          {/* FLAGSHIP SOLUTIONS SECTION (FROM IMAGE 2) */}
-          <div className="mt-24">
+          {/* FLAGSHIP SOLUTIONS SECTION */}
+          <div>
             <Reveal>
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">TECHNOLOGY INFRASTRUCTURE</span>
