@@ -1487,67 +1487,6 @@ function PackagesPage() {
               </button>
             </div>
           </Reveal>
-
-          {/* Interactive Trading Widgets Preview */}
-          <Reveal delay={0.15}>
-            <div className="mt-16 grid gap-6 md:grid-cols-3 items-stretch text-left font-mono text-xs max-w-6xl mx-auto">
-              {/* Left: Markets Feed */}
-              <div className="rounded-3xl border border-white/15 bg-[#121715]/80 p-6 backdrop-blur-2xl shadow-[0_15px_35px_rgba(0,0,0,0.5)]">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3 text-muted-foreground text-[11px]">
-                  <span className="font-bold text-foreground">AI Market Scanners</span>
-                  <span className="text-primary text-[10px] uppercase">LIVE STREAM ●</span>
-                </div>
-                <div className="mt-4 space-y-3">
-                  <div className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.03]">
-                    <span className="font-bold text-foreground">BTC / USDT</span>
-                    <span className="text-accent font-bold">$87,420.50 (+1.8%)</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.03]">
-                    <span className="font-bold text-foreground">ETH / USDT</span>
-                    <span className="text-accent font-bold">$3,120.15 (+2.4%)</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.03]">
-                    <span className="font-bold text-foreground">USDT (BEP20)</span>
-                    <span className="text-primary font-bold">1.0000 BSC</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Center: Main Yield Monitor */}
-              <div className="rounded-3xl border-2 border-primary/60 bg-gradient-to-b from-[#18201d]/90 via-[#101513]/85 to-[#0b0e0c]/95 p-7 backdrop-blur-2xl shadow-[0_0_50px_rgba(232,185,73,0.3)] relative overflow-hidden">
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase">
-                  <span className="font-bold text-primary">NEXATRADES AI ENGINE</span>
-                  <span className="text-accent font-bold">99.99% UPTIME</span>
-                </div>
-                <div className="mt-4">
-                  <span className="text-[11px] text-muted-foreground">Portfolio Target Return</span>
-                  <div className="text-3xl font-black text-foreground tracking-tight sm:text-4xl mt-1">$22,000.00 <span className="text-xs text-muted-foreground font-normal">USD</span></div>
-                </div>
-                <div className="relative mt-4 h-20 w-full">
-                  <svg className="h-full w-full" preserveAspectRatio="none" viewBox="0 0 300 100">
-                    <path d="M 0 80 Q 75 15, 150 65 T 300 10 L 300 100 L 0 100 Z" fill="rgba(232,185,73,0.25)" />
-                    <path d="M 0 80 Q 75 15, 150 65 T 300 10" fill="none" stroke="#e8b949" strokeWidth="2.5" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Right: Deposit & Execution */}
-              <div className="rounded-3xl border border-white/15 bg-[#121715]/80 p-6 backdrop-blur-2xl shadow-[0_15px_35px_rgba(0,0,0,0.5)] flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3 text-muted-foreground text-[11px]">
-                    <span className="font-bold text-foreground">Instant Deposit</span>
-                    <span className="text-primary font-bold">USDT BEP20</span>
-                  </div>
-                  <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                    Automated credit directly to wallet upon network confirmation.
-                  </p>
-                </div>
-                <div className="mt-4 rounded-xl border border-primary/30 bg-primary/10 p-3 text-center text-primary font-bold">
-                  Fast 15-Min Execution
-                </div>
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
 
