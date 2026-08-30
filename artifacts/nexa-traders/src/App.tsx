@@ -1455,14 +1455,8 @@ function PackagesPage() {
 
         <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8 text-center">
           <Reveal>
-            {/* Small Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary shadow-[0_0_25px_rgba(232,185,73,0.2)]">
-              <Sparkles size={13} className="text-primary animate-pulse" />
-              SMART CRYPTO TRADING • NEXATRADES
-            </div>
-
             {/* Main Headline */}
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.08] max-w-5xl mx-auto">
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.08] max-w-5xl mx-auto">
               Choose Your Trading Plan
             </h1>
             
