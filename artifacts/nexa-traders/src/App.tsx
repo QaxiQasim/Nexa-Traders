@@ -1365,6 +1365,14 @@ function PackagesPage() {
   const [modalTier, setModalTier] = useState<string>('Rise');
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'TARGET ROI' | 'PROJECTED RETURN' | 'DURATION' | 'MAX SLOTS'>('OVERVIEW');
   const [faqActiveIndex, setFaqActiveIndex] = useState<number>(-1);
+  const [withdrawNetwork, setWithdrawNetwork] = useState<'BSC' | 'ETH' | 'TRC'>('BSC');
+  const [depositToken, setDepositToken] = useState<'BEP20' | 'TRC20' | 'ERC20'>('BEP20');
+  const [copiedAddress, setCopiedAddress] = useState<boolean>(false);
+
+  const handleCopyAddress = () => {
+    setCopiedAddress(true);
+    setTimeout(() => setCopiedAddress(false), 2000);
+  };
 
   const modalTierData = useMemo(() => packages.find((p) => p.name === modalTier) || packages[2], [modalTier]);
 
@@ -1800,56 +1808,94 @@ function PackagesPage() {
         </div>
       </section>
 
-      {/* 5 & 6. DEPOSIT & WITHDRAWAL SECTION (MATCHING IMAGE 4) */}
-      <section id="deposit-section" className="relative overflow-hidden border-t border-white/10 bg-[#090c0b] py-24 lg:py-32">
-        <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
+      {/* 5 & 6. DEPOSIT & WITHDRAWAL SECTION */}
+      <section id="deposit-section" className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#090c0b] via-[#0d1210] to-[#08090a] py-24 lg:py-32 font-sans">
+        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-primary/10 blur-[150px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-accent/10 blur-[150px] pointer-events-none rounded-full" />
+
+        <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">FINANCIAL GATEWAY</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+                <Coins size={14} className="text-primary animate-pulse" />
+                FINANCIAL GATEWAY
+              </div>
+              <h2 className="mt-4 text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Deposit & Withdrawal
               </h2>
-              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                Simple, secure and automated digital asset transactions.
+              <p className="mt-4 text-sm text-muted-foreground sm:text-base leading-relaxed max-w-xl mx-auto">
+                Automated multi-chain liquidity gateways with instant execution and 24/7 wallet credit.
               </p>
             </div>
           </Reveal>
 
           <div className="grid gap-8 lg:grid-cols-2 items-stretch max-w-6xl mx-auto">
-            {/* Left: Supported Coins (USDT BEP20) */}
+            {/* Left Card: Supported Coins & Deposit Interactive Widget */}
             <Reveal className="h-full">
-              <div className="h-full rounded-3xl border border-primary/40 bg-gradient-to-b from-[#141b18]/85 to-[#0b0f0e]/95 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl flex flex-col justify-between">
+              <div className="group relative h-full rounded-3xl border border-primary/50 bg-gradient-to-b from-[#151d1a]/95 via-[#0e1311]/90 to-[#080b0a]/95 p-8 sm:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(232,185,73,0.2)] flex flex-col justify-between overflow-hidden">
+                {/* Specular Top Edge */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
+
                 <div>
-                  <div className="inline-flex items-center gap-2 rounded-xl bg-primary px-3.5 py-1.5 font-mono text-xs font-black uppercase text-primary-foreground">
-                    Supported Coins
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3.5 py-1.5 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.4)]">
+                      Supported Asset
+                    </span>
+                    <span className="flex items-center gap-1 font-mono text-[10px] text-accent font-bold uppercase tracking-wider">
+                      <span className="h-2 w-2 rounded-full bg-accent animate-ping" /> Instant Auto-Credit
+                    </span>
                   </div>
 
-                  <div className="mt-8 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+                  {/* Coin Header */}
+                  <div className="mt-8 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-6 shadow-inner">
                     <div className="flex items-center gap-4">
-                      {/* Premium USDT Coin Icon */}
-                      <div className="grid h-14 w-14 place-items-center rounded-2xl border-2 border-primary bg-gradient-to-br from-primary/30 via-[#26a17b]/30 to-primary/10 text-primary shadow-[0_0_20px_rgba(232,185,73,0.3)]">
-                        <Coins size={28} />
+                      {/* Premium USDT Gold Badge */}
+                      <div className="grid h-14 w-14 place-items-center rounded-2xl border-2 border-primary bg-gradient-to-br from-primary/30 via-[#26a17b]/30 to-primary/10 text-primary shadow-[0_0_25px_rgba(232,185,73,0.4)] group-hover:scale-105 transition-transform">
+                        <Coins size={30} />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-extrabold text-foreground">USDT</h3>
-                        <p className="text-xs text-muted-foreground font-mono">Tether USD</p>
+                        <h3 className="text-2xl font-extrabold text-foreground tracking-tight">USDT Tether</h3>
+                        <p className="text-xs text-muted-foreground font-mono">Multichain Stablecoin</p>
                       </div>
                     </div>
 
                     <div className="text-right font-mono">
-                      <span className="text-[10px] text-muted-foreground uppercase">Supported Chain</span>
-                      <div className="text-sm font-extrabold text-primary">BEP20 / BSC</div>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Selected Protocol</span>
+                      <div className="text-sm font-black text-primary">{depositToken}</div>
                     </div>
                   </div>
 
-                  <div className="mt-6 space-y-3 font-mono text-xs text-muted-foreground">
-                    <div className="flex justify-between border-b border-white/10 pb-2">
-                      <span>Network Protocol:</span>
-                      <strong className="text-foreground">Binance Smart Chain (BSC)</strong>
-                    </div>
-                    <div className="flex justify-between border-b border-white/10 pb-2">
-                      <span>Confirmation Uptime:</span>
-                      <strong className="text-accent">Instant Auto-Credit</strong>
+                  {/* Interactive Token Protocol Tabs */}
+                  <div className="mt-5 grid grid-cols-3 gap-2 font-mono text-xs">
+                    {(['BEP20', 'TRC20', 'ERC20'] as const).map((token) => (
+                      <button
+                        key={token}
+                        onClick={() => setDepositToken(token)}
+                        className={`rounded-xl border py-2.5 px-3 text-center transition-all ${
+                          depositToken === token
+                            ? 'border-primary bg-primary/20 text-primary font-bold shadow-[0_0_15px_rgba(232,185,73,0.3)]'
+                            : 'border-white/10 bg-white/[0.03] text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                        }`}
+                      >
+                        USDT ({token})
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Interactive Deposit Address & Copy Box */}
+                  <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider block mb-2">Deposit Destination Address</span>
+                    <div className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 font-mono text-xs text-foreground">
+                      <span className="truncate font-bold text-primary">
+                        {depositToken === 'BEP20' ? '0x71C839F4a9...BSC90' : depositToken === 'TRC20' ? 'TX9aK28M4pL...TRC77' : '0x992B14e8c1...ETH01'}
+                      </span>
+                      <button
+                        onClick={handleCopyAddress}
+                        className="shrink-0 rounded-lg bg-primary/20 border border-primary/50 px-3 py-1 text-[11px] font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all flex items-center gap-1"
+                      >
+                        {copiedAddress ? <Check size={13} /> : <Copy size={13} />}
+                        {copiedAddress ? 'Copied!' : 'Copy'}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1857,54 +1903,98 @@ function PackagesPage() {
                 <div className="mt-8">
                   <button
                     onClick={() => setLocation('/register')}
-                    className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-[1.02] transition-all"
+                    className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_45px_rgba(232,185,73,0.6)] transition-all"
+                    data-testid="button-deposit-usdt-now"
                   >
-                    Deposit USDT Now →
+                    Deposit USDT ({depositToken}) Now →
                   </button>
                 </div>
               </div>
             </Reveal>
 
-            {/* Right: Withdrawal Details */}
+            {/* Right Card: Interactive Withdrawal Details & Networks */}
             <Reveal className="h-full">
-              <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131916]/85 to-[#0b0e0d]/95 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl flex flex-col justify-between font-mono">
+              <div className="group relative h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131916]/95 via-[#0d1210]/90 to-[#080b0a]/95 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl flex flex-col justify-between overflow-hidden">
+                {/* Specular Top Edge */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+
                 <div>
-                  <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-3.5 py-1.5 text-xs font-bold uppercase text-foreground">
-                    Withdrawal Details
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-3.5 py-1.5 text-xs font-bold uppercase text-foreground">
+                      Withdrawal Details
+                    </div>
+                    <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
+                      24/7 AUTO PAYOUT
+                    </span>
                   </div>
 
-                  {/* 3 Network Cards */}
-                  <div className="mt-6 grid grid-cols-3 gap-3 text-center text-xs">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
-                      <strong className="text-foreground text-sm font-bold block">ETH</strong>
-                      <span className="text-[10px] text-muted-foreground">Ethereum</span>
-                    </div>
-                    <div className="rounded-2xl border border-primary/40 bg-primary/10 p-3.5">
-                      <strong className="text-primary text-sm font-bold block">BSC</strong>
-                      <span className="text-[10px] text-muted-foreground">Binance Smart</span>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
-                      <strong className="text-foreground text-sm font-bold block">TRC</strong>
-                      <span className="text-[10px] text-muted-foreground">Tron Chain</span>
-                    </div>
+                  {/* 3 Interactive Network Selector Buttons */}
+                  <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+                    {(['BSC', 'ETH', 'TRC'] as const).map((net) => {
+                      const isActive = withdrawNetwork === net;
+                      return (
+                        <button
+                          key={net}
+                          onClick={() => setWithdrawNetwork(net)}
+                          className={`rounded-2xl border p-4 transition-all duration-300 ${
+                            isActive
+                              ? net === 'BSC'
+                                ? 'border-2 border-primary bg-primary/20 text-primary shadow-[0_0_25px_rgba(232,185,73,0.4)] scale-105'
+                                : net === 'ETH'
+                                ? 'border-2 border-sky-400 bg-sky-500/20 text-sky-300 shadow-[0_0_25px_rgba(56,189,248,0.4)] scale-105'
+                                : 'border-2 border-red-500 bg-red-500/20 text-red-400 shadow-[0_0_25px_rgba(239,68,68,0.4)] scale-105'
+                              : 'border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/30 hover:bg-white/[0.06]'
+                          }`}
+                          data-testid={`withdraw-network-${net.toLowerCase()}`}
+                        >
+                          <strong className="text-base font-black block tracking-wider">
+                            {net}
+                          </strong>
+                          <span className="text-[10px] font-mono mt-0.5 block opacity-80">
+                            {net === 'BSC' ? 'Binance Smart' : net === 'ETH' ? 'Ethereum' : 'Tron Chain'}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  {/* Highlight Metrics */}
+                  {/* Dynamic Interactive Metrics Based on Selected Network */}
                   <div className="mt-6 grid sm:grid-cols-2 gap-4">
-                    <div className="rounded-2xl border border-primary/40 bg-primary/15 p-5 text-center">
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest">PROCESSING TIME</span>
-                      <div className="text-xl font-black text-primary mt-1">Up to 15 Minutes</div>
+                    {/* Processing Time Card */}
+                    <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-5 text-center shadow-inner relative overflow-hidden">
+                      <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+                        PROCESSING TIME ({withdrawNetwork})
+                      </span>
+                      <div className="text-2xl font-black text-primary mt-2">
+                        {withdrawNetwork === 'BSC' ? 'Up to 15 Minutes' : withdrawNetwork === 'ETH' ? 'Up to 12 Minutes' : 'Up to 5 Minutes'}
+                      </div>
+                      <span className="mt-1 inline-block text-[10px] font-mono text-accent font-semibold">
+                        ● Live Automation Active
+                      </span>
                     </div>
 
-                    <div className="rounded-2xl border border-accent/40 bg-accent/15 p-5 text-center">
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest">MINIMUM WITHDRAWAL</span>
-                      <div className="text-xl font-black text-accent mt-1">$15 USD</div>
+                    {/* Minimum Withdrawal Card */}
+                    <div className="rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/20 via-accent/10 to-transparent p-5 text-center shadow-inner relative overflow-hidden">
+                      <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+                        MINIMUM WITHDRAWAL
+                      </span>
+                      <div className="text-2xl font-black text-accent mt-2">
+                        {withdrawNetwork === 'ETH' ? '$25 USD' : '$15 USD'}
+                      </div>
+                      <span className="mt-1 inline-block text-[10px] font-mono text-muted-foreground">
+                        Estimated Fee: {withdrawNetwork === 'BSC' ? '~$0.20' : withdrawNetwork === 'ETH' ? '~$2.50' : '~$1.00'}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-white/10 text-[11px] text-muted-foreground text-center">
-                  Automatic payout processing enabled 24/7.
+                <div className="mt-8">
+                  <button
+                    onClick={() => setLocation('/register')}
+                    className="w-full rounded-2xl border border-white/20 bg-white/[0.05] py-4 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary backdrop-blur-md transition-all text-center"
+                  >
+                    Initiate {withdrawNetwork} Payout Request →
+                  </button>
                 </div>
               </div>
             </Reveal>
