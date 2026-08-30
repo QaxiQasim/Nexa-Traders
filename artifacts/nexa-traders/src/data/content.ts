@@ -91,8 +91,24 @@ export const articles: Article[] = [
 ];
 
 export const faqs = [
-  ['What is crypto arbitrage?', 'Crypto arbitrage is the practice of identifying a price difference for the same asset across markets and managing a route between them. NexaTraders automates the research and execution logic around those opportunities.'],
-  ['Does NexaTraders guarantee returns?', 'No. Digital asset markets are volatile and every strategy carries risk. The package figures on this site are illustrative target structures, not guarantees or financial advice.'],
-  ['How does the engine choose a trade?', 'It scores opportunities against live price divergence, liquidity, fees, execution latency, and configured risk boundaries. If the edge is not clear after costs, it stays out.'],
-  ['Can I withdraw before a package ends?', 'Package terms are fixed for the selected duration. Contact support before committing if you need clarification about timing, eligibility, or account terms.'],
+  [
+    'What is Crypto Arbitrage?',
+    'Crypto arbitrage is a trading strategy that seeks to take advantage of temporary price differences for the same cryptocurrency across different exchanges or markets. The system identifies price discrepancies and evaluates whether an opportunity may remain viable after relevant trading costs.',
+  ],
+  [
+    'How does Nexa Traders’ Arbitrage Engine work?',
+    'Nexa Traders continuously monitors supported markets for price differences. The engine observes market data, qualifies potential opportunities based on defined criteria, and can support automated execution according to the platform’s configured strategy and risk parameters.',
+  ],
+  [
+    'Why do cryptocurrency prices differ between exchanges?',
+    'Each exchange operates its own order book, liquidity, user base and market conditions. Because these markets are not perfectly synchronized, the same asset can temporarily trade at different prices across exchanges.',
+  ],
+  [
+    'Is crypto arbitrage risk-free?',
+    'No. Crypto arbitrage is not risk-free. Potential risks include price movements, execution delays, liquidity limitations, slippage, trading and network fees, exchange downtime and withdrawal restrictions. A displayed price difference does not guarantee that a profitable trade can be completed.',
+  ],
+  [
+    'How does the platform evaluate an arbitrage opportunity?',
+    'The platform can evaluate factors such as the price difference, available liquidity, trading costs and other execution conditions before an opportunity is considered suitable. The objective is to assess the net opportunity rather than relying only on the displayed spread.',
+  ],
 ];

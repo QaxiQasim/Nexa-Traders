@@ -1,0 +1,5 @@
+node_modules
+.git
+.tempmediaStorage
+artifacts/**/node_modules
+artifacts/**/dist
