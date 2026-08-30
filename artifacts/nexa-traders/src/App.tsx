@@ -1449,16 +1449,7 @@ function PackagesPage() {
               Explore structured access tiers designed around automated crypto-arbitrage technology.
             </p>
 
-            <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 font-mono text-xs text-muted-foreground">
-              <span className="flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-bold text-accent">
-                <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />
-                SYSTEM ONLINE
-              </span>
-              <span className="h-3 w-px bg-border" />
-              <span className="rounded-full border border-border bg-card/60 px-3 py-1 text-foreground">
-                5 TIERS AVAILABLE
-              </span>
-            </div>
+
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <button
