@@ -1374,207 +1374,172 @@ function PackagesPage() {
 
   const packageFaqs = [
     [
-      'What is the difference between the five tiers?',
-      'Each tier has a different allocation level, target ROI, projected return, duration, daily projection and maximum active-slot capacity.',
+      'What is the difference between the five subscription plans?',
+      'Each plan has a distinct investment amount, maximum slots per user, target ROI, projected return, duration, and daily ROI payout.',
     ],
     [
-      'Which tier is most selected?',
-      'Rise ($1,000) is currently marked as the Most Selected tier.',
+      'Which subscription plan is recommended for scaling?',
+      'The RISE ($1,000) plan is marked as Most Selected, offering 95% total ROI ($2,000 return) across 5 active slots.',
     ],
     [
-      'Can I compare the packages before selecting one?',
-      'Yes. Use the interactive comparison section to review the available tiers side by side.',
+      'Can I hold multiple active subscriptions simultaneously?',
+      'Yes. Users may hold multiple active subscriptions simultaneously up to the maximum slot limit for each tier.',
     ],
     [
-      'Are the projected returns guaranteed?',
-      'No. Projected or target figures are not guaranteed returns. Actual outcomes may vary depending on market and execution conditions.',
+      'How are daily returns credited to my wallet?',
+      'Daily ROI is credited automatically to your account wallet on a 24-hour cycle until full payout is completed.',
     ],
     [
-      'What information should I review before selecting a package?',
-      'Review the package details, applicable fees, terms, conditions and risk disclosure before proceeding.',
+      'What are the minimum deposit and withdrawal requirements?',
+      'Deposits are processed via USDT (BEP20 / BSC). The minimum withdrawal limit is $15 with automatic execution within 15 minutes.',
     ],
   ];
 
-  const partnerExchanges = [
-    { name: 'Binance', icon: '⚡' },
-    { name: 'Bybit', icon: '⚡' },
-    { name: 'OKX', icon: '⚡' },
-    { name: 'Kraken', icon: '⚡' },
-    { name: 'Coinbase', icon: '⚡' },
+  const flagshipSolutions = [
+    {
+      num: '1',
+      title: 'Spot Marketplace',
+      desc1: 'Continuously scan 25+ exchanges in real time to find the true best bid and ask.',
+      desc2: 'Execute trades at optimal lowest buy and highest sell price across all liquidity sources.',
+      icon: Network,
+    },
+    {
+      num: '2',
+      title: 'Arbitrage BOT',
+      desc1: 'Market-neutral spread execution across multiple Crypto Exchanges with institutional-grade risk controls.',
+      desc2: 'Ensures balanced exposure and efficient arbitrage across all liquidity sources.',
+      icon: Cpu,
+    },
+    {
+      num: '3',
+      title: 'AI Perpetual Futures',
+      desc1: 'One-tap protection (MarginOn) with smart entries and live risk control.',
+      desc2: 'AI-driven probability scoring with confidence indicators before every order.',
+      icon: BrainCircuit,
+    },
   ];
 
-  const recentTrades = [
-    { name: 'Robert Brian', amount: '$28,659.35', btc: '0.64 BTC', change: '+1.8%' },
-    { name: 'Courtney Henry', amount: '$1,856.20', btc: '123.45 ETH', change: '+2.9%' },
-    { name: 'Cody Fisher', amount: '$0.51', btc: '250,000 XMR', change: '+0.3%' },
-    { name: 'Darlene Robertson', amount: '$700.75', btc: '75.00 LTC', change: '+1.5%' },
+  const subscriptionRules = [
+    { num: '01', rule: 'Each subscription is independent and runs from the date of purchase.' },
+    { num: '02', rule: 'ROI is credited to the user\'s wallet on a daily basis.' },
+    { num: '03', rule: 'A subscription is marked \'Burn\' (completed) once the full ROI is paid out.' },
+    { num: '04', rule: 'Users may hold multiple active subscriptions simultaneously (within package limits).' },
+    { num: '05', rule: 'Subscriptions cannot be cancelled once activated.' },
+  ];
+
+  const transactionFlowSteps = [
+    { step: '01', title: 'Connect Wallet', desc: 'Link your Web3 wallet securely' },
+    { step: '02', title: 'Complete KYC', desc: 'Quick identity verification' },
+    { step: '03', title: 'Choose Subscription', desc: 'Select from Spark to Supreme' },
+    { step: '04', title: 'Deposit USDT', desc: 'Fund via USDT (BEP20 / BSC)' },
+    { step: '05', title: 'Trading & Daily Credit', desc: 'Automated daily ROI yield' },
   ];
 
   return (
-    <div className="relative overflow-hidden bg-[#08090a] text-foreground">
-      {/* 1. HERO SECTION WITH GOLD LIGHT SWIRL RING & FLOATING PILLS */}
+    <div className="relative overflow-hidden bg-[#08090a] text-foreground font-sans">
+      {/* 1. HERO SECTION */}
       <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-[#0b0e0d] via-[#0d110f] to-[#08090a] pt-24 pb-20 lg:pt-32 lg:pb-28">
-        {/* Glowing Background Gold Light Ring / Vortex Swirl */}
-        <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[850px] sm:w-[1100px] h-[550px] sm:h-[700px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.35)_0%,rgba(232,185,73,0.12)_45%,rgba(16,185,129,0.03)_70%,transparent_90%)] blur-[90px] pointer-events-none rounded-full" />
-        <div className="absolute top-[50px] left-1/2 -translate-x-1/2 w-[700px] h-[400px] border border-primary/20 rounded-full blur-[1px] opacity-40 pointer-events-none transform -rotate-12 animate-pulse" />
+        {/* Glowing Background Light Ring / Vortex */}
+        <div className="absolute top-[-120px] left-1/2 -translate-x-1/2 w-[900px] sm:w-[1200px] h-[600px] sm:h-[750px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.35)_0%,rgba(232,185,73,0.12)_45%,transparent_85%)] blur-[95px] pointer-events-none rounded-full" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b9490a_1px,transparent_1px),linear-gradient(to_bottom,#e8b9490a_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-50 pointer-events-none" />
 
         <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8 text-center">
-          {/* Floating Venue Badges around Title (Matching Reference Image) */}
-          <div className="hidden lg:block relative max-w-4xl mx-auto pointer-events-none">
-            <div className="absolute -top-4 -left-12 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1.5 backdrop-blur-xl font-mono text-[11px] font-bold text-foreground shadow-lg animate-bounce-slow">
-              Binance ⚡
-            </div>
-            <div className="absolute top-12 -left-20 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1.5 backdrop-blur-xl font-mono text-[11px] font-bold text-muted-foreground shadow-lg">
-              Bybit ⚡
-            </div>
-            <div className="absolute -top-4 -right-12 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1.5 backdrop-blur-xl font-mono text-[11px] font-bold text-foreground shadow-lg animate-bounce-slow">
-              OKX ⚡
-            </div>
-            <div className="absolute top-12 -right-20 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1.5 backdrop-blur-xl font-mono text-[11px] font-bold text-muted-foreground shadow-lg">
-              Kraken ⚡
-            </div>
-          </div>
-
           <Reveal>
-            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.08] max-w-5xl mx-auto">
-              Step Into The Future Of<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#f3cc68] to-accent font-black">
-                Crypto Arbitrage
-              </span>
+            {/* Small Eyebrow Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary shadow-[0_0_25px_rgba(232,185,73,0.2)]">
+              <Sparkles size={13} className="text-primary animate-pulse" />
+              SMART CRYPTO TRADING • NEXATRADES
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-[1.08] max-w-5xl mx-auto">
+              Choose Your Trading Plan
             </h1>
             
+            {/* Subheadline */}
             <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              AI-optimized execution engines with institutional-grade decision-making. Choose your capital edge.
+              Flexible subscription plans built for intelligent crypto trading and automated digital asset growth.
             </p>
 
-            <div className="mt-8 flex items-center justify-center">
+            {/* Hero CTAs */}
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={() => {
                   document.getElementById('package-cards')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="rounded-full bg-gradient-to-r from-primary via-[#f3cc68] to-primary px-8 py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.45)] transition-all hover:scale-105 hover:shadow-[0_0_50px_rgba(232,185,73,0.65)] flex items-center gap-2"
-                data-testid="button-hero-get-started"
+                className="rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-8 py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.45)] transition-all hover:scale-105 hover:shadow-[0_0_50px_rgba(232,185,73,0.65)] flex items-center gap-2"
+                data-testid="button-hero-view-packages"
               >
-                Get Started <ArrowRight size={16} />
+                View Packages <ArrowRight size={16} />
+              </button>
+              <button
+                onClick={() => {
+                  document.getElementById('deposit-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="rounded-full border border-primary/50 bg-primary/10 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider text-primary backdrop-blur-md transition-all hover:bg-primary/20 hover:border-primary"
+                data-testid="button-hero-deposit-start"
+              >
+                Deposit & Start Trading
               </button>
             </div>
           </Reveal>
 
-          {/* 3 FLOATING INTERACTIVE PREVIEW WIDGET CARDS (MATCHING REFERENCE IMAGE 1:1) */}
+          {/* Interactive Trading Widgets Preview */}
           <Reveal delay={0.15}>
             <div className="mt-16 grid gap-6 md:grid-cols-3 items-stretch text-left font-mono text-xs max-w-6xl mx-auto">
-              {/* Left Widget: Markets & Spreads */}
-              <div className="rounded-3xl border border-white/15 bg-[#121715]/75 p-6 backdrop-blur-2xl shadow-[0_15px_35px_rgba(0,0,0,0.5)]">
+              {/* Left: Markets Feed */}
+              <div className="rounded-3xl border border-white/15 bg-[#121715]/80 p-6 backdrop-blur-2xl shadow-[0_15px_35px_rgba(0,0,0,0.5)]">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3 text-muted-foreground text-[11px]">
-                  <span className="font-bold text-foreground">Markets & Spreads</span>
-                  <span className="text-primary text-[10px] uppercase">Live Feed ●</span>
+                  <span className="font-bold text-foreground">AI Market Scanners</span>
+                  <span className="text-primary text-[10px] uppercase">LIVE STREAM ●</span>
                 </div>
-                <div className="mt-4 space-y-3.5">
+                <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.03]">
-                    <div className="flex items-center gap-2.5">
-                      <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/20 text-primary font-bold text-[10px]">BTA</span>
-                      <div>
-                        <div className="font-bold text-foreground text-xs">BTC / USDT</div>
-                        <div className="text-[9px] text-accent">+0.8% spread</div>
-                      </div>
-                    </div>
-                    <strong className="text-foreground">$87,420.50</strong>
+                    <span className="font-bold text-foreground">BTC / USDT</span>
+                    <span className="text-accent font-bold">$87,420.50 (+1.8%)</span>
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.03]">
-                    <div className="flex items-center gap-2.5">
-                      <span className="grid h-7 w-7 place-items-center rounded-lg bg-accent/20 text-accent font-bold text-[10px]">CHY</span>
-                      <div>
-                        <div className="font-bold text-foreground text-xs">ETH / USDT</div>
-                        <div className="text-[9px] text-accent">+1.2% spread</div>
-                      </div>
-                    </div>
-                    <strong className="text-foreground">$3,120.15</strong>
+                    <span className="font-bold text-foreground">ETH / USDT</span>
+                    <span className="text-accent font-bold">$3,120.15 (+2.4%)</span>
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.03]">
-                    <div className="flex items-center gap-2.5">
-                      <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/20 text-primary font-bold text-[10px]">NXB</span>
-                      <div>
-                        <div className="font-bold text-foreground text-xs">BNB / USDT</div>
-                        <div className="text-[9px] text-accent">+0.5% spread</div>
-                      </div>
-                    </div>
-                    <strong className="text-foreground">$620.40</strong>
+                    <span className="font-bold text-foreground">USDT (BEP20)</span>
+                    <span className="text-primary font-bold">1.0000 BSC</span>
                   </div>
                 </div>
               </div>
 
-              {/* Center Main Widget: Portfolio Balance & Waveform */}
+              {/* Center: Main Yield Monitor */}
               <div className="rounded-3xl border-2 border-primary/60 bg-gradient-to-b from-[#18201d]/90 via-[#101513]/85 to-[#0b0e0c]/95 p-7 backdrop-blur-2xl shadow-[0_0_50px_rgba(232,185,73,0.3)] relative overflow-hidden">
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase">
-                  <span className="font-bold text-primary">NEXA YIELD MONITOR</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
-                    <span className="text-accent font-bold">ONLINE</span>
-                  </div>
+                  <span className="font-bold text-primary">NEXATRADES AI ENGINE</span>
+                  <span className="text-accent font-bold">99.99% UPTIME</span>
                 </div>
-
                 <div className="mt-4">
-                  <span className="text-[11px] text-muted-foreground">Total Yield Balance</span>
-                  <div className="text-3xl font-black text-foreground tracking-tight sm:text-4xl mt-1">$15,475.00 <span className="text-xs text-muted-foreground font-normal">USD</span></div>
+                  <span className="text-[11px] text-muted-foreground">Portfolio Target Return</span>
+                  <div className="text-3xl font-black text-foreground tracking-tight sm:text-4xl mt-1">$22,000.00 <span className="text-xs text-muted-foreground font-normal">USD</span></div>
                 </div>
-
-                {/* Waveform Line Chart */}
-                <div className="relative mt-4 h-24 w-full">
+                <div className="relative mt-4 h-20 w-full">
                   <svg className="h-full w-full" preserveAspectRatio="none" viewBox="0 0 300 100">
-                    <defs>
-                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#e8b949" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#e8b949" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M 0 80 Q 75 20, 150 70 T 300 15 L 300 100 L 0 100 Z" fill="url(#chartGrad)" />
-                    <path d="M 0 80 Q 75 20, 150 70 T 300 15" fill="none" stroke="#e8b949" strokeWidth="2.5" />
-                    <circle cx="295" cy="16" r="4" fill="#f3cc68" className="animate-ping" />
+                    <path d="M 0 80 Q 75 15, 150 65 T 300 10 L 300 100 L 0 100 Z" fill="rgba(232,185,73,0.25)" />
+                    <path d="M 0 80 Q 75 15, 150 65 T 300 10" fill="none" stroke="#e8b949" strokeWidth="2.5" />
                   </svg>
-                </div>
-
-                <div className="mt-2 flex items-center justify-between text-[11px]">
-                  <span className="text-muted-foreground">Total Return</span>
-                  <strong className="text-accent font-extrabold">+$4,324.00 (+95% Target ROI)</strong>
                 </div>
               </div>
 
-              {/* Right Widget: Crypto Exchange Swaps */}
-              <div className="rounded-3xl border border-white/15 bg-[#121715]/75 p-6 backdrop-blur-2xl shadow-[0_15px_35px_rgba(0,0,0,0.5)]">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3 text-muted-foreground text-[11px]">
-                  <span className="font-bold text-foreground">Arbitrage Gateway</span>
-                  <span className="text-primary font-mono text-[10px]">SUB-14MS</span>
+              {/* Right: Deposit & Execution */}
+              <div className="rounded-3xl border border-white/15 bg-[#121715]/80 p-6 backdrop-blur-2xl shadow-[0_15px_35px_rgba(0,0,0,0.5)] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3 text-muted-foreground text-[11px]">
+                    <span className="font-bold text-foreground">Instant Deposit</span>
+                    <span className="text-primary font-bold">USDT BEP20</span>
+                  </div>
+                  <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                    Automated credit directly to wallet upon network confirmation.
+                  </p>
                 </div>
-
-                <div className="mt-4 space-y-3">
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                    <div className="text-[10px] text-muted-foreground flex justify-between">
-                      <span>Source Venue: Binance</span>
-                      <span className="text-foreground">USDETH</span>
-                    </div>
-                    <div className="mt-1.5 flex items-center justify-between text-sm font-bold">
-                      <span className="text-foreground">BTA</span>
-                      <span className="text-primary">40.670</span>
-                    </div>
-                  </div>
-
-                  <div className="grid place-items-center my-1">
-                    <div className="grid h-7 w-7 place-items-center rounded-full border border-primary/40 bg-primary/20 text-primary">
-                      ↓
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                    <div className="text-[10px] text-muted-foreground flex justify-between">
-                      <span>Target Venue: OKX</span>
-                      <span className="text-accent font-bold">+1.85% Edge</span>
-                    </div>
-                    <div className="mt-1.5 flex items-center justify-between text-sm font-bold">
-                      <span className="text-foreground">NBX</span>
-                      <span className="text-accent">1230.365</span>
-                    </div>
-                  </div>
+                <div className="mt-4 rounded-xl border border-primary/30 bg-primary/10 p-3 text-center text-primary font-bold">
+                  Fast 15-Min Execution
                 </div>
               </div>
             </div>
@@ -1582,179 +1547,30 @@ function PackagesPage() {
         </div>
       </section>
 
-      {/* 2. PARTNER MARQUEE LOGOS SECTION */}
-      <section className="border-b border-white/10 bg-[#070908] py-8">
-        <div className="mx-auto max-w-7xl px-5 text-center">
-          <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-            Simplifying Blockchain Workflows For <strong className="text-foreground">2,500+ Active Traders</strong>
-          </p>
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-8 lg:gap-14 font-mono text-sm text-muted-foreground/70">
-            {partnerExchanges.map((partner) => (
-              <div key={partner.name} className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-2 hover:border-primary/40 hover:text-foreground transition-all">
-                <span className="text-primary">{partner.icon}</span>
-                <span className="font-extrabold tracking-wider">{partner.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. BENTO GRID: "TOOLS FOR BETTER CRYPTOCURRENCY TRADING" (MATCHING 2ND ROW IN REFERENCE IMAGE) */}
-      <section className="relative overflow-hidden py-24 lg:py-32 border-b border-white/10 bg-[#090c0b]">
-        <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
-          <Reveal>
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">INTELLIGENT EXECUTION</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-                Powerful Features<br />For Smarter Crypto Trading
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                AI-optimized execution teams with institutional-grade decision-making.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* Bento Top Row */}
-          <div className="grid gap-6 lg:grid-cols-12 items-stretch">
-            {/* Left Box: Tools For Better Trading */}
-            <Reveal className="lg:col-span-5 h-full">
-              <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#141a17]/80 to-[#0a0d0c]/90 p-8 sm:p-10 backdrop-blur-2xl flex flex-col justify-between shadow-2xl">
-                <div>
-                  <span className="font-mono text-xs text-primary font-bold uppercase tracking-widest">NEXA ENGINE v4.2</span>
-                  <h3 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl leading-tight">
-                    Tools For Better<br />Cryptocurrency Trading
-                  </h3>
-                  <p className="mt-4 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                    Smart platforms designed to help you analyze market spreads and make informed allocation decisions.
-                  </p>
-                </div>
-
-                <div className="mt-10">
-                  <button
-                    onClick={() => openTerminalModal('Rise')}
-                    className="rounded-full bg-gradient-to-r from-primary to-[#f3cc68] px-7 py-3.5 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-105 transition-all inline-flex items-center gap-2"
-                  >
-                    Get Started <ArrowRight size={15} />
-                  </button>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Right Box: Live Glowing Chart Curve */}
-            <Reveal className="lg:col-span-7 h-full">
-              <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#161d19]/80 to-[#0b0e0c]/90 p-8 backdrop-blur-2xl flex flex-col justify-between shadow-2xl relative overflow-hidden min-h-[300px]">
-                <div className="flex items-center justify-between font-mono text-xs">
-                  <span className="text-muted-foreground">Real-time Yield Spread Chart</span>
-                  <span className="text-accent font-bold">0.000000 ETH</span>
-                </div>
-
-                <div className="relative my-6 h-48 w-full">
-                  <svg className="h-full w-full" preserveAspectRatio="none" viewBox="0 0 500 150">
-                    <defs>
-                      <linearGradient id="bentoGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#e8b949" stopOpacity="0.5" />
-                        <stop offset="100%" stopColor="#e8b949" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M 0 100 Q 125 15, 250 120 T 500 20 L 500 150 L 0 150 Z" fill="url(#bentoGrad)" />
-                    <path d="M 0 100 Q 125 15, 250 120 T 500 20" fill="none" stroke="#e8b949" strokeWidth="3" />
-                  </svg>
-                </div>
-
-                <div className="flex justify-between font-mono text-[10px] text-muted-foreground uppercase">
-                  <span>Your Balance</span>
-                  <span>Target Projected Yield</span>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-
-          {/* Bento Bottom Row (2 Equal Width Cards matching reference) */}
-          <div className="mt-6 grid gap-6 md:grid-cols-2 items-stretch">
-            {/* Recent Executed Arbitrage Leaderboard */}
-            <Reveal className="h-full">
-              <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131916]/80 to-[#090c0b]/90 p-7 backdrop-blur-2xl font-mono text-xs">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-widest">LIVE EVENT STREAM</span>
-                <h4 className="mt-1 text-lg font-bold text-foreground">Executed Trade Activity</h4>
-
-                <div className="mt-5 space-y-3">
-                  {recentTrades.map((item) => (
-                    <div key={item.name} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                      <div className="flex items-center gap-3">
-                        <div className="grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-primary/20 text-primary font-bold text-[10px]">
-                          {item.name.split(' ').map((n) => n[0]).join('')}
-                        </div>
-                        <div>
-                          <div className="font-bold text-foreground">{item.name}</div>
-                          <div className="text-[10px] text-muted-foreground">{item.btc}</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <strong className="text-foreground">{item.amount}</strong>
-                        <div className="text-[10px] font-bold text-accent">{item.change}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Security & Multi-layer Gateway Card */}
-            <Reveal className="h-full">
-              <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131916]/80 to-[#090c0b]/90 p-7 backdrop-blur-2xl font-mono text-xs flex flex-col justify-between">
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest">INSTITUTIONAL SECURITY</span>
-                  <h4 className="mt-1 text-lg font-bold text-foreground">Multi-layer Risk Gateways</h4>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                    Automated stop-loss boundaries, latency verification, and multi-signature cold node protection.
-                  </p>
-                </div>
-
-                <div className="my-8 grid place-items-center relative">
-                  <div className="grid h-20 w-20 place-items-center rounded-full border-2 border-primary/60 bg-primary/20 text-primary shadow-[0_0_35px_rgba(232,185,73,0.4)] animate-pulse">
-                    <ShieldCheck size={36} />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-between px-10 pointer-events-none opacity-40">
-                    <span className="h-3 w-3 rounded-full bg-accent animate-ping" />
-                    <span className="h-3 w-3 rounded-full bg-primary animate-ping" />
-                  </div>
-                </div>
-
-                <div className="flex justify-between border-t border-white/10 pt-4 text-[10px] text-muted-foreground">
-                  <span>99.99% Execution Uptime</span>
-                  <span className="text-primary font-bold">24/7 Monitored</span>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. MAIN PACKAGE CARDS SECTION (`#package-cards`) */}
+      {/* 2. PACKAGE OVERVIEW (5 SUBSCRIPTION PLANS CARDS) */}
       <section id="package-cards" className="relative overflow-hidden w-full py-24 lg:py-32" data-testid="section-packages">
-        {/* Ambient Gold Light Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[950px] h-[550px] bg-primary/10 blur-[160px] pointer-events-none rounded-full" />
 
         <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10">
           <Reveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary shadow-[0_0_20px_rgba(232,185,73,0.15)]">
-                STRUCTURED ALLOCATION
+                SUBSCRIPTION PLANS
               </div>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-                FIND YOUR TIER
+                Subscription Plans
               </h2>
               <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                Five tiers. One intelligent trading platform.
+                Choose the plan that fits your trading strategy and account level.
               </p>
             </div>
           </Reveal>
 
-          {/* 5 ULTRA-PREMIUM GLASS CARDS */}
+          {/* 5 PREMIUM CARDS GRID */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 items-stretch">
             {packages.map((tier) => {
               const isSelected = selectedTier === tier.name;
+              const isSupreme = tier.name === 'Supreme';
               const isRise = tier.name === 'Rise';
 
               return (
@@ -1762,37 +1578,27 @@ function PackagesPage() {
                   <div
                     onClick={() => openTerminalModal(tier.name)}
                     className={`group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl p-7 transition-all duration-500 backdrop-blur-2xl ${
-                      isRise
-                        ? 'border-2 border-primary/90 bg-gradient-to-b from-primary/20 via-[#18201c]/85 to-[#0c100e]/95 shadow-[0_0_60px_rgba(232,185,73,0.35)] -translate-y-3'
+                      isSupreme
+                        ? 'border-2 border-primary bg-gradient-to-b from-primary/25 via-[#1a231f]/90 to-[#0e1411]/95 shadow-[0_0_60px_rgba(232,185,73,0.4)] scale-105 z-20'
+                        : isRise
+                        ? 'border-2 border-primary/80 bg-gradient-to-b from-primary/20 via-[#18201c]/85 to-[#0c100e]/95 shadow-[0_0_45px_rgba(232,185,73,0.3)]'
                         : isSelected
                         ? 'border border-primary/70 bg-gradient-to-b from-primary/15 via-[#131916]/80 to-[#0a0e0c]/90 shadow-[0_0_35px_rgba(232,185,73,0.22)]'
                         : 'border border-white/10 bg-gradient-to-b from-[#141a18]/70 via-[#0e1311]/65 to-[#090b0a]/80 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:border-primary/60 hover:bg-[#151c19]/80 hover:shadow-[0_0_40px_rgba(232,185,73,0.2)]'
                     }`}
                     data-testid={`card-tier-${tier.name.toLowerCase()}`}
                   >
-                    {/* Specular Glass Highlight */}
-                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                    {/* Glass Specular Top Highlight */}
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
                     
-                    {/* Background Waveform Graph & Glow Effect */}
-                    <div className="absolute inset-0 pointer-events-none opacity-25 group-hover:opacity-50 transition-opacity duration-500">
-                      <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 200 100">
-                        <path
-                          d="M 0 75 Q 50 35, 100 65 T 200 25"
-                          fill="none"
-                          stroke={isRise ? '#e8b949' : '#10b981'}
-                          strokeWidth="1.5"
-                          strokeDasharray="4 2"
-                        />
-                        <circle cx="150" cy="45" r="3.5" fill="#f3cc68" className="animate-ping" />
-                      </svg>
-                      <div className="absolute bottom-3 right-3 font-mono text-[8px] uppercase tracking-widest text-muted-foreground/50">
-                        SIMULATION
-                      </div>
-                    </div>
-
                     {/* Top Badges */}
-                    {isRise && (
-                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f3cc68] to-primary px-3 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.5)]">
+                    {isSupreme && (
+                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.6)] flex items-center gap-1">
+                        <Crown size={11} /> VIP TIER
+                      </div>
+                    )}
+                    {isRise && !isSupreme && (
+                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.5)]">
                         MOST SELECTED
                       </div>
                     )}
@@ -1800,11 +1606,11 @@ function PackagesPage() {
                     <div>
                       {/* Header info */}
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                          TIER / {tier.name.toUpperCase()}
+                        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                          {tier.name}
                         </span>
-                        <div className={`grid h-9 w-9 place-items-center rounded-xl border backdrop-blur-md transition-all duration-300 group-hover:scale-110 ${
-                          isRise ? 'border-primary/60 bg-primary/20 text-primary shadow-[0_0_15px_rgba(232,185,73,0.3)]' : 'border-white/10 bg-white/[0.05] text-muted-foreground group-hover:text-primary group-hover:border-primary/50 group-hover:bg-primary/10'
+                        <div className={`grid h-9 w-9 place-items-center rounded-xl border backdrop-blur-md ${
+                          isSupreme || isRise ? 'border-primary/60 bg-primary/20 text-primary shadow-[0_0_15px_rgba(232,185,73,0.3)]' : 'border-white/10 bg-white/[0.05] text-muted-foreground'
                         }`}>
                           {tier.name === 'Spark' && <Zap size={16} />}
                           {tier.name === 'Boost' && <TrendingUp size={16} />}
@@ -1814,58 +1620,62 @@ function PackagesPage() {
                         </div>
                       </div>
 
-                      {/* Amount */}
+                      {/* Large White Price */}
                       <p className="mt-5 text-4xl sm:text-5xl font-black tracking-tight text-foreground">
                         {tier.amount}
                       </p>
 
-                      <div className="my-6 h-px bg-gradient-to-r from-primary/50 via-white/10 to-transparent" />
+                      <div className="my-5 h-px bg-gradient-to-r from-primary/50 via-white/10 to-transparent" />
 
-                      {/* Stats Section */}
-                      <div className="space-y-3.5 font-mono text-xs">
-                        <div className="rounded-2xl border border-accent/40 bg-accent/15 px-4 py-2.5 backdrop-blur-md shadow-inner">
+                      {/* Stats Breakdown */}
+                      <div className="space-y-3 font-mono text-xs">
+                        {/* Highlighted ROI in Gold */}
+                        <div className="rounded-2xl border border-primary/40 bg-primary/15 px-4 py-2.5 backdrop-blur-md">
                           <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground text-[11px] font-semibold">Target ROI</span>
-                            <strong className="text-base font-black text-accent">{tier.roi}</strong>
+                            <span className="text-muted-foreground text-[11px] font-semibold">Total ROI</span>
+                            <strong className="text-base font-black text-primary">{tier.roi}</strong>
                           </div>
                         </div>
 
-                        <div className="space-y-2.5 border-t border-white/10 pt-4 text-[11px]">
+                        {/* Total Return Prominent */}
+                        <div className="space-y-2 border-t border-white/10 pt-3 text-[11px]">
                           <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Projected Return</span>
-                            <strong className="text-foreground font-bold">{tier.returnAmount}</strong>
+                            <span className="text-muted-foreground">Total Return</span>
+                            <strong className="text-foreground font-extrabold text-sm">{tier.returnAmount}</strong>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="text-muted-foreground">Duration</span>
                             <span className="text-foreground font-medium">{tier.duration}</span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Daily Projection</span>
+                            <span className="text-muted-foreground">Daily ROI</span>
                             <span className="font-bold text-primary">{tier.daily}</span>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Max Slots</span>
-                            <span className="text-foreground font-medium">{tier.slots} active</span>
-                          </div>
+                        </div>
+
+                        {/* Maximum Slots Badge */}
+                        <div className="mt-3 inline-flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] text-muted-foreground">
+                          <span>Max Slots:</span>
+                          <strong className="text-foreground font-bold">{tier.slots} active</strong>
                         </div>
                       </div>
                     </div>
 
                     {/* CTA Button */}
-                    <div className="mt-8">
+                    <div className="mt-7">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           openTerminalModal(tier.name);
                         }}
                         className={`w-full rounded-2xl py-3.5 px-4 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${
-                          isRise
-                            ? 'bg-gradient-to-r from-primary via-[#f3cc68] to-primary text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_35px_rgba(232,185,73,0.6)]'
+                          isSupreme || isRise
+                            ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_35px_rgba(232,185,73,0.6)]'
                             : 'border border-white/15 bg-white/[0.05] text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary backdrop-blur-md'
                         }`}
-                        data-testid={`button-view-tier-${tier.name.toLowerCase()}`}
+                        data-testid={`button-choose-plan-${tier.name.toLowerCase()}`}
                       >
-                        {isRise ? 'Choose Rise →' : 'View this tier →'}
+                        Choose Plan →
                       </button>
                     </div>
                   </div>
@@ -1876,163 +1686,354 @@ function PackagesPage() {
         </div>
       </section>
 
-      {/* 5. INTERACTIVE COMPARISON SECTION */}
-      <section id="comparison" className="relative overflow-hidden border-t border-white/10 bg-[#0b0d0e] py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+      {/* 3. PACKAGE DETAILS & FLAGSHIP SOLUTIONS */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-[#0a0d0c] py-24 lg:py-32">
+        <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
-            <div className="text-center max-w-2xl mx-auto">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
-                COMPARATIVE ANALYTICS
-              </div>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-                COMPARE YOUR OPTIONS
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">COMPREHENSIVE SPECIFICATIONS</span>
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                Plan Details
               </h2>
               <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                Compare the available tiers across key package metrics.
+                In-depth breakdown of investment allocation, yields, and slot boundaries across all packages.
               </p>
             </div>
+          </Reveal>
 
-            {/* Metric Selector Tabs */}
-            <div className="mt-10 flex flex-wrap justify-center gap-2 border-b border-white/10 pb-4">
-              {(['OVERVIEW', 'TARGET ROI', 'PROJECTED RETURN', 'DURATION', 'MAX SLOTS'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`rounded-xl border px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
-                    activeTab === tab
-                      ? 'border-primary bg-primary/15 text-primary shadow-[0_0_15px_rgba(232,185,73,0.25)]'
-                      : 'border-white/10 bg-white/[0.04] text-muted-foreground hover:border-primary/40 hover:text-foreground'
-                  }`}
-                  data-testid={`tab-comparison-${tab.toLowerCase().replace(/\s+/g, '-')}`}
+          {/* Detailed Horizontal / Vertical Plan Specs */}
+          <div className="space-y-4 max-w-5xl mx-auto font-mono text-xs">
+            {packages.map((tier) => (
+              <Reveal key={tier.name}>
+                <div
+                  onClick={() => openTerminalModal(tier.name)}
+                  className="cursor-pointer rounded-3xl border border-white/10 bg-gradient-to-r from-[#121715]/80 via-[#0e1311]/70 to-[#0b0e0d]/80 p-6 sm:p-8 backdrop-blur-xl hover:border-primary/50 transition-all shadow-xl"
                 >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {/* Interactive Comparison Cards Grid */}
-            <div className="mt-10 grid gap-4 sm:grid-cols-5 font-mono text-xs">
-              {packages.map((tier) => {
-                const isHighlight = tier.name === selectedTier;
-                return (
-                  <div
-                    key={tier.name}
-                    onClick={() => setSelectedTier(tier.name)}
-                    className={`cursor-pointer rounded-2xl border p-5 transition-all ${
-                      isHighlight
-                        ? 'border-primary bg-primary/10 shadow-[0_0_30px_rgba(232,185,73,0.2)]'
-                        : 'border-white/10 bg-white/[0.03] hover:border-primary/40'
-                    }`}
-                  >
-                    <div className="text-[10px] text-muted-foreground uppercase">{tier.name}</div>
-                    <div className="mt-1 text-2xl font-extrabold text-foreground">{tier.amount}</div>
-
-                    <div className="mt-6 space-y-3">
-                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'TARGET ROI' || activeTab === 'OVERVIEW' ? 'border-accent/40 bg-accent/15 font-bold text-accent scale-105' : 'border-transparent text-muted-foreground'}`}>
-                        <div className="text-[9px] uppercase text-muted-foreground">Target ROI</div>
-                        <div className="text-base text-accent font-extrabold">{tier.roi}</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="grid h-12 w-12 place-items-center rounded-2xl border border-primary/40 bg-primary/15 text-primary">
+                        <Coins size={22} />
                       </div>
-
-                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'PROJECTED RETURN' || activeTab === 'OVERVIEW' ? 'border-primary/40 bg-primary/15 font-bold text-primary scale-105' : 'border-transparent text-muted-foreground'}`}>
-                        <div className="text-[9px] uppercase text-muted-foreground">Projected Return</div>
-                        <div className="text-sm font-bold text-foreground">{tier.returnAmount}</div>
-                      </div>
-
-                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'DURATION' || activeTab === 'OVERVIEW' ? 'border-primary/40 bg-primary/15 font-bold text-primary scale-105' : 'border-transparent text-muted-foreground'}`}>
-                        <div className="text-[9px] uppercase text-muted-foreground">Duration</div>
-                        <div className="text-xs text-foreground">{tier.duration}</div>
-                      </div>
-
-                      <div className={`p-2.5 rounded-lg border transition-all ${activeTab === 'MAX SLOTS' || activeTab === 'OVERVIEW' ? 'border-accent/40 bg-accent/15 font-bold text-accent scale-105' : 'border-transparent text-muted-foreground'}`}>
-                        <div className="text-[9px] uppercase text-muted-foreground">Max Slots</div>
-                        <div className="text-xs text-foreground">{tier.slots} active</div>
+                      <div>
+                        <h3 className="text-xl font-extrabold text-foreground tracking-wider">{tier.name.toUpperCase()} — {tier.amount} PACKAGE</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">Investment Amount: <strong className="text-foreground">{tier.amount}</strong></p>
                       </div>
                     </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openTerminalModal(tier.name);
+                      }}
+                      className="rounded-xl bg-primary/15 border border-primary/40 px-5 py-2.5 text-xs font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all self-start sm:self-auto"
+                    >
+                      Select {tier.name} →
+                    </button>
                   </div>
-                );
-              })}
-            </div>
-          </Reveal>
-        </div>
-      </section>
 
-      {/* 6. FAQ ACCORDION SECTION */}
-      <section className="relative overflow-hidden border-t border-white/10 bg-[#08090a] py-20 lg:py-28">
-        <div className="mx-auto max-w-4xl px-5 lg:px-8">
-          <Reveal>
-            <div className="text-center max-w-xl mx-auto mb-12">
-              <span className="font-mono text-xs uppercase tracking-widest text-primary">TIER QUESTIONS</span>
-              <h2 className="mt-2 text-3xl font-extrabold text-foreground sm:text-4xl">FREQUENTLY ASKED</h2>
-            </div>
+                  {/* Icon Metric Grid */}
+                  <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-6 border-t border-white/10 text-[11px]">
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Layers size={13} className="text-primary" /> Max Subscriptions</div>
+                      <strong className="text-foreground font-bold">{tier.slots} max per user</strong>
+                    </div>
 
-            <div className="divide-y divide-white/10 border-y border-white/10">
-              {packageFaqs.map(([question, answer], idx) => (
-                <div key={question} className="py-5">
-                  <button
-                    onClick={() => setFaqActiveIndex(faqActiveIndex === idx ? -1 : idx)}
-                    className="flex w-full items-center justify-between gap-4 text-left font-medium text-base hover:text-primary transition-colors"
-                    data-testid={`button-package-faq-${idx}`}
-                  >
-                    <span>{question}</span>
-                    <ChevronDown
-                      size={18}
-                      className={`shrink-0 text-muted-foreground transition-transform duration-300 ${
-                        faqActiveIndex === idx ? 'rotate-180 text-primary' : ''
-                      }`}
-                    />
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {faqActiveIndex === idx && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="mt-3 text-sm leading-relaxed text-muted-foreground max-w-3xl">
-                          {answer}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                    <div className="rounded-xl border border-primary/30 bg-primary/10 p-3">
+                      <div className="flex items-center gap-1.5 text-primary mb-1"><TrendingUp size={13} /> Total ROI</div>
+                      <strong className="text-primary font-black text-sm">{tier.roi}</strong>
+                    </div>
+
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Coins size={13} className="text-accent" /> User Receives</div>
+                      <strong className="text-foreground font-bold">{tier.returnAmount} total</strong>
+                    </div>
+
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Clock size={13} className="text-primary" /> Duration</div>
+                      <strong className="text-foreground font-bold">{tier.duration}</strong>
+                    </div>
+
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><Zap size={13} className="text-primary" /> Daily ROI</div>
+                      <strong className="text-primary font-bold">{tier.daily}</strong>
+                    </div>
+
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                      <div className="flex items-center gap-1.5 text-muted-foreground mb-1"><CheckCircle2 size={13} className="text-accent" /> Status</div>
+                      <strong className="text-accent font-bold">Active Ready</strong>
+                    </div>
+                  </div>
                 </div>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* FLAGSHIP SOLUTIONS SECTION (FROM IMAGE 2) */}
+          <div className="mt-24">
+            <Reveal>
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">TECHNOLOGY INFRASTRUCTURE</span>
+                <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                  Flagship Solutions
+                </h2>
+              </div>
+            </Reveal>
+
+            <div className="grid gap-6 md:grid-cols-3 items-stretch">
+              {flagshipSolutions.map((sol) => (
+                <Reveal key={sol.num} className="h-full">
+                  <div className="h-full rounded-3xl border border-primary/30 bg-gradient-to-b from-[#131916]/80 to-[#080b0a]/90 p-8 backdrop-blur-2xl flex flex-col justify-between shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 h-32 w-32 bg-primary/10 blur-3xl pointer-events-none" />
+
+                    <div>
+                      {/* Numbered Indicator Badge */}
+                      <div className="inline-grid h-9 w-9 place-items-center rounded-xl border border-primary bg-primary/20 font-mono text-sm font-bold text-primary shadow-[0_0_15px_rgba(232,185,73,0.3)]">
+                        {sol.num}
+                      </div>
+
+                      <h3 className="mt-6 text-2xl font-extrabold text-foreground tracking-tight">{sol.title}</h3>
+                      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{sol.desc1}</p>
+                      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{sol.desc2}</p>
+                    </div>
+
+                    <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-primary font-bold">
+                      <span>NEXATRADES CORE</span>
+                      <span>ACTIVE ⚡</span>
+                    </div>
+                  </div>
+                </Reveal>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. SUBSCRIPTION RULES (MATCHING IMAGE 3) */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-[#08090a] py-24 lg:py-32">
+        <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold font-semibold">GOVERNANCE & TERMS</span>
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                Subscription Rules
+              </h2>
+            </div>
+          </Reveal>
+
+          {/* 5 Numbered Cards in Clean Grid */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 items-stretch font-mono text-xs max-w-6xl mx-auto">
+            {subscriptionRules.map((item) => (
+              <Reveal key={item.num} className="h-full">
+                <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131816]/75 to-[#090b0a]/85 p-6 backdrop-blur-2xl flex flex-col justify-between shadow-xl">
+                  <div>
+                    <div className="grid h-9 w-9 place-items-center rounded-xl border border-primary/60 bg-primary/20 text-primary font-bold text-sm shadow-[0_0_15px_rgba(232,185,73,0.25)]">
+                      {item.num}
+                    </div>
+                    <p className="mt-5 text-xs leading-relaxed text-foreground/90 font-medium">
+                      {item.rule}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-3 border-t border-white/10 text-[9px] text-muted-foreground uppercase">
+                    RULE {item.num} / COMPLIANCE
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* Compliance Notice */}
+          <Reveal delay={0.2}>
+            <div className="mt-12 max-w-2xl mx-auto rounded-2xl border border-primary/40 bg-primary/10 p-5 text-center backdrop-blur-xl">
+              <div className="inline-flex items-center gap-2 text-xs font-mono text-primary font-bold">
+                <ShieldCheck size={16} />
+                Minimum KYC approval is required before purchasing a subscription.
+              </div>
+            </div>
           </Reveal>
         </div>
       </section>
 
-      {/* 7. FINAL CLOSING DRAMATIC CTA */}
-      <section className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#08090a] via-[#0d100f] to-[#060707] py-24 lg:py-32">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(232,185,73,0.2)_0%,transparent_70%)] pointer-events-none" />
-        
-        <div className="relative mx-auto max-w-4xl px-5 text-center lg:px-8">
+      {/* 5 & 6. DEPOSIT & WITHDRAWAL SECTION (MATCHING IMAGE 4) */}
+      <section id="deposit-section" className="relative overflow-hidden border-t border-white/10 bg-[#090c0b] py-24 lg:py-32">
+        <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
-            <span className="font-mono text-xs font-extrabold uppercase tracking-widest text-primary">
-              YOUR NEXT MOVE STARTS HERE.
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">FINANCIAL GATEWAY</span>
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                Deposit & Withdrawal
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Simple, secure and automated digital asset transactions.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-8 lg:grid-cols-2 items-stretch max-w-6xl mx-auto">
+            {/* Left: Supported Coins (USDT BEP20) */}
+            <Reveal className="h-full">
+              <div className="h-full rounded-3xl border border-primary/40 bg-gradient-to-b from-[#141b18]/85 to-[#0b0f0e]/95 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-xl bg-primary px-3.5 py-1.5 font-mono text-xs font-black uppercase text-primary-foreground">
+                    Supported Coins
+                  </div>
+
+                  <div className="mt-8 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+                    <div className="flex items-center gap-4">
+                      {/* Premium USDT Coin Icon */}
+                      <div className="grid h-14 w-14 place-items-center rounded-2xl border-2 border-primary bg-gradient-to-br from-primary/30 via-[#26a17b]/30 to-primary/10 text-primary shadow-[0_0_20px_rgba(232,185,73,0.3)]">
+                        <Coins size={28} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-extrabold text-foreground">USDT</h3>
+                        <p className="text-xs text-muted-foreground font-mono">Tether USD</p>
+                      </div>
+                    </div>
+
+                    <div className="text-right font-mono">
+                      <span className="text-[10px] text-muted-foreground uppercase">Supported Chain</span>
+                      <div className="text-sm font-extrabold text-primary">BEP20 / BSC</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 space-y-3 font-mono text-xs text-muted-foreground">
+                    <div className="flex justify-between border-b border-white/10 pb-2">
+                      <span>Network Protocol:</span>
+                      <strong className="text-foreground">Binance Smart Chain (BSC)</strong>
+                    </div>
+                    <div className="flex justify-between border-b border-white/10 pb-2">
+                      <span>Confirmation Uptime:</span>
+                      <strong className="text-accent">Instant Auto-Credit</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <button
+                    onClick={() => setLocation('/register')}
+                    className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-[1.02] transition-all"
+                  >
+                    Deposit USDT Now →
+                  </button>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* Right: Withdrawal Details */}
+            <Reveal className="h-full">
+              <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131916]/85 to-[#0b0e0d]/95 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl flex flex-col justify-between font-mono">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-3.5 py-1.5 text-xs font-bold uppercase text-foreground">
+                    Withdrawal Details
+                  </div>
+
+                  {/* 3 Network Cards */}
+                  <div className="mt-6 grid grid-cols-3 gap-3 text-center text-xs">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
+                      <strong className="text-foreground text-sm font-bold block">ETH</strong>
+                      <span className="text-[10px] text-muted-foreground">Ethereum</span>
+                    </div>
+                    <div className="rounded-2xl border border-primary/40 bg-primary/10 p-3.5">
+                      <strong className="text-primary text-sm font-bold block">BSC</strong>
+                      <span className="text-[10px] text-muted-foreground">Binance Smart</span>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
+                      <strong className="text-foreground text-sm font-bold block">TRC</strong>
+                      <span className="text-[10px] text-muted-foreground">Tron Chain</span>
+                    </div>
+                  </div>
+
+                  {/* Highlight Metrics */}
+                  <div className="mt-6 grid sm:grid-cols-2 gap-4">
+                    <div className="rounded-2xl border border-primary/40 bg-primary/15 p-5 text-center">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest">PROCESSING TIME</span>
+                      <div className="text-xl font-black text-primary mt-1">Up to 15 Minutes</div>
+                    </div>
+
+                    <div className="rounded-2xl border border-accent/40 bg-accent/15 p-5 text-center">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest">MINIMUM WITHDRAWAL</span>
+                      <div className="text-xl font-black text-accent mt-1">$15 USD</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-4 border-t border-white/10 text-[11px] text-muted-foreground text-center">
+                  Automatic payout processing enabled 24/7.
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. TRANSACTION FLOW */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-[#08090a] py-24 lg:py-32">
+        <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
+          <Reveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">SIMPLE ONBOARDING</span>
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                Transaction Flow
+              </h2>
+            </div>
+          </Reveal>
+
+          {/* 5-Step Process */}
+          <div className="relative mt-8 max-w-6xl mx-auto">
+            {/* Connecting Line */}
+            <div className="hidden lg:block absolute top-1/2 left-10 right-10 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-accent -translate-y-1/2 z-0" />
+
+            <div className="relative z-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5 font-mono">
+              {transactionFlowSteps.map((s) => (
+                <Reveal key={s.step}>
+                  <div className="rounded-3xl border border-white/15 bg-gradient-to-b from-[#121715] to-[#090b0a] p-6 text-center shadow-xl backdrop-blur-xl hover:border-primary/50 transition-all">
+                    <div className="mx-auto grid h-10 w-10 place-items-center rounded-full border border-primary bg-primary/20 text-xs font-black text-primary shadow-[0_0_15px_rgba(232,185,73,0.3)]">
+                      {s.step}
+                    </div>
+                    <h3 className="mt-4 font-extrabold text-foreground text-sm tracking-wider">{s.title}</h3>
+                    <p className="mt-2 text-[11px] text-muted-foreground leading-relaxed">{s.desc}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. FINAL CTA */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#08090a] via-[#0e1210] to-[#050606] py-28 lg:py-36">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(232,185,73,0.22)_0%,transparent_70%)] pointer-events-none" />
+
+        <div className="relative z-10 mx-auto max-w-4xl px-5 text-center lg:px-8">
+          <Reveal>
+            <span className="font-mono text-xs font-black uppercase tracking-widest text-primary">
+              ENTER THE FUTURE OF CRYPTO
             </span>
             <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
-              READY TO CHOOSE YOUR TIER?
+              Ready to Trade Smarter?
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-sm text-muted-foreground sm:text-base leading-relaxed">
-              Explore the available Nexa Traders tiers and select the package that fits your objectives.
+              Choose your NexaTrades subscription and enter the next generation of intelligent crypto trading.
             </p>
+            
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <button
-                onClick={() => openTerminalModal('Rise')}
-                className="rounded-full bg-gradient-to-r from-primary via-[#f3cc68] to-primary px-8 py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.4)] hover:scale-105 transition-all"
-                data-testid="button-final-cta-choose"
+                onClick={() => {
+                  document.getElementById('package-cards')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-9 py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.45)] hover:scale-105 transition-all"
+                data-testid="button-final-choose-plan"
               >
-                CHOOSE YOUR TIER →
+                Choose Your Plan →
               </button>
               <button
                 onClick={() => {
-                  document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('deposit-section')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="rounded-full border border-white/15 bg-white/[0.05] px-8 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary backdrop-blur-md"
-                data-testid="button-final-cta-compare"
+                className="rounded-full border border-white/20 bg-white/[0.05] px-9 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary backdrop-blur-md"
+                data-testid="button-final-deposit-usdt"
               >
-                COMPARE PACKAGES
+                Deposit USDT
               </button>
             </div>
           </Reveal>
@@ -2087,7 +2088,7 @@ function PackagesPage() {
               {/* Selected Tier Title */}
               <div className="mt-6 flex items-baseline justify-between">
                 <div>
-                  <span className="text-[10px] uppercase text-muted-foreground tracking-widest">SELECTED TIER</span>
+                  <span className="text-[10px] uppercase text-muted-foreground tracking-widest">SELECTED PLAN</span>
                   <h3 className="text-3xl font-extrabold text-foreground">{modalTierData.name.toUpperCase()}</h3>
                 </div>
                 <div className="text-right">
@@ -2101,23 +2102,23 @@ function PackagesPage() {
               {/* Detailed Breakdown */}
               <div className="mt-6 space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-xs">
                 <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                  <span className="text-muted-foreground">TARGET ROI</span>
-                  <strong className="text-sm font-extrabold text-accent">{modalTierData.roi}</strong>
+                  <span className="text-muted-foreground">TOTAL ROI</span>
+                  <strong className="text-sm font-extrabold text-primary">{modalTierData.roi}</strong>
                 </div>
                 <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                  <span className="text-muted-foreground">PROJECTED RETURN</span>
-                  <strong className="text-foreground">{modalTierData.returnAmount}</strong>
+                  <span className="text-muted-foreground">TOTAL RETURN</span>
+                  <strong className="text-foreground font-bold">{modalTierData.returnAmount}</strong>
                 </div>
                 <div className="flex justify-between items-center border-b border-white/10 pb-2">
                   <span className="text-muted-foreground">DURATION</span>
                   <span className="text-foreground">{modalTierData.duration}</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                  <span className="text-muted-foreground">DAILY PROJECTION</span>
+                  <span className="text-muted-foreground">DAILY ROI</span>
                   <span className="font-bold text-primary">{modalTierData.daily}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">MAX ACTIVE SLOTS</span>
+                  <span className="text-muted-foreground">MAX SLOTS PER USER</span>
                   <span className="text-foreground">{modalTierData.slots} Active</span>
                 </div>
               </div>
@@ -2129,20 +2130,17 @@ function PackagesPage() {
                     setModalOpen(false);
                     setLocation('/register');
                   }}
-                  className="flex-1 rounded-xl bg-primary py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:bg-[#f3cc68]"
+                  className="flex-1 rounded-xl bg-primary py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:bg-[#f5c542]"
                   data-testid="button-modal-proceed"
                 >
-                  PROCEED →
+                  Proceed to Activation →
                 </button>
                 <button
-                  onClick={() => {
-                    setModalOpen(false);
-                    document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
+                  onClick={() => setModalOpen(false)}
                   className="rounded-xl border border-white/10 bg-white/5 py-3.5 px-5 text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
-                  data-testid="button-modal-compare"
+                  data-testid="button-modal-close-action"
                 >
-                  COMPARE TIERS
+                  Close
                 </button>
               </div>
             </motion.div>
