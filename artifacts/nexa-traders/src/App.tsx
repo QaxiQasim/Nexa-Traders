@@ -1495,10 +1495,7 @@ function PackagesPage() {
         <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10">
           <Reveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary shadow-[0_0_20px_rgba(232,185,73,0.15)]">
-                SUBSCRIPTION PLANS
-              </div>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                 Subscription Plans
               </h2>
               <p className="mt-3 text-sm text-muted-foreground sm:text-base">
