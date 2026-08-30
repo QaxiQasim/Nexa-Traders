@@ -1748,11 +1748,7 @@ function PackagesPage() {
         <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
-                <ShieldCheck size={14} className="text-primary" />
-                GOVERNANCE & TERMS
-              </div>
-              <h2 className="mt-4 text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Subscription Rules
               </h2>
               <p className="mt-4 text-sm text-muted-foreground sm:text-base leading-relaxed max-w-xl mx-auto">
