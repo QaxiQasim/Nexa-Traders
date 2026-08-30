@@ -1810,46 +1810,69 @@ function PackagesPage() {
         </div>
       </section>
 
-      {/* 4. SUBSCRIPTION RULES (MATCHING IMAGE 3) */}
-      <section className="relative overflow-hidden border-t border-white/10 bg-[#08090a] py-24 lg:py-32">
-        <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
+      {/* 4. SUBSCRIPTION RULES */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#08090a] via-[#0c100e] to-[#08090a] py-24 lg:py-32 font-sans">
+        {/* Ambient Radial Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-primary/10 blur-[150px] pointer-events-none rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,185,73,0.12)_0%,transparent_70%)] pointer-events-none" />
+
+        <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
-            <div className="text-center max-w-2xl mx-auto mb-16">
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold font-semibold">GOVERNANCE & TERMS</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+                <ShieldCheck size={14} className="text-primary" />
+                GOVERNANCE & TERMS
+              </div>
+              <h2 className="mt-4 text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Subscription Rules
               </h2>
+              <p className="mt-4 text-sm text-muted-foreground sm:text-base leading-relaxed max-w-xl mx-auto">
+                Essential compliance protocols and active management guidelines for all NexaTrades subscription plans.
+              </p>
             </div>
           </Reveal>
 
-          {/* 5 Numbered Cards in Clean Grid */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 items-stretch font-mono text-xs max-w-6xl mx-auto">
+          {/* 5 Ultra-Premium Numbered Rule Cards in Clean Grid */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 items-stretch max-w-7xl mx-auto">
             {subscriptionRules.map((item) => (
               <Reveal key={item.num} className="h-full">
-                <div className="h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131816]/75 to-[#090b0a]/85 p-6 backdrop-blur-2xl flex flex-col justify-between shadow-xl">
+                <div className="group relative h-full rounded-3xl border border-white/12 bg-gradient-to-b from-[#141c18]/90 via-[#0f1412]/85 to-[#090c0b]/95 p-7 backdrop-blur-2xl flex flex-col justify-between shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/70 hover:shadow-[0_0_40px_rgba(232,185,73,0.3)] overflow-hidden">
+                  {/* Top Specular Gold Edge Light */}
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent group-hover:via-primary transition-all duration-500" />
+                  
                   <div>
-                    <div className="grid h-9 w-9 place-items-center rounded-xl border border-primary/60 bg-primary/20 text-primary font-bold text-sm shadow-[0_0_15px_rgba(232,185,73,0.25)]">
-                      {item.num}
+                    {/* Glowing Number Badge */}
+                    <div className="flex items-center justify-between">
+                      <div className="grid h-11 w-11 place-items-center rounded-2xl border border-primary/60 bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10 text-primary font-black text-sm shadow-[0_0_20px_rgba(232,185,73,0.35)] group-hover:scale-110 transition-transform">
+                        {item.num}
+                      </div>
+                      <div className="h-2 w-2 rounded-full bg-primary/40 group-hover:bg-primary group-hover:shadow-[0_0_10px_#e8b949] transition-all" />
                     </div>
-                    <p className="mt-5 text-xs leading-relaxed text-foreground/90 font-medium">
+
+                    {/* Premium Clean Sans-Serif Rule Text */}
+                    <p className="mt-6 text-sm font-semibold text-foreground/95 leading-relaxed tracking-wide">
                       {item.rule}
                     </p>
                   </div>
 
-                  <div className="mt-6 pt-3 border-t border-white/10 text-[9px] text-muted-foreground uppercase">
-                    RULE {item.num} / COMPLIANCE
+                  <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between font-mono text-[10px] text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
+                    <span>RULE {item.num}</span>
+                    <span className="font-bold">COMPLIANCE</span>
                   </div>
                 </div>
               </Reveal>
             ))}
           </div>
 
-          {/* Compliance Notice */}
+          {/* Elevated Premium Compliance Notice Box */}
           <Reveal delay={0.2}>
-            <div className="mt-12 max-w-2xl mx-auto rounded-2xl border border-primary/40 bg-primary/10 p-5 text-center backdrop-blur-xl">
-              <div className="inline-flex items-center gap-2 text-xs font-mono text-primary font-bold">
-                <ShieldCheck size={16} />
-                Minimum KYC approval is required before purchasing a subscription.
+            <div className="mt-14 max-w-3xl mx-auto rounded-3xl border-2 border-primary/50 bg-gradient-to-r from-primary/20 via-[#18211c]/90 to-primary/20 p-6 sm:p-7 text-center backdrop-blur-2xl shadow-[0_0_40px_rgba(232,185,73,0.25)] relative overflow-hidden">
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b9490a_1px,transparent_1px)] bg-[size:1.5rem] opacity-30 pointer-events-none" />
+              <div className="relative z-10 flex items-center justify-center gap-3 text-sm sm:text-base font-bold text-primary tracking-wide">
+                <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/20 border border-primary/60 shrink-0">
+                  <ShieldCheck size={18} className="text-primary" />
+                </div>
+                <span>Minimum KYC approval is required before purchasing a subscription.</span>
               </div>
             </div>
           </Reveal>
