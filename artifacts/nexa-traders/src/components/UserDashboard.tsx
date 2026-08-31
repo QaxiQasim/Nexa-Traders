@@ -25,7 +25,12 @@ import {
   ExternalLink,
   Lock,
   UserCheck,
-  LogOut
+  LogOut,
+  LayoutDashboard,
+  Menu,
+  X,
+  Layers,
+  ChevronDown
 } from 'lucide-react';
 import {
   AreaChart,
@@ -213,6 +218,7 @@ const YIELD_GRAPH_DATA = [
 export function UserDashboard() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<'overview' | 'packages' | 'buy' | 'kyc' | 'withdraw' | 'transactions'>('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Load User Data from localStorage
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || 'Alex Vance');
@@ -245,7 +251,7 @@ export function UserDashboard() {
     };
   });
 
-  // Save to localStorage whenever state changes
+  // Save to localStorage
   useEffect(() => {
     localStorage.setItem('nexa_wallet_balance', walletBalance.toString());
   }, [walletBalance]);
@@ -400,97 +406,204 @@ export function UserDashboard() {
     setWithdrawWallet('');
   };
 
+  const navMenuItems = [
+    { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
+    { id: 'packages', label: 'My Packages', icon: Package, badge: `${activePackagesCount}` },
+    { id: 'buy', label: 'Packages Store', icon: Sparkles, badgeText: 'HOT', badgeColor: 'bg-primary text-primary-foreground' },
+    { id: 'kyc', label: 'KYC Verification', icon: ShieldCheck, statusBadge: kycData.status },
+    { id: 'withdraw', label: 'Withdrawal Portal', icon: ArrowUpRight },
+    { id: 'transactions', label: 'Transactions History', icon: History }
+  ];
+
   return (
-    <div className="min-h-screen bg-[#070908] text-foreground pt-24 pb-20 font-sans selection:bg-primary selection:text-primary-foreground">
-      {/* Glow Ambient Orbs */}
-      <div className="fixed top-20 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/10 blur-[180px] pointer-events-none rounded-full" />
+    <div className="min-h-screen bg-[#070908] text-foreground font-sans selection:bg-primary selection:text-primary-foreground flex flex-col lg:flex-row relative overflow-x-hidden">
+      {/* Glow Ambient Backdrop Orbs */}
+      <div className="fixed top-0 left-1/4 w-[800px] h-[500px] bg-primary/10 blur-[180px] pointer-events-none rounded-full" />
+      <div className="fixed bottom-0 right-1/4 w-[700px] h-[500px] bg-accent/5 blur-[200px] pointer-events-none rounded-full" />
 
-      <div className="relative z-10 mx-auto max-w-[1550px] px-4 sm:px-6 lg:px-10">
-        
-        {/* TOP DASHBOARD HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-white/10">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent text-primary shadow-[0_0_25px_rgba(232,185,73,0.25)] font-bold text-xl">
-                {userName.charAt(0)}
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-                  Welcome, {userName}
-                  <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-[10px] font-mono text-accent font-bold uppercase tracking-wider">
-                    <Zap size={10} className="fill-current" /> Live Trader
-                  </span>
-                </h1>
-                <p className="text-xs text-muted-foreground font-mono mt-0.5">
-                  {userEmail} • Joined Aug 2026
-                </p>
-              </div>
-            </div>
+      {/* MOBILE TOP BAR WITH MENU TOGGLE */}
+      <div className="lg:hidden sticky top-0 z-40 border-b border-white/10 bg-[#090d0b]/95 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary/20 text-primary border border-primary/40 font-bold">
+            {userName.charAt(0)}
           </div>
-
-          {/* Quick Balance & Action Bar */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-2.5 backdrop-blur-xl">
-              <span className="block text-[10px] font-mono uppercase text-muted-foreground">Available Wallet Balance</span>
-              <span className="text-xl sm:text-2xl font-black font-mono text-primary tracking-tight">
-                ${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-xs text-foreground font-normal">USDT</span>
-              </span>
-            </div>
-
-            <button
-              onClick={() => {
-                setActiveTab('buy');
-              }}
-              className="rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-5 py-3 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] transition-all hover:scale-105 flex items-center gap-1.5"
-            >
-              <Plus size={16} /> Buy Package
-            </button>
-
-            <button
-              onClick={() => setActiveTab('withdraw')}
-              className="rounded-xl border border-primary/50 bg-primary/10 px-5 py-3 font-mono text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 transition-all flex items-center gap-1.5"
-            >
-              <ArrowUpRight size={16} /> Withdraw
-            </button>
+          <div>
+            <h2 className="text-sm font-bold text-foreground">{userName}</h2>
+            <span className="text-[10px] text-primary font-mono font-bold">$ {walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
           </div>
         </div>
 
-        {/* NAVIGATION TABS BAR */}
-        <div className="mt-8 flex items-center gap-2 overflow-x-auto pb-3 border-b border-white/10 scrollbar-none">
-          {[
-            { id: 'overview', label: 'Dashboard Overview', icon: TrendingUp },
-            { id: 'packages', label: `My Packages (${activePackagesCount})`, icon: Package },
-            { id: 'buy', label: 'Packages Store', icon: Sparkles },
-            { id: 'kyc', label: 'KYC Verification', icon: ShieldCheck, badge: kycData.status },
-            { id: 'withdraw', label: 'Withdrawal Portal', icon: ArrowUpRight },
-            { id: 'transactions', label: 'Transactions History', icon: History }
-          ].map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="rounded-xl border border-white/10 bg-white/5 p-2 text-muted-foreground hover:text-foreground"
+        >
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* LEFT SIDEBAR NAVIGATION */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 bg-[#0a0f0d]/95 backdrop-blur-2xl border-r border-white/10 flex flex-col justify-between p-5 transition-transform duration-300 lg:translate-x-0 lg:static ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="space-y-6">
+          {/* Brand & User Profile Card */}
+          <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#131b17] to-[#0c110f] p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 h-16 w-16 bg-primary/10 blur-xl pointer-events-none" />
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl border border-primary/50 bg-gradient-to-br from-primary/30 to-primary/10 text-primary font-black text-xl shadow-[0_0_20px_rgba(232,185,73,0.3)]">
+                {userName.charAt(0)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-extrabold text-foreground truncate">{userName}</h2>
+                  <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                </div>
+                <p className="text-[11px] text-muted-foreground font-mono truncate">{userEmail}</p>
+                <div className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-accent/40 bg-accent/10 px-2 py-0.5 font-mono text-[9px] text-accent font-bold uppercase">
+                  <Zap size={9} className="fill-current" /> VIP QUANT TRADER
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Wallet Balance Widget in Sidebar */}
+            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+              <div>
+                <span className="text-[10px] text-muted-foreground block uppercase">Available Balance</span>
+                <span className="text-base font-black text-primary">
+                  ${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 rounded-xl px-4 py-2.5 font-mono text-xs font-bold transition-all whitespace-nowrap border ${
-                  isActive
-                    ? 'border-primary bg-primary/15 text-primary shadow-[0_0_20px_rgba(232,185,73,0.2)]'
-                    : 'border-white/5 bg-white/[0.02] text-muted-foreground hover:border-white/20 hover:text-foreground'
-                }`}
+                onClick={() => {
+                  setActiveTab('withdraw');
+                  setSidebarOpen(false);
+                }}
+                className="rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-[10px] font-bold text-primary hover:bg-primary/20 transition-all flex items-center gap-1"
               >
-                <Icon size={15} />
-                {tab.label}
-                {tab.badge && (
-                  <span className={`ml-1.5 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${
-                    tab.badge === 'APPROVED' ? 'bg-accent/20 text-accent border border-accent/40' :
-                    tab.badge === 'PENDING' ? 'bg-primary/20 text-primary border border-primary/40' :
-                    'bg-destructive/20 text-destructive border border-destructive/40'
-                  }`}>
-                    {tab.badge}
-                  </span>
-                )}
+                Withdraw <ArrowUpRight size={11} />
               </button>
-            );
-          })}
+            </div>
+          </div>
+
+          {/* SIDEBAR NAVIGATION ITEMS MENU */}
+          <nav className="space-y-1.5 font-mono text-xs">
+            <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Dashboard Navigation
+            </div>
+            {navMenuItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveTab(item.id as any);
+                    setSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between rounded-xl px-4 py-3.5 font-bold transition-all relative overflow-hidden group ${
+                    isActive
+                      ? 'border border-primary/70 bg-gradient-to-r from-primary/25 via-primary/15 to-transparent text-primary shadow-[0_0_25px_rgba(232,185,73,0.2)]'
+                      : 'border border-transparent hover:border-white/10 hover:bg-white/[0.03] text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary rounded-r-full" />
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Icon size={18} className={isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'} />
+                    <span>{item.label}</span>
+                  </div>
+
+                  {/* Badges */}
+                  {item.badge && (
+                    <span className="rounded-full bg-primary/20 text-primary border border-primary/40 px-2.5 py-0.5 text-[10px] font-bold">
+                      {item.badge}
+                    </span>
+                  )}
+                  {item.badgeText && (
+                    <span className={`rounded-full px-2 py-0.5 text-[9px] font-black uppercase ${item.badgeColor}`}>
+                      {item.badgeText}
+                    </span>
+                  )}
+                  {item.statusBadge && (
+                    <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${
+                      item.statusBadge === 'APPROVED' ? 'bg-accent/20 text-accent border border-accent/40' :
+                      item.statusBadge === 'PENDING' ? 'bg-primary/20 text-primary border border-primary/40' :
+                      'bg-destructive/20 text-destructive border border-destructive/40'
+                    }`}>
+                      {item.statusBadge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* SIDEBAR FOOTER TELEMETRY CARD */}
+        <div className="mt-6 pt-4 border-t border-white/10 font-mono text-[11px] space-y-3">
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-muted-foreground space-y-1.5">
+            <div className="flex items-center justify-between text-foreground font-bold text-xs">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-accent animate-pulse" /> Quantitative Engine
+              </span>
+              <span className="text-accent text-[10px]">99.99%</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              Multi-Exchange High Frequency Arbitrage Cluster online.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setLocation('/')}
+            className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
+          >
+            <LogOut size={14} /> Return to Homepage
+          </button>
+        </div>
+      </aside>
+
+      {/* MAIN DASHBOARD CONTENT AREA */}
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-10 lg:pl-8">
+        
+        {/* TOP CONTENT HEADER BAR */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div>
+            <div className="flex items-center gap-2 font-mono text-xs text-primary font-bold">
+              <span>NEXATRADES</span>
+              <ChevronRight size={12} />
+              <span className="capitalize">{activeTab.replace('_', ' ')}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground mt-1">
+              {activeTab === 'overview' && 'Dashboard Analytics & Overview'}
+              {activeTab === 'packages' && 'My Active Subscription Packages'}
+              {activeTab === 'buy' && 'Arbitrage Package Store'}
+              {activeTab === 'kyc' && 'Identity & KYC Verification'}
+              {activeTab === 'withdraw' && 'Instant Withdrawal Portal'}
+              {activeTab === 'transactions' && 'Cryptographic Transaction Ledger'}
+            </h1>
+          </div>
+
+          {/* Quick Header Actions */}
+          <div className="flex items-center gap-3 font-mono">
+            <button
+              onClick={() => {
+                setSelectedPlanForBuy(AVAILABLE_PLANS[1]);
+                setCustomInvestAmount(1000);
+              }}
+              className="rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-5 py-2.5 text-xs font-black uppercase text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] transition-all hover:scale-105 flex items-center gap-1.5"
+            >
+              <Plus size={15} /> Buy Package
+            </button>
+            <button
+              onClick={() => setActiveTab('withdraw')}
+              className="rounded-xl border border-primary/50 bg-primary/10 px-4 py-2.5 text-xs font-bold text-primary hover:bg-primary/20 transition-all flex items-center gap-1.5"
+            >
+              <ArrowUpRight size={15} /> Withdraw
+            </button>
+          </div>
         </div>
 
         {/* TAB 1: OVERVIEW */}
@@ -1150,7 +1263,7 @@ export function UserDashboard() {
           </div>
         )}
 
-      </div>
+      </main>
 
       {/* BUY PACKAGE CONFIRMATION MODAL */}
       {selectedPlanForBuy && (
