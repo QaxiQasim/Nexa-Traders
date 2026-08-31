@@ -59,6 +59,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { articles, categories, faqs, packages, type Article, type PackageTier } from '@/data/content';
 import NotFound from '@/pages/not-found';
+import { UserDashboard } from '@/components/UserDashboard';
 
 const queryClient = new QueryClient();
 
@@ -106,7 +107,7 @@ function SectionHeading({ eyebrow, title, copy, align = 'left' }: { eyebrow: str
 function Navbar() {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
-  const nav = [['/trades', 'Arbitrage Live Trades'], ['/packages', 'Packages'], ['/about', 'Our edge'], ['/blog', 'Insights'], ['/contact', 'Contact']];
+  const nav = [['/trades', 'Arbitrage Live Trades'], ['/packages', 'Packages'], ['/dashboard', 'Dashboard'], ['/about', 'Our edge'], ['/blog', 'Insights'], ['/contact', 'Contact']];
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 lg:px-8">
@@ -2148,9 +2149,20 @@ function PrivacyPage() {
 
 function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [, setLocation] = useLocation();
-  const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const isRegister = mode === 'register';
-  return <div className="relative flex min-h-[calc(100dvh-72px)] items-center justify-center overflow-hidden px-5 py-16"><div className="absolute inset-0 grid-fade opacity-60" /><div className="relative w-full max-w-md"><div className="mb-8 text-center"><Logo compact /><h1 className="mt-8 text-3xl font-semibold tracking-[-.05em]">{isRegister ? 'Make room for better decisions.' : 'Welcome back to the signal.'}</h1><p className="mt-3 text-sm text-muted-foreground">{isRegister ? 'Create your NexaTraders access in under a minute.' : 'Sign in to continue to your NexaTraders workspace.'}</p></div><div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8">{submitted ? <div className="py-8 text-center"><span className="mx-auto grid h-11 w-11 place-items-center rounded-full border border-primary/30 bg-primary/10 text-primary"><Check size={20} /></span><h2 className="mt-5 text-xl font-semibold">This is a preview.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Authentication is not connected in this experience. Your form was captured client-side, but no account was created.</p><button onClick={() => setSubmitted(false)} className="mt-6 text-sm text-primary hover:underline" data-testid="button-auth-reset">Back to form</button></div> : <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-4">{isRegister && <label className="block text-sm"><span className="mb-2 block text-muted-foreground">Full name</span><input required className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-name" /></label>}<label className="block text-sm"><span className="mb-2 block text-muted-foreground">Email</span><input required type="email" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-email" /></label><label className="block text-sm"><span className="mb-2 block text-muted-foreground">Password</span><input required type="password" minLength={6} className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-password" /></label><button type="submit" className="mt-2 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68]" data-testid={`button-auth-${mode}`}>{isRegister ? 'Create preview access' : 'Sign in'} <ArrowRight size={15} className="ml-1 inline" /></button></form>}<div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">{isRegister ? 'Already have access? ' : 'New to NexaTraders? '}<button onClick={() => setLocation(isRegister ? '/login' : '/register')} className="text-primary hover:underline" data-testid="button-auth-switch">{isRegister ? 'Sign in' : 'Create an account'}</button></div></div><p className="mt-6 text-center text-[11px] text-muted-foreground">By continuing, you acknowledge our <Link href="/privacy" className="text-primary hover:underline" data-testid="link-auth-privacy">privacy policy</Link>.</p></div></div>;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const finalName = name.trim() || (email.split('@')[0]) || 'Alex Vance';
+    const finalEmail = email.trim() || 'alex.vance@nexatraders.com';
+    localStorage.setItem('nexa_user_name', finalName.charAt(0).toUpperCase() + finalName.slice(1));
+    localStorage.setItem('nexa_user_email', finalEmail);
+    setLocation('/dashboard');
+  };
+
+  return <div className="relative flex min-h-[calc(100dvh-72px)] items-center justify-center overflow-hidden px-5 py-16"><div className="absolute inset-0 grid-fade opacity-60" /><div className="relative w-full max-w-md"><div className="mb-8 text-center"><Logo compact /><h1 className="mt-8 text-3xl font-semibold tracking-[-.05em]">{isRegister ? 'Make room for better decisions.' : 'Welcome back to the signal.'}</h1><p className="mt-3 text-sm text-muted-foreground">{isRegister ? 'Create your NexaTraders account in under a minute.' : 'Sign in to access your NexaTraders User Dashboard.'}</p></div><div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8"><form onSubmit={handleSubmit} className="space-y-4">{isRegister && <label className="block text-sm"><span className="mb-2 block text-muted-foreground">Full name</span><input required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex Vance" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-name" /></label>}<label className="block text-sm"><span className="mb-2 block text-muted-foreground">Email</span><input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@domain.com" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-email" /></label><label className="block text-sm"><span className="mb-2 block text-muted-foreground">Password</span><input required type="password" minLength={6} placeholder="••••••••" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-password" /></label><button type="submit" className="mt-2 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68] transition-all" data-testid={`button-auth-${mode}`}>{isRegister ? 'Create Account & Launch Dashboard' : 'Sign In to Dashboard'} <ArrowRight size={15} className="ml-1 inline" /></button></form><div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">{isRegister ? 'Already have access? ' : 'New to NexaTraders? '}<button onClick={() => setLocation(isRegister ? '/login' : '/register')} className="text-primary hover:underline" data-testid="button-auth-switch">{isRegister ? 'Sign in' : 'Create an account'}</button></div></div><p className="mt-6 text-center text-[11px] text-muted-foreground">By continuing, you acknowledge our <Link href="/privacy" className="text-primary hover:underline" data-testid="link-auth-privacy">privacy policy</Link>.</p></div></div>;
 }
 
 function TradesPage() {
@@ -2721,7 +2733,7 @@ function TradesPage() {
 
 function Router() {
   const [location] = useLocation();
-  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={Home} /><Route path="/trades" component={TradesPage} /><Route path="/packages" component={PackagesPage} /><Route path="/about" component={AboutPage} /><Route path="/blog" component={BlogPage} /><Route path="/blog/:slug" component={ArticlePage} /><Route path="/privacy" component={PrivacyPage} /><Route path="/contact" component={ContactPage} /><Route path="/login">{() => <AuthPage mode="login" />}</Route><Route path="/register">{() => <AuthPage mode="register" />}</Route><Route component={NotFound} /></Switch></ErrorBoundary>;
+  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={Home} /><Route path="/trades" component={TradesPage} /><Route path="/packages" component={PackagesPage} /><Route path="/dashboard" component={UserDashboard} /><Route path="/about" component={AboutPage} /><Route path="/blog" component={BlogPage} /><Route path="/blog/:slug" component={ArticlePage} /><Route path="/privacy" component={PrivacyPage} /><Route path="/contact" component={ContactPage} /><Route path="/login">{() => <AuthPage mode="login" />}</Route><Route path="/register">{() => <AuthPage mode="register" />}</Route><Route component={NotFound} /></Switch></ErrorBoundary>;
 }
 
 function App() {
