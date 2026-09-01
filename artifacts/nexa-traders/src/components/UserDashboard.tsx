@@ -51,6 +51,7 @@ import {
   fetchTransactionsFromDb,
   fetchUserProfileFromDb
 } from '@/lib/supabase';
+import { verifyBep20Transaction, DEFAULT_DEPOSIT_WALLET } from '@/lib/bep20';
 
 export interface PurchasedPackage {
   id: string;
@@ -351,28 +352,70 @@ export function UserDashboard() {
   const totalRemainingRoi = purchasedPackages.reduce((acc, p) => acc + p.remainingRoi, 0);
   const activePackagesCount = purchasedPackages.filter(p => p.status === 'ACTIVE').length;
 
-  // Buy Package Modal State
-  const [selectedPlanForBuy, setSelectedPlanForBuy] = useState<typeof AVAILABLE_PLANS[0] | null>(null);
-  const [customInvestAmount, setCustomInvestAmount] = useState<number>(1000);
-  const [paymentMethod, setPaymentMethod] = useState<'WALLET' | 'USDT_BEP20' | 'BTC'>('WALLET');
-  const [buySuccessMessage, setBuySuccessMessage] = useState<string>('');
+  // BEP20 Auto-Verification State
+  const [bep20TxHash, setBep20TxHash] = useState<string>('');
+  const [isVerifyingBep20, setIsVerifyingBep20] = useState<boolean>(false);
+  const [bep20VerifyError, setBep20VerifyError] = useState<string>('');
+  const [bep20VerifySuccess, setBep20VerifySuccess] = useState<string>('');
 
-  // KYC Form State
-  const [kycForm, setKycForm] = useState({
-    fullName: '',
-    dob: '',
-    country: 'United Arab Emirates',
-    idType: 'PASSPORT' as 'PASSPORT' | 'NATIONAL_ID' | 'DRIVERS_LICENSE',
-    idNumber: '',
-    fileUploaded: false
-  });
-  const [kycMessage, setKycMessage] = useState<string>('');
+  const handleVerifyBep20Payment = async () => {
+    if (!bep20TxHash.trim()) {
+      setBep20VerifyError('Please enter your 66-character BEP20 TxHash (0x...) from your wallet app.');
+      return;
+    }
 
-  // Withdrawal Form State
-  const [withdrawAmount, setWithdrawAmount] = useState<string>('500');
-  const [withdrawWallet, setWithdrawWallet] = useState<string>('');
-  const [withdrawNetwork, setWithdrawNetwork] = useState<'USDT_BEP20' | 'USDT_TRC20' | 'BTC'>('USDT_BEP20');
-  const [withdrawMessage, setWithdrawMessage] = useState<string>('');
+    setIsVerifyingBep20(true);
+    setBep20VerifyError('');
+    setBep20VerifySuccess('');
+
+    const res = await verifyBep20Transaction(bep20TxHash, DEFAULT_DEPOSIT_WALLET);
+    setIsVerifyingBep20(false);
+
+    if (res.success) {
+      setBep20VerifySuccess(res.message);
+      
+      const amount = res.amountUsdt && res.amountUsdt > 0 ? res.amountUsdt : Number(customInvestAmount);
+      const totalCap = amount * ((selectedPlanForBuy?.totalCapPct || 200) / 100);
+
+      const newPkg: PurchasedPackage = {
+        id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
+        name: selectedPlanForBuy?.name || 'Rise',
+        amount: amount,
+        dailyRoi: selectedPlanForBuy?.dailyRoiNum || 1.3,
+        totalRoiCap: totalCap,
+        earnedRoi: 0,
+        remainingRoi: totalCap,
+        purchaseDate: new Date().toISOString().split('T')[0],
+        expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        status: 'ACTIVE'
+      };
+
+      setPurchasedPackages(prev => [newPkg, ...prev]);
+      insertPackageToDb(userEmail, newPkg);
+
+      const newTx: Transaction = {
+        id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        type: 'DEPOSIT',
+        title: `BEP20 Auto-Deposit (${selectedPlanForBuy?.name || 'Package'})`,
+        amount: amount,
+        status: 'COMPLETED',
+        txHash: bep20TxHash
+      };
+      setTransactions(prev => [newTx, ...prev]);
+      insertTransactionToDb(userEmail, newTx);
+
+      setBuySuccessMessage(`Verified Live on BNB Smart Chain! Activated ${selectedPlanForBuy?.name} plan with ${amount} USDT.`);
+      setTimeout(() => {
+        setSelectedPlanForBuy(null);
+        setBuySuccessMessage('');
+        setBep20TxHash('');
+        setBep20VerifySuccess('');
+      }, 3000);
+    } else {
+      setBep20VerifyError(res.message);
+    }
+  };
 
   // Handle Buy Package Confirmation
   const handleConfirmPurchase = () => {
@@ -1438,6 +1481,69 @@ export function UserDashboard() {
                     </button>
                   </div>
                 </div>
+
+                {paymentMethod === 'USDT_BEP20' && (
+                  <div className="rounded-2xl border border-primary/40 bg-primary/10 p-4 space-y-3">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-primary flex items-center gap-1.5">
+                        <Zap size={14} /> Official BEP20 Deposit Address (BNB Smart Chain)
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 px-3 py-2 font-mono text-[11px] text-foreground">
+                      <span className="truncate mr-2 font-bold">{DEFAULT_DEPOSIT_WALLET}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(DEFAULT_DEPOSIT_WALLET);
+                          alert('BEP20 Address Copied to Clipboard!');
+                        }}
+                        className="rounded-lg bg-primary/20 px-2 py-1 text-primary hover:bg-primary/30 flex items-center gap-1 flex-shrink-0 font-bold"
+                      >
+                        <Copy size={12} /> Copy
+                      </button>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      <label className="block text-[11px] text-muted-foreground">Enter BEP20 TxHash / Transaction ID</label>
+                      <input
+                        type="text"
+                        value={bep20TxHash}
+                        onChange={e => setBep20TxHash(e.target.value)}
+                        placeholder="0x..."
+                        className="w-full rounded-xl border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-foreground font-mono outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    {bep20VerifyError && (
+                      <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-[11px] text-rose-400 font-mono flex items-center gap-2">
+                        <AlertCircle size={14} className="flex-shrink-0" /> {bep20VerifyError}
+                      </div>
+                    )}
+
+                    {bep20VerifySuccess && (
+                      <div className="rounded-xl border border-accent/40 bg-accent/10 p-3 text-[11px] text-accent font-mono flex items-center gap-2">
+                        <CheckCircle2 size={14} className="flex-shrink-0" /> {bep20VerifySuccess}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      disabled={isVerifyingBep20}
+                      onClick={handleVerifyBep20Payment}
+                      className="w-full rounded-xl bg-gradient-to-r from-accent via-primary to-accent py-3 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                    >
+                      {isVerifyingBep20 ? (
+                        <>
+                          <RefreshCw size={14} className="animate-spin" /> Verifying on BscScan...
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck size={16} /> Verify BEP20 Payment Live on BscScan
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
 
                 <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2 text-xs">
                   <div className="flex justify-between text-muted-foreground">
