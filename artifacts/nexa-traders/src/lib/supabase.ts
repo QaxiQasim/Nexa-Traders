@@ -30,21 +30,40 @@ export async function fetchUserProfileFromDb(email: string) {
 
 export async function syncUserProfile(email: string, name: string, balance: number) {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
-      method: 'POST',
+    // 1. Try PATCH update on existing profile row by email
+    const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
+      method: 'PATCH',
       headers: {
         ...getHeaders(),
-        'Prefer': 'resolution=merge-duplicates'
+        'Prefer': 'return=representation'
       },
+      body: JSON.stringify({
+        full_name: name,
+        wallet_balance: balance
+      })
+    });
+
+    if (patchRes.ok) {
+      const data = await patchRes.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return true;
+      }
+    }
+
+    // 2. If row does not exist yet, INSERT via POST
+    const postRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+      method: 'POST',
+      headers: getHeaders(),
       body: JSON.stringify({
         email,
         full_name: name,
         wallet_balance: balance
       })
     });
-    return res.ok;
+    return postRes.ok;
   } catch (err) {
-    console.warn('Supabase profile sync notice: stored locally.');
+    console.warn('Supabase profile sync notice: stored locally.', err);
+    return false;
   }
 }
 

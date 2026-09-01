@@ -340,7 +340,12 @@ export function UserDashboard() {
     fetchUserProfileFromDb(userEmail).then(profile => {
       if (profile && profile.wallet_balance !== undefined) {
         const bal = Number(profile.wallet_balance);
-        if (!isNaN(bal)) setWalletBalance(bal);
+        if (!isNaN(bal)) {
+          setWalletBalance(bal);
+          try {
+            localStorage.setItem('nexa_wallet_balance', bal.toString());
+          } catch (e) {}
+        }
       }
     }).catch(() => {});
     fetchUserPackagesFromDb(userEmail).then(pkgs => {
@@ -356,10 +361,13 @@ export function UserDashboard() {
 
   // Save to localStorage & sync to Supabase Live Database
   useEffect(() => {
+    if (walletBalance === undefined || walletBalance === null) return;
     try {
-      localStorage.setItem('nexa_wallet_balance', (walletBalance || 0).toString());
+      localStorage.setItem('nexa_wallet_balance', walletBalance.toString());
     } catch (e) {}
-    syncUserProfile(userEmail, userName, walletBalance || 0);
+    if (userEmail) {
+      syncUserProfile(userEmail, userName, walletBalance);
+    }
   }, [walletBalance, userEmail, userName]);
 
   useEffect(() => {
