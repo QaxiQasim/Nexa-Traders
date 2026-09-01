@@ -387,6 +387,28 @@ export function UserDashboard() {
   const totalRemainingRoi = pkgsList.reduce((acc, p) => acc + (p?.remainingRoi || 0), 0);
   const activePackagesCount = pkgsList.filter(p => p && p.status === 'ACTIVE').length;
 
+  // Package Store & Modal State
+  const [selectedPlanForBuy, setSelectedPlanForBuy] = useState<any | null>(null);
+  const [customInvestAmount, setCustomInvestAmount] = useState<number>(1000);
+  const [paymentMethod, setPaymentMethod] = useState<'WALLET' | 'BEP20_USDT'>('BEP20_USDT');
+  const [buySuccessMessage, setBuySuccessMessage] = useState<string>('');
+
+  // KYC Form State
+  const [kycForm, setKycForm] = useState({
+    fullName: '',
+    dob: '',
+    country: 'United Arab Emirates',
+    idType: 'PASSPORT' as 'PASSPORT' | 'NATIONAL_ID' | 'DRIVERS_LICENSE',
+    idNumber: ''
+  });
+  const [kycMessage, setKycMessage] = useState<string>('');
+
+  // Withdrawal Portal State
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('');
+  const [withdrawWallet, setWithdrawWallet] = useState<string>('');
+  const [withdrawNetwork, setWithdrawNetwork] = useState<string>('USDT BEP20 (BNB Smart Chain)');
+  const [withdrawMessage, setWithdrawMessage] = useState<string>('');
+
   // BEP20 Auto-Verification State
   const [bep20TxHash, setBep20TxHash] = useState<string>('');
   const [isVerifyingBep20, setIsVerifyingBep20] = useState<boolean>(false);
