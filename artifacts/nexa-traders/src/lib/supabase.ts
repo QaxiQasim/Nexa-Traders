@@ -1,83 +1,47 @@
-import { createClient } from '@supabase/supabase-js';
-
-// NEXATRADES Supabase Configuration
+// NEXATRADES Supabase Lightweight REST Client (Zero-dependency)
 export const SUPABASE_URL = 'https://lgveupchdsgzoyumrofj.supabase.co';
 export const SUPABASE_ANON_KEY = 'sb_publishable_hLwz5RxhL_olEQNyc2zRCg_vVFSg4EN';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Types for Supabase DB Tables
-export interface DbProfile {
-  id?: string;
-  email: string;
-  full_name: string;
-  wallet_balance: number;
-  created_at?: string;
-}
-
-export interface DbPurchasedPackage {
-  id: string;
-  user_email: string;
-  package_name: string;
-  amount: number;
-  daily_roi: number;
-  total_roi_cap: number;
-  earned_roi: number;
-  remaining_roi: number;
-  purchase_date: string;
-  expiry_date: string;
-  status: 'ACTIVE' | 'COMPLETED';
-}
-
-export interface DbKyc {
-  user_email: string;
-  full_name: string;
-  dob: string;
-  country: string;
-  id_type: string;
-  id_number: string;
-  status: 'UNVERIFIED' | 'PENDING' | 'APPROVED' | 'REJECTED';
-  submitted_at: string;
-}
-
-export interface DbTransaction {
-  id: string;
-  user_email: string;
-  date: string;
-  type: 'DEPOSIT' | 'PACKAGE_PURCHASE' | 'DAILY_ROI' | 'WITHDRAWAL';
-  title: string;
-  amount: number;
-  status: 'COMPLETED' | 'PENDING' | 'FAILED';
-  tx_hash?: string;
-}
+const getHeaders = () => ({
+  'apikey': SUPABASE_ANON_KEY,
+  'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+});
 
 // ----------------------------------------------------
-// SUPABASE DATABASE OPERATIONS
+// SUPABASE REST DATABASE OPERATIONS
 // ----------------------------------------------------
 
 export async function syncUserProfile(email: string, name: string, balance: number) {
   try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert({ email, full_name: name, wallet_balance: balance }, { onConflict: 'email' })
-      .select();
-    if (error) console.warn('Supabase syncUserProfile error:', error.message);
-    return data;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+      method: 'POST',
+      headers: {
+        ...getHeaders(),
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        email,
+        full_name: name,
+        wallet_balance: balance
+      })
+    });
+    return res.ok;
   } catch (err) {
-    console.warn('Supabase offline or unreachable, using local storage.');
+    console.warn('Supabase profile sync notice: stored locally.');
   }
 }
 
 export async function fetchUserPackagesFromDb(email: string) {
   try {
-    const { data, error } = await supabase
-      .from('purchased_packages')
-      .select('*')
-      .eq('user_email', email)
-      .order('purchase_date', { ascending: false });
-
-    if (error || !data) return null;
-    return data.map(item => ({
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages?user_email=eq.${encodeURIComponent(email)}&order=purchase_date.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.map((item: any) => ({
       id: item.id,
       name: item.package_name,
       amount: item.amount,
@@ -96,42 +60,46 @@ export async function fetchUserPackagesFromDb(email: string) {
 
 export async function insertPackageToDb(email: string, pkg: any) {
   try {
-    const { error } = await supabase.from('purchased_packages').insert({
-      id: pkg.id,
-      user_email: email,
-      package_name: pkg.name,
-      amount: pkg.amount,
-      daily_roi: pkg.dailyRoi,
-      total_roi_cap: pkg.totalRoiCap,
-      earned_roi: pkg.earnedRoi,
-      remaining_roi: pkg.remainingRoi,
-      purchase_date: pkg.purchaseDate,
-      expiry_date: pkg.expiryDate,
-      status: pkg.status
+    await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        id: pkg.id,
+        user_email: email,
+        package_name: pkg.name,
+        amount: pkg.amount,
+        daily_roi: pkg.dailyRoi,
+        total_roi_cap: pkg.totalRoiCap,
+        earned_roi: pkg.earnedRoi,
+        remaining_roi: pkg.remainingRoi,
+        purchase_date: pkg.purchaseDate,
+        expiry_date: pkg.expiryDate,
+        status: pkg.status
+      })
     });
-    if (error) console.warn('Supabase package insert notice:', error.message);
   } catch (err) {
-    console.warn('Saved package locally.');
+    console.warn('Supabase package notice: saved locally.');
   }
 }
 
 export async function fetchKycFromDb(email: string) {
   try {
-    const { data, error } = await supabase
-      .from('kyc_verifications')
-      .select('*')
-      .eq('user_email', email)
-      .single();
-
-    if (error || !data) return null;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=eq.${encodeURIComponent(email)}`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data || data.length === 0) return null;
+    const item = data[0];
     return {
-      status: data.status,
-      fullName: data.full_name,
-      dob: data.dob,
-      country: data.country,
-      idType: data.id_type,
-      idNumber: data.id_number,
-      submittedAt: data.submitted_at
+      status: item.status,
+      fullName: item.full_name,
+      dob: item.dob,
+      country: item.country,
+      idType: item.id_type,
+      idNumber: item.id_number,
+      submittedAt: item.submitted_at
     };
   } catch (err) {
     return null;
@@ -140,33 +108,37 @@ export async function fetchKycFromDb(email: string) {
 
 export async function upsertKycToDb(email: string, kyc: any) {
   try {
-    const { error } = await supabase.from('kyc_verifications').upsert({
-      user_email: email,
-      full_name: kyc.fullName,
-      dob: kyc.dob,
-      country: kyc.country,
-      id_type: kyc.idType,
-      id_number: kyc.idNumber,
-      status: kyc.status,
-      submitted_at: kyc.submittedAt || new Date().toISOString().split('T')[0]
-    }, { onConflict: 'user_email' });
-
-    if (error) console.warn('Supabase KYC notice:', error.message);
+    await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications`, {
+      method: 'POST',
+      headers: {
+        ...getHeaders(),
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        user_email: email,
+        full_name: kyc.fullName,
+        dob: kyc.dob,
+        country: kyc.country,
+        id_type: kyc.idType,
+        id_number: kyc.idNumber,
+        status: kyc.status,
+        submitted_at: kyc.submittedAt || new Date().toISOString().split('T')[0]
+      })
+    });
   } catch (err) {
-    console.warn('Saved KYC locally.');
+    console.warn('Supabase KYC notice: saved locally.');
   }
 }
 
 export async function fetchTransactionsFromDb(email: string) {
   try {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .eq('user_email', email)
-      .order('date', { ascending: false });
-
-    if (error || !data) return null;
-    return data.map(tx => ({
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=eq.${encodeURIComponent(email)}&order=date.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.map((tx: any) => ({
       id: tx.id,
       date: tx.date,
       type: tx.type,
@@ -182,18 +154,21 @@ export async function fetchTransactionsFromDb(email: string) {
 
 export async function insertTransactionToDb(email: string, tx: any) {
   try {
-    const { error } = await supabase.from('transactions').insert({
-      id: tx.id,
-      user_email: email,
-      date: tx.date,
-      type: tx.type,
-      title: tx.title,
-      amount: tx.amount,
-      status: tx.status,
-      tx_hash: tx.txHash
+    await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        id: tx.id,
+        user_email: email,
+        date: tx.date,
+        type: tx.type,
+        title: tx.title,
+        amount: tx.amount,
+        status: tx.status,
+        tx_hash: tx.txHash
+      })
     });
-    if (error) console.warn('Supabase transaction notice:', error.message);
   } catch (err) {
-    console.warn('Saved transaction locally.');
+    console.warn('Supabase transaction notice: saved locally.');
   }
 }
