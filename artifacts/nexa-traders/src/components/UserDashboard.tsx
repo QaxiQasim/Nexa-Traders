@@ -252,6 +252,17 @@ export function UserDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'packages' | 'buy' | 'kyc' | 'withdraw' | 'transactions'>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const handleLogout = () => {
+    localStorage.removeItem('nexa_user_name');
+    localStorage.removeItem('nexa_user_email');
+    localStorage.removeItem('nexa_wallet_balance');
+    localStorage.removeItem('nexa_purchased_packages');
+    localStorage.removeItem('nexa_transactions');
+    localStorage.removeItem('nexa_kyc_data');
+    localStorage.removeItem('nexa_auth_user');
+    setLocation('/auth');
+  };
+
   // Load User Data from localStorage / Supabase defaults
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || 'Alex Vance');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || 'alex.vance@nexatraders.com');
@@ -626,12 +637,20 @@ export function UserDashboard() {
             </p>
           </div>
 
-          <button
-            onClick={() => setLocation('/')}
-            className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
-          >
-            <LogOut size={14} /> Return to Homepage
-          </button>
+          <div className="space-y-2">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition-all shadow-[0_0_15px_rgba(244,63,94,0.15)]"
+            >
+              <LogOut size={14} /> Log Out
+            </button>
+            <button
+              onClick={() => setLocation('/')}
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
+            >
+              <ExternalLink size={14} /> Return to Homepage
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -672,6 +691,13 @@ export function UserDashboard() {
               className="rounded-xl border border-primary/50 bg-primary/10 px-4 py-2.5 text-xs font-bold text-primary hover:bg-primary/20 transition-all flex items-center gap-1.5"
             >
               <ArrowUpRight size={15} /> Withdraw
+            </button>
+            <button
+              onClick={handleLogout}
+              className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.15)]"
+              title="Log out of account"
+            >
+              <LogOut size={15} /> Logout
             </button>
           </div>
         </div>
