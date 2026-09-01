@@ -60,6 +60,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { articles, categories, faqs, packages, type Article, type PackageTier } from '@/data/content';
 import NotFound from '@/pages/not-found';
 import { UserDashboard } from '@/components/UserDashboard';
+import { fetchUserProfileFromDb, syncUserProfile } from '@/lib/supabase';
 
 const queryClient = new QueryClient();
 
@@ -2161,12 +2162,28 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
     const rawName = name.trim() || (finalEmail.split('@')[0]) || 'Trader';
     const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
+    // Fetch existing profile from Supabase so balance is NEVER reset to 0
+    let balanceToKeep = 0;
+    try {
+      const dbProfile = await fetchUserProfileFromDb(finalEmail);
+      if (dbProfile && dbProfile.wallet_balance !== undefined) {
+        balanceToKeep = Number(dbProfile.wallet_balance) || 0;
+      } else {
+        const localBal = localStorage.getItem('nexa_wallet_balance');
+        if (localBal !== null) {
+          const parsed = parseFloat(localBal);
+          if (!isNaN(parsed)) balanceToKeep = parsed;
+        }
+      }
+    } catch (err) {}
+
     localStorage.setItem('nexa_user_name', formattedName);
     localStorage.setItem('nexa_user_email', finalEmail);
+    localStorage.setItem('nexa_wallet_balance', balanceToKeep.toString());
     localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
 
     try {
-      await syncUserProfile(finalEmail, formattedName, 0);
+      await syncUserProfile(finalEmail, formattedName, balanceToKeep);
     } catch (err) {}
 
     setLoading(false);
