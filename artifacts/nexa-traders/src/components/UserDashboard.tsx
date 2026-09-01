@@ -41,6 +41,15 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
+import {
+  syncUserProfile,
+  insertPackageToDb,
+  upsertKycToDb,
+  insertTransactionToDb,
+  fetchUserPackagesFromDb,
+  fetchKycFromDb,
+  fetchTransactionsFromDb
+} from '@/lib/supabase';
 
 export interface PurchasedPackage {
   id: string;
@@ -251,10 +260,11 @@ export function UserDashboard() {
     };
   });
 
-  // Save to localStorage
+  // Save to localStorage & sync to Supabase Live Database
   useEffect(() => {
     localStorage.setItem('nexa_wallet_balance', walletBalance.toString());
-  }, [walletBalance]);
+    syncUserProfile(userEmail, userName, walletBalance);
+  }, [walletBalance, userEmail, userName]);
 
   useEffect(() => {
     localStorage.setItem('nexa_purchased_packages', JSON.stringify(purchasedPackages));
@@ -326,6 +336,7 @@ export function UserDashboard() {
     };
 
     setPurchasedPackages([newPkg, ...purchasedPackages]);
+    insertPackageToDb(userEmail, newPkg);
 
     if (paymentMethod === 'WALLET') {
       setWalletBalance(prev => prev - amount);
@@ -342,6 +353,7 @@ export function UserDashboard() {
     };
 
     setTransactions([newTx, ...transactions]);
+    insertTransactionToDb(userEmail, newTx);
     setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name} Plan for $${amount.toLocaleString()}! Package activated.`);
     
     setTimeout(() => {
@@ -368,6 +380,7 @@ export function UserDashboard() {
       submittedAt: new Date().toISOString().split('T')[0]
     };
     setKycData(updated);
+    upsertKycToDb(userEmail, updated);
     setKycMessage('Your KYC identity documents have been submitted successfully! Verification is currently in review.');
   };
 
@@ -401,6 +414,7 @@ export function UserDashboard() {
     };
 
     setTransactions([withdrawTx, ...transactions]);
+    insertTransactionToDb(userEmail, withdrawTx);
     setWithdrawMessage(`Withdrawal request for $${val.toFixed(2)} USDT submitted! Transferred to ${withdrawWallet.substring(0, 8)}...`);
     setWithdrawAmount('');
     setWithdrawWallet('');
