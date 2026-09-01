@@ -252,6 +252,11 @@ export function UserDashboard() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<'overview' | 'packages' | 'buy' | 'kyc' | 'withdraw' | 'transactions'>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('nexa_user_name');
@@ -865,24 +870,26 @@ export function UserDashboard() {
                 </div>
 
                 <div className="h-[280px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={YIELD_GRAPH_DATA}>
-                      <defs>
-                        <linearGradient id="colorYield" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#e8b949" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="#e8b949" stopOpacity={0.0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                      <XAxis dataKey="day" stroke="#a1a1aa" fontSize={11} fontFamily="monospace" />
-                      <YAxis stroke="#a1a1aa" fontSize={11} fontFamily="monospace" tickFormatter={(val) => `$${val}`} />
-                      <Tooltip
-                        contentStyle={{ backgroundColor: '#141c18', borderColor: '#e8b94940', borderRadius: '12px', color: '#fff', fontSize: '12px', fontFamily: 'monospace' }}
-                        formatter={(val: any) => [`$${val}.00`, 'Earned ROI']}
-                      />
-                      <Area type="monotone" dataKey="yield" stroke="#e8b949" strokeWidth={3} fillOpacity={1} fill="url(#colorYield)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  {isMounted && (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={YIELD_GRAPH_DATA}>
+                        <defs>
+                          <linearGradient id="colorYield" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#e8b949" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#e8b949" stopOpacity={0.0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                        <XAxis dataKey="day" stroke="#a1a1aa" fontSize={11} fontFamily="monospace" />
+                        <YAxis stroke="#a1a1aa" fontSize={11} fontFamily="monospace" tickFormatter={(val) => `$${val}`} />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: '#141c18', borderColor: '#e8b94940', borderRadius: '12px', color: '#fff', fontSize: '12px', fontFamily: 'monospace' }}
+                          formatter={(val: any) => [`$${val || 0}.00`, 'Earned ROI']}
+                        />
+                        <Area type="monotone" dataKey="yield" stroke="#e8b949" strokeWidth={3} fillOpacity={1} fill="url(#colorYield)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </div>
 

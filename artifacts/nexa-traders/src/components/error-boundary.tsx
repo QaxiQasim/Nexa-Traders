@@ -36,29 +36,49 @@ function toError(value: unknown): Error {
 }
 
 function DefaultFallback({ error, resetError }: ErrorFallbackProps) {
+  const handleClearCacheAndReset = () => {
+    try {
+      localStorage.removeItem('nexa_purchased_packages');
+      localStorage.removeItem('nexa_transactions');
+      localStorage.removeItem('nexa_kyc_data');
+    } catch (e) {}
+    resetError();
+    window.location.reload();
+  };
+
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-6">
-      <div className="max-w-lg w-full text-center">
-        <h1 className="text-xl font-semibold text-gray-900">
-          Something went wrong
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#070908] text-foreground p-6 font-sans">
+      <div className="max-w-lg w-full text-center rounded-3xl border border-rose-500/30 bg-[#0f1412] p-8 shadow-2xl backdrop-blur-2xl">
+        <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 font-mono font-bold text-xl mb-4 border border-rose-500/30">
+          ⚠️
+        </div>
+        <h1 className="text-xl font-bold text-foreground tracking-tight">
+          Application Error Detected
         </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          This part of the app hit an error. The rest of the app is still
-          running.
+        <p className="mt-2 text-xs text-muted-foreground font-mono">
+          An unexpected error occurred while rendering this component.
         </p>
-        {/* Dev only: messages can carry API responses and other internals. */}
-        {import.meta.env.DEV ? (
-          <pre className="mt-4 overflow-x-auto rounded bg-gray-100 p-3 text-left text-xs text-gray-800">
-            {error.message || String(error)}
-          </pre>
-        ) : null}
-        <button
-          type="button"
-          onClick={resetError}
-          className="mt-4 rounded bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700"
-        >
-          Try again
-        </button>
+
+        <div className="mt-4 overflow-x-auto rounded-xl border border-rose-500/20 bg-rose-950/20 p-3 text-left font-mono text-[11px] text-rose-300 max-h-40">
+          {error.message || String(error)}
+        </div>
+
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 font-mono text-xs">
+          <button
+            type="button"
+            onClick={resetError}
+            className="w-full sm:w-auto rounded-xl bg-primary px-5 py-2.5 font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all"
+          >
+            Try Again
+          </button>
+          <button
+            type="button"
+            onClick={handleClearCacheAndReset}
+            className="w-full sm:w-auto rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 font-bold text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
+          >
+            Reset Session & Reload
+          </button>
+        </div>
       </div>
     </div>
   );
