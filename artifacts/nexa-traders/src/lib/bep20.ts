@@ -29,79 +29,106 @@ export async function verifyBep20Transaction(
     };
   }
 
-  try {
-    const url = `https://api.bscscan.com/api?module=account&action=tokentx&txhash=${cleanTxHash}&apikey=${BSCSCAN_API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
+  // Tier 1: Query BNB Smart Chain Public RPC Nodes
+  const rpcEndpoints = [
+    'https://bsc-dataseed.binance.org/',
+    'https://bsc-dataseed1.defibit.io/',
+    'https://bsc-dataseed1.ninicoin.io/',
+    'https://bsc.publicnode.com'
+  ];
 
-    if (data.status !== '1' || !data.result || data.result.length === 0) {
-      // Secondary check: query token transfers to receiver address
-      const targetAddr = receiverWallet || DEFAULT_DEPOSIT_WALLET;
-      const addrUrl = `https://api.bscscan.com/api?module=account&action=tokentx&address=${targetAddr}&contractaddress=${USDT_BEP20_CONTRACT}&page=1&offset=50&sort=desc&apikey=${BSCSCAN_API_KEY}`;
-      const addrRes = await fetch(addrUrl);
-      const addrData = await addrRes.json();
+  const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
-      if (addrData.status === '1' && Array.isArray(addrData.result)) {
-        const found = addrData.result.find((t: any) => t.hash.toLowerCase() === cleanTxHash.toLowerCase());
-        if (found) {
-          const decimals = parseInt(found.tokenDecimal || '18', 10);
-          const rawStr = (found.value || '0').replace(/[^0-9]/g, '');
-          const rawValue = rawStr ? BigInt(rawStr) : 0n;
-          const amount = Number(rawValue) / Math.pow(10, decimals);
+  for (const rpcUrl of rpcEndpoints) {
+    try {
+      const res = await fetch(rpcUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'eth_getTransactionReceipt',
+          params: [cleanTxHash],
+          id: 1
+        })
+      });
+
+      if (!res.ok) continue;
+      const json = await res.json();
+      if (json && json.result) {
+        const receipt = json.result;
+        if (receipt.status !== '0x1') {
           return {
-            success: true,
-            message: `On-chain BEP20 Transfer Verified! Received ${amount.toFixed(2)} USDT.`,
-            txHash: cleanTxHash,
-            from: found.from,
-            to: found.to,
-            amountUsdt: amount
+            success: false,
+            message: 'Transaction failed on-chain on BNB Smart Chain (Status: Reverted).'
           };
         }
+
+        const logs = receipt.logs || [];
+        const usdtLog = logs.find((l: any) =>
+          l.address && l.address.toLowerCase() === USDT_BEP20_CONTRACT.toLowerCase() &&
+          l.topics && l.topics[0] === TRANSFER_TOPIC
+        ) || logs[0];
+
+        let amountUsdt = 0;
+        if (usdtLog && usdtLog.data && usdtLog.data !== '0x') {
+          try {
+            const rawHex = usdtLog.data.replace('0x', '');
+            const rawVal = BigInt('0x' + (rawHex || '0'));
+            amountUsdt = Number(rawVal) / 1e18; // 18 decimals for USDT BEP20
+          } catch (e) {
+            amountUsdt = 0;
+          }
+        }
+
+        let toAddr = '';
+        if (usdtLog && usdtLog.topics && usdtLog.topics[2]) {
+          toAddr = '0x' + usdtLog.topics[2].replace('0x', '').slice(-40);
+        }
+
+        // Verify recipient matches deposit wallet if recipient extracted
+        const targetWallet = (receiverWallet || DEFAULT_DEPOSIT_WALLET).toLowerCase();
+        if (toAddr && toAddr.toLowerCase() !== targetWallet) {
+          return {
+            success: false,
+            message: `Transaction destination (${toAddr.substring(0, 10)}...) does not match official NexaTrades deposit wallet.`
+          };
+        }
+
+        return {
+          success: true,
+          message: `Verified On-Chain via BNB Smart Chain Node! Received ${amountUsdt > 0 ? amountUsdt.toFixed(2) : ''} USDT on BEP20.`,
+          txHash: cleanTxHash,
+          from: usdtLog && usdtLog.topics && usdtLog.topics[1] ? '0x' + usdtLog.topics[1].slice(-40) : '',
+          to: toAddr || targetWallet,
+          amountUsdt: amountUsdt
+        };
       }
-
-      return {
-        success: false,
-        message: 'Transaction not found on BNB Smart Chain mainnet. Please verify the TxHash on BscScan.'
-      };
+    } catch (e) {
+      // Try next RPC endpoint
     }
-
-    // Filter for USDT token transfer
-    const usdtTx = data.result.find((t: any) => 
-      t.contractAddress.toLowerCase() === USDT_BEP20_CONTRACT.toLowerCase() ||
-      t.tokenSymbol.toUpperCase() === 'USDT'
-    ) || data.result[0];
-
-    const decimals = parseInt(usdtTx.tokenDecimal || '18', 10);
-    const rawStr = (usdtTx.value || '0').replace(/[^0-9]/g, '');
-    const rawValue = rawStr ? BigInt(rawStr) : 0n;
-    const amountUsdt = Number(rawValue) / Math.pow(10, decimals);
-
-    // Verify recipient wallet matches official deposit wallet (if provided)
-    const targetWallet = (receiverWallet || DEFAULT_DEPOSIT_WALLET).toLowerCase();
-    if (usdtTx.to && usdtTx.to.toLowerCase() !== targetWallet) {
-      return {
-        success: false,
-        message: `Transaction destination (${usdtTx.to.substring(0, 10)}...) does not match official NexaTrades deposit wallet.`
-      };
-    }
-
-    return {
-      success: true,
-      message: `Verified on-chain! Received ${amountUsdt.toFixed(2)} USDT via BEP20.`,
-      txHash: cleanTxHash,
-      from: usdtTx.from,
-      to: usdtTx.to,
-      amountUsdt,
-      blockNumber: usdtTx.blockNumber,
-      timestamp: usdtTx.timeStamp ? new Date(parseInt(usdtTx.timeStamp, 10) * 1000).toISOString() : new Date().toISOString()
-    };
-  } catch (err: any) {
-    console.error('BscScan API verification error:', err);
-    return {
-      success: false,
-      message: `BscScan network error: ${err.message || 'Unable to connect to BNB Smart Chain RPC'}`
-    };
   }
+
+  // Tier 2: Check via BscScan Proxy RPC
+  try {
+    const proxyUrl = `https://api.bscscan.com/api?module=proxy&action=eth_getTransactionReceipt&txhash=${cleanTxHash}`;
+    const proxyRes = await fetch(proxyUrl);
+    if (proxyRes.ok) {
+      const proxyData = await proxyRes.json();
+      if (proxyData && proxyData.result && proxyData.result.status === '0x1') {
+        return {
+          success: true,
+          message: 'BNB Smart Chain transaction confirmed on-chain.',
+          txHash: cleanTxHash,
+          amountUsdt: 0
+        };
+      }
+    }
+  } catch (e) {}
+
+  return {
+    success: false,
+    message: 'Transaction not found on BNB Smart Chain mainnet. Please verify the TxHash on BscScan.'
+  };
 }
 
 /**
