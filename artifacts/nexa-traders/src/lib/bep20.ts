@@ -61,9 +61,15 @@ export async function verifyBep20Transaction(
       t.tokenSymbol.toUpperCase() === 'USDT'
     ) || data.result[0];
 
-    const decimals = parseInt(usdtTx.tokenDecimal || '18', 10);
-    const rawValue = BigInt(usdtTx.value || '0');
-    const amountUsdt = Number(rawValue) / Math.pow(10, decimals);
+    let amountUsdt = 0;
+    try {
+      const decimals = parseInt(usdtTx.tokenDecimal || '18', 10);
+      const rawStr = (usdtTx.value || '0').replace(/[^0-9]/g, '');
+      const rawValue = rawStr ? BigInt(rawStr) : 0n;
+      amountUsdt = Number(rawValue) / Math.pow(10, decimals);
+    } catch (e) {
+      amountUsdt = 0;
+    }
 
     return {
       success: true,
@@ -73,7 +79,7 @@ export async function verifyBep20Transaction(
       to: usdtTx.to,
       amountUsdt,
       blockNumber: usdtTx.blockNumber,
-      timestamp: new Date(parseInt(usdtTx.timeStamp || '0', 10) * 1000).toISOString()
+      timestamp: usdtTx.timeStamp ? new Date(parseInt(usdtTx.timeStamp, 10) * 1000).toISOString() : new Date().toISOString()
     };
   } catch (err: any) {
     console.error('BscScan API verification error:', err);
@@ -94,14 +100,21 @@ export async function getIncomingBep20Deposits(walletAddress: string) {
     const data = await res.json();
     if (data.status === '1' && Array.isArray(data.result)) {
       return data.result.map((tx: any) => {
-        const decimals = parseInt(tx.tokenDecimal || '18', 10);
-        const rawValue = BigInt(tx.value || '0');
+        let amountUsdt = 0;
+        try {
+          const decimals = parseInt(tx.tokenDecimal || '18', 10);
+          const rawStr = (tx.value || '0').replace(/[^0-9]/g, '');
+          const rawValue = rawStr ? BigInt(rawStr) : 0n;
+          amountUsdt = Number(rawValue) / Math.pow(10, decimals);
+        } catch (e) {
+          amountUsdt = 0;
+        }
         return {
           hash: tx.hash,
           from: tx.from,
           to: tx.to,
-          amountUsdt: Number(rawValue) / Math.pow(10, decimals),
-          timestamp: new Date(parseInt(tx.timeStamp || '0', 10) * 1000).toISOString(),
+          amountUsdt,
+          timestamp: tx.timeStamp ? new Date(parseInt(tx.timeStamp, 10) * 1000).toISOString() : new Date().toISOString(),
           confirmations: parseInt(tx.confirmations || '1', 10)
         };
       });

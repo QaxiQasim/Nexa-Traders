@@ -271,26 +271,46 @@ export function UserDashboard() {
   const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
 
   const [walletBalance, setWalletBalance] = useState<number>(() => {
-    const saved = localStorage.getItem('nexa_wallet_balance');
-    if (saved !== null) return parseFloat(saved);
+    try {
+      const saved = localStorage.getItem('nexa_wallet_balance');
+      if (saved !== null) {
+        const val = parseFloat(saved);
+        if (!isNaN(val)) return val;
+      }
+    } catch (e) {}
     return isDemo ? 4680.00 : 0.00;
   });
 
   const [purchasedPackages, setPurchasedPackages] = useState<PurchasedPackage[]>(() => {
-    const saved = localStorage.getItem('nexa_purchased_packages');
-    if (saved !== null) return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem('nexa_purchased_packages');
+      if (saved !== null) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
     return isDemo ? DEFAULT_PACKAGES : [];
   });
 
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem('nexa_transactions');
-    if (saved !== null) return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem('nexa_transactions');
+      if (saved !== null) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
     return isDemo ? INITIAL_TRANSACTIONS : [];
   });
 
   const [kycData, setKycData] = useState<KycData>(() => {
-    const saved = localStorage.getItem('nexa_kyc_data');
-    if (saved !== null) return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem('nexa_kyc_data');
+      if (saved !== null) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch (e) {}
     return isDemo ? {
       status: 'APPROVED',
       fullName: 'Alex Vance',
@@ -314,43 +334,53 @@ export function UserDashboard() {
     if (!userEmail) return;
     fetchUserProfileFromDb(userEmail).then(profile => {
       if (profile && profile.wallet_balance !== undefined) {
-        setWalletBalance(Number(profile.wallet_balance));
+        const bal = Number(profile.wallet_balance);
+        if (!isNaN(bal)) setWalletBalance(bal);
       }
     });
     fetchUserPackagesFromDb(userEmail).then(pkgs => {
-      if (pkgs !== null) setPurchasedPackages(pkgs);
+      if (Array.isArray(pkgs)) setPurchasedPackages(pkgs);
     });
     fetchTransactionsFromDb(userEmail).then(txs => {
-      if (txs !== null) setTransactions(txs);
+      if (Array.isArray(txs)) setTransactions(txs);
     });
     fetchKycFromDb(userEmail).then(kyc => {
-      if (kyc !== null) setKycData(kyc as any);
+      if (kyc && typeof kyc === 'object') setKycData(kyc as any);
     });
   }, [userEmail]);
 
   // Save to localStorage & sync to Supabase Live Database
   useEffect(() => {
-    localStorage.setItem('nexa_wallet_balance', walletBalance.toString());
-    syncUserProfile(userEmail, userName, walletBalance);
+    try {
+      localStorage.setItem('nexa_wallet_balance', (walletBalance || 0).toString());
+    } catch (e) {}
+    syncUserProfile(userEmail, userName, walletBalance || 0);
   }, [walletBalance, userEmail, userName]);
 
   useEffect(() => {
-    localStorage.setItem('nexa_purchased_packages', JSON.stringify(purchasedPackages));
+    try {
+      localStorage.setItem('nexa_purchased_packages', JSON.stringify(purchasedPackages || []));
+    } catch (e) {}
   }, [purchasedPackages]);
 
   useEffect(() => {
-    localStorage.setItem('nexa_transactions', JSON.stringify(transactions));
+    try {
+      localStorage.setItem('nexa_transactions', JSON.stringify(transactions || []));
+    } catch (e) {}
   }, [transactions]);
 
   useEffect(() => {
-    localStorage.setItem('nexa_kyc_data', JSON.stringify(kycData));
+    try {
+      localStorage.setItem('nexa_kyc_data', JSON.stringify(kycData || {}));
+    } catch (e) {}
   }, [kycData]);
 
   // Aggregate Metrics
-  const totalInvested = purchasedPackages.reduce((acc, p) => acc + p.amount, 0);
-  const totalEarnedRoi = purchasedPackages.reduce((acc, p) => acc + p.earnedRoi, 0);
-  const totalRemainingRoi = purchasedPackages.reduce((acc, p) => acc + p.remainingRoi, 0);
-  const activePackagesCount = purchasedPackages.filter(p => p.status === 'ACTIVE').length;
+  const pkgsList = Array.isArray(purchasedPackages) ? purchasedPackages : [];
+  const totalInvested = pkgsList.reduce((acc, p) => acc + (p?.amount || 0), 0);
+  const totalEarnedRoi = pkgsList.reduce((acc, p) => acc + (p?.earnedRoi || 0), 0);
+  const totalRemainingRoi = pkgsList.reduce((acc, p) => acc + (p?.remainingRoi || 0), 0);
+  const activePackagesCount = pkgsList.filter(p => p && p.status === 'ACTIVE').length;
 
   // BEP20 Auto-Verification State
   const [bep20TxHash, setBep20TxHash] = useState<string>('');
