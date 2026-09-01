@@ -48,7 +48,8 @@ import {
   insertTransactionToDb,
   fetchUserPackagesFromDb,
   fetchKycFromDb,
-  fetchTransactionsFromDb
+  fetchTransactionsFromDb,
+  fetchUserProfileFromDb
 } from '@/lib/supabase';
 
 export interface PurchasedPackage {
@@ -277,6 +278,11 @@ export function UserDashboard() {
   // On mount, sync from live Supabase DB
   useEffect(() => {
     if (!userEmail) return;
+    fetchUserProfileFromDb(userEmail).then(profile => {
+      if (profile && profile.wallet_balance !== undefined) {
+        setWalletBalance(Number(profile.wallet_balance));
+      }
+    });
     fetchUserPackagesFromDb(userEmail).then(pkgs => {
       if (pkgs !== null) setPurchasedPackages(pkgs);
     });

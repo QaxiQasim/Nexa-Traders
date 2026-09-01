@@ -13,6 +13,21 @@ const getHeaders = () => ({
 // SUPABASE REST DATABASE OPERATIONS
 // ----------------------------------------------------
 
+export async function fetchUserProfileFromDb(email: string) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data || data.length === 0) return null;
+    return data[0];
+  } catch (err) {
+    return null;
+  }
+}
+
 export async function syncUserProfile(email: string, name: string, balance: number) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
