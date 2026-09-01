@@ -902,17 +902,20 @@ export function UserDashboard() {
                   </div>
 
                   <div className="mt-5 space-y-4">
-                    {purchasedPackages.map(pkg => {
-                      const pct = Math.min(100, Math.round((pkg.earnedRoi / pkg.totalRoiCap) * 100));
+                    {(purchasedPackages || []).map(pkg => {
+                      const amount = Number(pkg?.amount || 0);
+                      const earned = Number(pkg?.earnedRoi || 0);
+                      const totalCap = Number(pkg?.totalRoiCap || 1);
+                      const pct = Math.min(100, Math.round((earned / totalCap) * 100));
                       return (
                         <div key={pkg.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 font-mono">
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-foreground text-sm">{pkg.name} Plan</span>
-                            <span className="text-xs font-bold text-primary">${pkg.amount.toLocaleString()}</span>
+                            <span className="text-xs font-bold text-primary">${amount.toLocaleString()}</span>
                           </div>
                           <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
                             <span>Daily: <strong className="text-accent">+{pkg.dailyRoi}%</strong></span>
-                            <span>Earned: <strong className="text-primary">${pkg.earnedRoi.toFixed(2)}</strong></span>
+                            <span>Earned: <strong className="text-primary">${earned.toFixed(2)}</strong></span>
                           </div>
                           {/* Progress Bar */}
                           <div className="mt-3">
@@ -962,8 +965,12 @@ export function UserDashboard() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {purchasedPackages.map(pkg => {
-                const progressPct = Math.min(100, Math.round((pkg.earnedRoi / pkg.totalRoiCap) * 100));
+              {(purchasedPackages || []).map(pkg => {
+                const amount = Number(pkg?.amount || 0);
+                const earned = Number(pkg?.earnedRoi || 0);
+                const remaining = Number(pkg?.remainingRoi || 0);
+                const totalCap = Number(pkg?.totalRoiCap || 1);
+                const progressPct = Math.min(100, Math.round((earned / totalCap) * 100));
                 return (
                   <div
                     key={pkg.id}
@@ -984,7 +991,7 @@ export function UserDashboard() {
                       <div className="mt-6 space-y-3 font-mono text-xs">
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Investment Capital</span>
-                          <strong className="text-foreground text-sm">${pkg.amount.toLocaleString()}.00</strong>
+                          <strong className="text-foreground text-sm">${amount.toLocaleString()}.00</strong>
                         </div>
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Daily ROI Rate</span>
@@ -992,11 +999,11 @@ export function UserDashboard() {
                         </div>
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Total Earned ROI</span>
-                          <strong className="text-primary text-sm">${pkg.earnedRoi.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                          <strong className="text-primary text-sm">${earned.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
                         </div>
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Remaining ROI Cap</span>
-                          <strong className="text-foreground">${pkg.remainingRoi.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                          <strong className="text-foreground">${remaining.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
                         </div>
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Purchase Date</span>

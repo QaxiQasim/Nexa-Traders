@@ -117,7 +117,7 @@ export async function fetchKycFromDb(email: string) {
       country: 'United Arab Emirates',
       idType: item.document_type || 'PASSPORT',
       idNumber: item.document_number || 'N849102948',
-      submittedAt: item.submitted_at ? item.submitted_at.substring(0, 10) : new Date().toISOString().substring(0, 10)
+      submittedAt: (typeof item.submitted_at === 'string') ? item.submitted_at.substring(0, 10) : new Date().toISOString().substring(0, 10)
     };
   } catch (err) {
     return null;
@@ -152,13 +152,14 @@ export async function fetchTransactionsFromDb(email: string) {
     });
     if (!res.ok) return null;
     const data = await res.json();
+    if (!Array.isArray(data)) return [];
     return data.map((tx: any) => ({
       id: tx.id || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-      date: tx.created_at ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16),
-      type: tx.type,
-      title: tx.description || tx.type,
-      amount: Number(tx.amount),
-      status: tx.status
+      date: (typeof tx.created_at === 'string') ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16),
+      type: tx.type || 'DEPOSIT',
+      title: tx.description || tx.type || 'Transaction',
+      amount: isNaN(Number(tx.amount)) ? 0 : Number(tx.amount),
+      status: tx.status || 'COMPLETED'
     }));
   } catch (err) {
     return null;
