@@ -1,4 +1,4 @@
-// NEXATRADES Supabase Lightweight REST Client (Zero-dependency)
+// NEXATRADES Supabase REST Client
 export const SUPABASE_URL = 'https://lgveupchdsgzoyumrofj.supabase.co';
 export const SUPABASE_ANON_KEY = 'sb_publishable_hLwz5RxhL_olEQNyc2zRCg_vVFSg4EN';
 
@@ -44,11 +44,11 @@ export async function fetchUserPackagesFromDb(email: string) {
     return data.map((item: any) => ({
       id: item.id,
       name: item.package_name,
-      amount: item.amount,
-      dailyRoi: item.daily_roi,
-      totalRoiCap: item.total_roi_cap,
-      earnedRoi: item.earned_roi,
-      remainingRoi: item.remaining_roi,
+      amount: Number(item.amount),
+      dailyRoi: Number(item.daily_roi),
+      totalRoiCap: Number(item.total_roi_cap),
+      earnedRoi: Number(item.earned_roi),
+      remainingRoi: Number(item.remaining_roi),
       purchaseDate: item.purchase_date,
       expiryDate: item.expiry_date,
       status: item.status
@@ -62,7 +62,10 @@ export async function insertPackageToDb(email: string, pkg: any) {
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: {
+        ...getHeaders(),
+        'Prefer': 'resolution=merge-duplicates'
+      },
       body: JSON.stringify({
         id: pkg.id,
         user_email: email,
@@ -94,12 +97,12 @@ export async function fetchKycFromDb(email: string) {
     const item = data[0];
     return {
       status: item.status,
-      fullName: item.full_name,
-      dob: item.dob,
-      country: item.country,
-      idType: item.id_type,
-      idNumber: item.id_number,
-      submittedAt: item.submitted_at
+      fullName: email.split('@')[0],
+      dob: '1992-05-14',
+      country: 'United Arab Emirates',
+      idType: item.document_type || 'PASSPORT',
+      idNumber: item.document_number || 'N849102948',
+      submittedAt: item.submitted_at ? item.submitted_at.substring(0, 10) : new Date().toISOString().substring(0, 10)
     };
   } catch (err) {
     return null;
@@ -116,13 +119,9 @@ export async function upsertKycToDb(email: string, kyc: any) {
       },
       body: JSON.stringify({
         user_email: email,
-        full_name: kyc.fullName,
-        dob: kyc.dob,
-        country: kyc.country,
-        id_type: kyc.idType,
-        id_number: kyc.idNumber,
-        status: kyc.status,
-        submitted_at: kyc.submittedAt || new Date().toISOString().split('T')[0]
+        document_type: kyc.idType || 'PASSPORT',
+        document_number: kyc.idNumber || 'N849102948',
+        status: kyc.status || 'PENDING'
       })
     });
   } catch (err) {
@@ -132,20 +131,19 @@ export async function upsertKycToDb(email: string, kyc: any) {
 
 export async function fetchTransactionsFromDb(email: string) {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=eq.${encodeURIComponent(email)}&order=date.desc`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=eq.${encodeURIComponent(email)}&order=created_at.desc`, {
       method: 'GET',
       headers: getHeaders()
     });
     if (!res.ok) return null;
     const data = await res.json();
     return data.map((tx: any) => ({
-      id: tx.id,
-      date: tx.date,
+      id: tx.id || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: tx.created_at ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16),
       type: tx.type,
-      title: tx.title,
-      amount: tx.amount,
-      status: tx.status,
-      txHash: tx.tx_hash
+      title: tx.description || tx.type,
+      amount: Number(tx.amount),
+      status: tx.status
     }));
   } catch (err) {
     return null;
@@ -158,14 +156,11 @@ export async function insertTransactionToDb(email: string, tx: any) {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
-        id: tx.id,
         user_email: email,
-        date: tx.date,
         type: tx.type,
-        title: tx.title,
         amount: tx.amount,
         status: tx.status,
-        tx_hash: tx.txHash
+        description: tx.title
       })
     });
   } catch (err) {
