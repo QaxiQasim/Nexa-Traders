@@ -2151,18 +2151,114 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [, setLocation] = useLocation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
   const isRegister = mode === 'register';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const finalName = name.trim() || (email.split('@')[0]) || 'Alex Vance';
+    setLoading(true);
     const finalEmail = email.trim() || 'alex.vance@nexatraders.com';
-    localStorage.setItem('nexa_user_name', finalName.charAt(0).toUpperCase() + finalName.slice(1));
+    const rawName = name.trim() || (finalEmail.split('@')[0]) || 'Trader';
+    const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+    localStorage.setItem('nexa_user_name', formattedName);
     localStorage.setItem('nexa_user_email', finalEmail);
-    setLocation('/dashboard');
+    localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
+
+    try {
+      await syncUserProfile(finalEmail, formattedName, 0);
+    } catch (err) {}
+
+    setLoading(false);
+    window.location.href = '/dashboard';
   };
 
-  return <div className="relative flex min-h-[calc(100dvh-72px)] items-center justify-center overflow-hidden px-5 py-16"><div className="absolute inset-0 grid-fade opacity-60" /><div className="relative w-full max-w-md"><div className="mb-8 text-center"><Logo compact /><h1 className="mt-8 text-3xl font-semibold tracking-[-.05em]">{isRegister ? 'Make room for better decisions.' : 'Welcome back to the signal.'}</h1><p className="mt-3 text-sm text-muted-foreground">{isRegister ? 'Create your NexaTraders account in under a minute.' : 'Sign in to access your NexaTraders User Dashboard.'}</p></div><div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8"><form onSubmit={handleSubmit} className="space-y-4">{isRegister && <label className="block text-sm"><span className="mb-2 block text-muted-foreground">Full name</span><input required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex Vance" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-name" /></label>}<label className="block text-sm"><span className="mb-2 block text-muted-foreground">Email</span><input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@domain.com" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-email" /></label><label className="block text-sm"><span className="mb-2 block text-muted-foreground">Password</span><input required type="password" minLength={6} placeholder="••••••••" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-auth-password" /></label><button type="submit" className="mt-2 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68] transition-all" data-testid={`button-auth-${mode}`}>{isRegister ? 'Create Account & Launch Dashboard' : 'Sign In to Dashboard'} <ArrowRight size={15} className="ml-1 inline" /></button></form><div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">{isRegister ? 'Already have access? ' : 'New to NexaTraders? '}<button onClick={() => setLocation(isRegister ? '/login' : '/register')} className="text-primary hover:underline" data-testid="button-auth-switch">{isRegister ? 'Sign in' : 'Create an account'}</button></div></div><p className="mt-6 text-center text-[11px] text-muted-foreground">By continuing, you acknowledge our <Link href="/privacy" className="text-primary hover:underline" data-testid="link-auth-privacy">privacy policy</Link>.</p></div></div>;
+  return (
+    <div className="relative flex min-h-[calc(100dvh-72px)] items-center justify-center overflow-hidden px-5 py-16">
+      <div className="absolute inset-0 grid-fade opacity-60" />
+      <div className="relative w-full max-w-md">
+        <div className="mb-8 text-center">
+          <Logo compact />
+          <h1 className="mt-8 text-3xl font-semibold tracking-[-.05em]">
+            {isRegister ? 'Make room for better decisions.' : 'Welcome back to the signal.'}
+          </h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            {isRegister ? 'Create your NexaTraders account in under a minute.' : 'Sign in to access your NexaTraders User Dashboard.'}
+          </p>
+        </div>
+        <div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {isRegister && (
+              <label className="block text-sm">
+                <span className="mb-2 block text-muted-foreground">Full name</span>
+                <input
+                  required
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="e.g. Alex Vance"
+                  className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary"
+                  data-testid="input-auth-name"
+                />
+              </label>
+            )}
+            <label className="block text-sm">
+              <span className="mb-2 block text-muted-foreground">Email address</span>
+              <input
+                required
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@domain.com"
+                className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
+                data-testid="input-auth-email"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="mb-2 block text-muted-foreground">Password</span>
+              <input
+                required
+                type="password"
+                minLength={6}
+                placeholder="••••••••"
+                className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
+                data-testid="input-auth-password"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              data-testid={`button-auth-${mode}`}
+            >
+              {loading ? (
+                <span>Authenticating...</span>
+              ) : (
+                <>
+                  {isRegister ? 'Create Account & Launch Dashboard' : 'Sign In to Dashboard'} <ArrowRight size={15} />
+                </>
+              )}
+            </button>
+          </form>
+          <div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">
+            {isRegister ? 'Already have access? ' : 'New to NexaTraders? '}
+            <button
+              onClick={() => setLocation(isRegister ? '/login' : '/register')}
+              className="text-primary hover:underline font-bold"
+              data-testid="button-auth-switch"
+            >
+              {isRegister ? 'Sign in' : 'Create an account'}
+            </button>
+          </div>
+        </div>
+        <p className="mt-6 text-center text-[11px] text-muted-foreground">
+          By continuing, you acknowledge our{' '}
+          <Link href="/privacy" className="text-primary hover:underline" data-testid="link-auth-privacy">
+            privacy policy
+          </Link>.
+        </p>
+      </div>
+    </div>
+  );
 }
 
 function TradesPage() {
