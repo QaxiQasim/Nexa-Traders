@@ -114,55 +114,77 @@ const DEFAULT_PACKAGES: PurchasedPackage[] = [
 
 const AVAILABLE_PLANS = [
   {
-    name: 'Starter',
+    name: 'Spark',
+    price: '$100',
     min: 100,
-    max: 499,
-    dailyRoi: '1.2%',
-    dailyRoiNum: 1.2,
-    totalCapPct: 180,
-    duration: '60 Days',
+    max: 100,
+    totalRoi: '85%',
+    totalReturn: '$185',
+    dailyRoi: '$1/day',
+    dailyRoiNum: 1.0,
+    totalCapPct: 185,
+    duration: '6 Months',
+    slots: '2 active',
     features: ['Standard AI Execution', 'Daily ROI Credits', '24/7 Live Monitoring', 'Standard Withdrawal Speed']
   },
   {
-    name: 'Rise',
-    min: 500,
-    max: 2499,
-    dailyRoi: '1.8%',
-    dailyRoiNum: 1.8,
-    totalCapPct: 200,
-    duration: '90 Days',
-    popular: true,
-    features: ['High-Frequency Arbitrage', 'Automated Daily Payouts', 'Priority Execution Latency', 'Fast 15-Min Withdrawal']
-  },
-  {
-    name: 'Advanced',
-    min: 2500,
-    max: 4999,
-    dailyRoi: '2.4%',
-    dailyRoiNum: 2.4,
-    totalCapPct: 240,
-    duration: '120 Days',
+    name: 'Boost',
+    price: '$300',
+    min: 300,
+    max: 300,
+    totalRoi: '90%',
+    totalReturn: '$570',
+    dailyRoi: '$3.8/day',
+    dailyRoiNum: 1.26,
+    totalCapPct: 190,
+    duration: '5 Months',
+    slots: '4 active',
     features: ['Multi-Exchange Spreads', 'Institutional Liquidity', 'Dedicated Account Assistant', 'Instant Capital Compound']
   },
   {
-    name: 'Pro',
+    name: 'Rise',
+    price: '$1,000',
+    min: 1000,
+    max: 1000,
+    totalRoi: '95%',
+    totalReturn: '$2,000',
+    dailyRoi: '$13/day',
+    dailyRoiNum: 1.3,
+    totalCapPct: 200,
+    duration: '5 Months',
+    slots: '5 active',
+    popular: true,
+    badgeText: 'MOST SELECTED',
+    features: ['High-Frequency Arbitrage', 'Automated Daily Payouts', 'Priority Execution Latency', 'Fast 15-Min Withdrawal']
+  },
+  {
+    name: 'Titan',
+    price: '$5,000',
     min: 5000,
-    max: 9999,
-    dailyRoi: '3.0%',
-    dailyRoiNum: 3.0,
-    totalCapPct: 280,
-    duration: '150 Days',
+    max: 5000,
+    totalRoi: '100%',
+    totalReturn: '$10,000',
+    dailyRoi: '$66/day',
+    dailyRoiNum: 1.32,
+    totalCapPct: 200,
+    duration: '5 Months',
+    slots: '6 active',
     features: ['VIP Flash Loans Integration', 'Maximum Daily Spread Yield', 'Zero Withdrawal Fees', 'Direct Trader Desk Access']
   },
   {
     name: 'Supreme',
+    price: '$10,000',
     min: 10000,
     max: 100000,
-    dailyRoi: '3.5%',
-    dailyRoiNum: 3.5,
-    totalCapPct: 300,
-    duration: '180 Days',
+    totalRoi: '120%',
+    totalReturn: '$22,000',
+    dailyRoi: '$183/day',
+    dailyRoiNum: 1.83,
+    totalCapPct: 220,
+    duration: '4 Months',
+    slots: '8 active',
     supreme: true,
+    badgeText: 'VIP TIER 👑',
     features: ['Institutional AI Quantum Engine', 'Custom Yield Strategy', 'VIP Concierge Service', 'Uncapped Compounding Power']
   }
 ];
@@ -935,46 +957,55 @@ export function UserDashboard() {
               {AVAILABLE_PLANS.map(plan => (
                 <div
                   key={plan.name}
-                  className={`group relative rounded-3xl border p-7 backdrop-blur-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 ${
-                    plan.popular
+                  className={`group relative rounded-3xl border p-6 backdrop-blur-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 ${
+                    plan.supreme
                       ? 'border-2 border-primary bg-gradient-to-b from-[#1c241f] via-[#121815] to-[#0c100e] shadow-[0_0_40px_rgba(232,185,73,0.3)]'
+                      : plan.popular
+                      ? 'border-2 border-primary/80 bg-gradient-to-b from-[#18201b] via-[#111613] to-[#0a0e0c] shadow-[0_0_30px_rgba(232,185,73,0.2)]'
                       : 'border-white/12 bg-gradient-to-b from-[#141c18]/90 via-[#0f1412]/85 to-[#090c0b]/95 hover:border-primary/50'
                   }`}
                 >
                   <div>
-                    {plan.popular && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-primary/60 bg-primary px-3 py-0.5 font-mono text-[9px] font-black uppercase text-primary-foreground shadow-md">
-                        MOST POPULAR
+                    {/* Badge */}
+                    {plan.badgeText && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-primary/60 bg-primary px-3 py-0.5 font-mono text-[9px] font-black uppercase text-primary-foreground shadow-md whitespace-nowrap">
+                        {plan.badgeText}
                       </span>
                     )}
 
-                    <div className="text-center pb-5 border-b border-white/10">
-                      <h3 className="text-xl font-black text-foreground font-mono">{plan.name} Plan</h3>
-                      <div className="mt-3 text-3xl font-black text-primary font-mono tracking-tight">
-                        {plan.dailyRoi} <span className="text-xs text-muted-foreground font-normal">/ Day</span>
-                      </div>
-                      <div className="mt-1 text-xs text-muted-foreground font-mono">
-                        ${plan.min.toLocaleString()} – ${plan.max.toLocaleString()}
+                    {/* Plan Header & Big Price */}
+                    <div className="pb-4">
+                      <span className="text-[11px] font-black tracking-widest font-mono uppercase text-muted-foreground block">
+                        {plan.name}
+                      </span>
+                      <div className="mt-2 text-4xl font-black text-foreground font-mono tracking-tight">
+                        {plan.price}
                       </div>
                     </div>
 
-                    <div className="mt-6 space-y-3 font-mono text-xs">
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span className="text-muted-foreground">Total Return Cap</span>
-                        <strong className="text-accent">{plan.totalCapPct}% ROI</strong>
+                    {/* Gold Total ROI Box */}
+                    <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 p-3 text-center my-3">
+                      <span className="text-[10px] uppercase text-muted-foreground font-mono font-bold block">Total ROI</span>
+                      <span className="text-xl font-black text-primary font-mono">{plan.totalRoi}</span>
+                    </div>
+
+                    {/* Plan Metrics List */}
+                    <div className="space-y-2.5 font-mono text-xs my-4">
+                      <div className="flex justify-between border-b border-white/5 pb-1.5">
+                        <span className="text-muted-foreground">Total Return</span>
+                        <strong className="text-foreground">{plan.totalReturn}</strong>
                       </div>
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span className="text-muted-foreground">Trading Duration</span>
+                      <div className="flex justify-between border-b border-white/5 pb-1.5">
+                        <span className="text-muted-foreground">Duration</span>
                         <span className="text-foreground">{plan.duration}</span>
                       </div>
-
-                      <div className="pt-2 space-y-2">
-                        {plan.features.map(feat => (
-                          <div key={feat} className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                            <Check size={12} className="text-primary flex-shrink-0" />
-                            <span>{feat}</span>
-                          </div>
-                        ))}
+                      <div className="flex justify-between border-b border-white/5 pb-1.5">
+                        <span className="text-muted-foreground">Daily ROI</span>
+                        <strong className="text-primary">{plan.dailyRoi}</strong>
+                      </div>
+                      <div className="flex justify-between border-b border-white/5 pb-1.5">
+                        <span className="text-muted-foreground">Max Slots</span>
+                        <span className="text-accent text-[11px]">{plan.slots}</span>
                       </div>
                     </div>
                   </div>
@@ -984,13 +1015,13 @@ export function UserDashboard() {
                       setSelectedPlanForBuy(plan);
                       setCustomInvestAmount(plan.min);
                     }}
-                    className={`mt-8 w-full rounded-xl py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
-                      plan.popular
-                        ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:scale-105'
+                    className={`mt-4 w-full rounded-xl py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                      plan.supreme || plan.popular
+                        ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:scale-[1.02]'
                         : 'border border-primary/50 bg-primary/10 text-primary hover:bg-primary/20'
                     }`}
                   >
-                    Subscribe Now <ArrowUpRight size={15} />
+                    Choose Plan <ArrowUpRight size={15} />
                   </button>
                 </div>
               ))}
