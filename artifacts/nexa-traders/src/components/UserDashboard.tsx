@@ -564,7 +564,7 @@ export function UserDashboard() {
     { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'packages', label: 'My Packages', icon: Package, badge: `${activePackagesCount}` },
     { id: 'buy', label: 'Packages Store', icon: Sparkles, badgeText: 'HOT', badgeColor: 'bg-primary text-primary-foreground' },
-    { id: 'kyc', label: 'KYC Verification', icon: ShieldCheck, statusBadge: kycData.status },
+    { id: 'kyc', label: 'KYC Verification', icon: ShieldCheck, statusBadge: (kycData && kycData.status) || 'UNVERIFIED' },
     { id: 'withdraw', label: 'Withdrawal Portal', icon: ArrowUpRight },
     { id: 'transactions', label: 'Transactions History', icon: History }
   ];
@@ -579,11 +579,11 @@ export function UserDashboard() {
       <div className="lg:hidden sticky top-0 z-40 border-b border-white/10 bg-[#090d0b]/95 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary/20 text-primary border border-primary/40 font-bold">
-            {userName.charAt(0)}
+            {(userName || 'User').charAt(0)}
           </div>
           <div>
-            <h2 className="text-sm font-bold text-foreground">{userName}</h2>
-            <span className="text-[10px] text-primary font-mono font-bold">$ {walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
+            <h2 className="text-sm font-bold text-foreground">{userName || 'User'}</h2>
+            <span className="text-[10px] text-primary font-mono font-bold">$ {(walletBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
           </div>
         </div>
 
@@ -607,14 +607,14 @@ export function UserDashboard() {
             <div className="absolute top-0 right-0 h-16 w-16 bg-primary/10 blur-xl pointer-events-none" />
             <div className="flex items-center gap-3">
               <div className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl border border-primary/50 bg-gradient-to-br from-primary/30 to-primary/10 text-primary font-black text-xl shadow-[0_0_20px_rgba(232,185,73,0.3)]">
-                {userName.charAt(0)}
+                {(userName || 'User').charAt(0)}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-extrabold text-foreground truncate">{userName}</h2>
+                  <h2 className="text-sm font-extrabold text-foreground truncate">{userName || 'User'}</h2>
                   <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
                 </div>
-                <p className="text-[11px] text-muted-foreground font-mono truncate">{userEmail}</p>
+                <p className="text-[11px] text-muted-foreground font-mono truncate">{userEmail || ''}</p>
                 <div className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-accent/40 bg-accent/10 px-2 py-0.5 font-mono text-[9px] text-accent font-bold uppercase">
                   <Zap size={9} className="fill-current" /> VIP QUANT TRADER
                 </div>
@@ -626,7 +626,7 @@ export function UserDashboard() {
               <div>
                 <span className="text-[10px] text-muted-foreground block uppercase">Available Balance</span>
                 <span className="text-base font-black text-primary">
-                  ${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ${(walletBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
               <button
