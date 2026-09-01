@@ -229,27 +229,34 @@ export function UserDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'packages' | 'buy' | 'kyc' | 'withdraw' | 'transactions'>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Load User Data from localStorage
+  // Load User Data from localStorage / Supabase defaults
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || 'Alex Vance');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || 'alex.vance@nexatraders.com');
+  
+  const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
+
   const [walletBalance, setWalletBalance] = useState<number>(() => {
     const saved = localStorage.getItem('nexa_wallet_balance');
-    return saved ? parseFloat(saved) : 4680.00;
+    if (saved !== null) return parseFloat(saved);
+    return isDemo ? 4680.00 : 0.00;
   });
 
   const [purchasedPackages, setPurchasedPackages] = useState<PurchasedPackage[]>(() => {
     const saved = localStorage.getItem('nexa_purchased_packages');
-    return saved ? JSON.parse(saved) : DEFAULT_PACKAGES;
+    if (saved !== null) return JSON.parse(saved);
+    return isDemo ? DEFAULT_PACKAGES : [];
   });
 
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     const saved = localStorage.getItem('nexa_transactions');
-    return saved ? JSON.parse(saved) : INITIAL_TRANSACTIONS;
+    if (saved !== null) return JSON.parse(saved);
+    return isDemo ? INITIAL_TRANSACTIONS : [];
   });
 
   const [kycData, setKycData] = useState<KycData>(() => {
     const saved = localStorage.getItem('nexa_kyc_data');
-    return saved ? JSON.parse(saved) : {
+    if (saved !== null) return JSON.parse(saved);
+    return isDemo ? {
       status: 'APPROVED',
       fullName: 'Alex Vance',
       dob: '1992-05-14',
@@ -257,8 +264,29 @@ export function UserDashboard() {
       idType: 'PASSPORT',
       idNumber: 'N849102948',
       submittedAt: '2026-08-10'
+    } : {
+      status: 'UNVERIFIED',
+      fullName: '',
+      dob: '',
+      country: 'United Arab Emirates',
+      idType: 'PASSPORT',
+      idNumber: '',
     };
   });
+
+  // On mount, sync from live Supabase DB
+  useEffect(() => {
+    if (!userEmail) return;
+    fetchUserPackagesFromDb(userEmail).then(pkgs => {
+      if (pkgs !== null) setPurchasedPackages(pkgs);
+    });
+    fetchTransactionsFromDb(userEmail).then(txs => {
+      if (txs !== null) setTransactions(txs);
+    });
+    fetchKycFromDb(userEmail).then(kyc => {
+      if (kyc !== null) setKycData(kyc as any);
+    });
+  }, [userEmail]);
 
   // Save to localStorage & sync to Supabase Live Database
   useEffect(() => {
