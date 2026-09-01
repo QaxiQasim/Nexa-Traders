@@ -21,7 +21,7 @@ export async function fetchUserProfileFromDb(email: string) {
     });
     if (!res.ok) return null;
     const data = await res.json();
-    if (!data || data.length === 0) return null;
+    if (!Array.isArray(data) || data.length === 0) return null;
     return data[0];
   } catch (err) {
     return null;
@@ -56,17 +56,18 @@ export async function fetchUserPackagesFromDb(email: string) {
     });
     if (!res.ok) return null;
     const data = await res.json();
+    if (!Array.isArray(data)) return [];
     return data.map((item: any) => ({
-      id: item.id,
-      name: item.package_name,
-      amount: Number(item.amount),
-      dailyRoi: Number(item.daily_roi),
-      totalRoiCap: Number(item.total_roi_cap),
-      earnedRoi: Number(item.earned_roi),
-      remainingRoi: Number(item.remaining_roi),
-      purchaseDate: item.purchase_date,
-      expiryDate: item.expiry_date,
-      status: item.status
+      id: item.id || `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: item.package_name || 'Standard',
+      amount: isNaN(Number(item.amount)) ? 0 : Number(item.amount),
+      dailyRoi: isNaN(Number(item.daily_roi)) ? 0 : Number(item.daily_roi),
+      totalRoiCap: isNaN(Number(item.total_roi_cap)) ? 1 : Number(item.total_roi_cap),
+      earnedRoi: isNaN(Number(item.earned_roi)) ? 0 : Number(item.earned_roi),
+      remainingRoi: isNaN(Number(item.remaining_roi)) ? 0 : Number(item.remaining_roi),
+      purchaseDate: item.purchase_date || new Date().toISOString().substring(0, 10),
+      expiryDate: item.expiry_date || new Date().toISOString().substring(0, 10),
+      status: item.status || 'ACTIVE'
     }));
   } catch (err) {
     return null;
@@ -108,11 +109,11 @@ export async function fetchKycFromDb(email: string) {
     });
     if (!res.ok) return null;
     const data = await res.json();
-    if (!data || data.length === 0) return null;
+    if (!Array.isArray(data) || data.length === 0) return null;
     const item = data[0];
     return {
-      status: item.status,
-      fullName: email.split('@')[0],
+      status: item.status || 'UNVERIFIED',
+      fullName: (email || '').split('@')[0] || 'User',
       dob: '1992-05-14',
       country: 'United Arab Emirates',
       idType: item.document_type || 'PASSPORT',

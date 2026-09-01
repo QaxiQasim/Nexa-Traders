@@ -261,7 +261,7 @@ export function UserDashboard() {
     localStorage.removeItem('nexa_transactions');
     localStorage.removeItem('nexa_kyc_data');
     localStorage.removeItem('nexa_auth_user');
-    setLocation('/auth');
+    setLocation('/login');
   };
 
   // Load User Data from localStorage / Supabase defaults
@@ -337,16 +337,16 @@ export function UserDashboard() {
         const bal = Number(profile.wallet_balance);
         if (!isNaN(bal)) setWalletBalance(bal);
       }
-    });
+    }).catch(() => {});
     fetchUserPackagesFromDb(userEmail).then(pkgs => {
       if (Array.isArray(pkgs)) setPurchasedPackages(pkgs);
-    });
+    }).catch(() => {});
     fetchTransactionsFromDb(userEmail).then(txs => {
       if (Array.isArray(txs)) setTransactions(txs);
-    });
+    }).catch(() => {});
     fetchKycFromDb(userEmail).then(kyc => {
       if (kyc && typeof kyc === 'object') setKycData(kyc as any);
-    });
+    }).catch(() => {});
   }, [userEmail]);
 
   // Save to localStorage & sync to Supabase Live Database
