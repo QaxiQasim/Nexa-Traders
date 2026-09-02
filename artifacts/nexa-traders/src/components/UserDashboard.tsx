@@ -262,124 +262,12 @@ export function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Load User Data from localStorage
+  // 1. Core User Info States
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || '');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || '');
-
-  // Referral & Team States
-  const [userRefCode, setUserRefCode] = useState<string>(() => {
-    try {
-      const email = localStorage.getItem('nexa_user_email') || '';
-      return email ? localStorage.getItem(`nexa_ref_code_${email}`) || '' : '';
-    } catch (e) {}
-    return '';
-  });
-  const [directTeam, setDirectTeam] = useState<any[]>([]);
-  const [teamHierarchy, setTeamHierarchy] = useState<any[]>([]);
-  const [teamLoading, setTeamLoading] = useState<boolean>(false);
-  const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [copiedCode, setCopiedCode] = useState<boolean>(false);
-  const [teamTabFilter, setTeamTabFilter] = useState<'all' | 'direct' | 'network'>('all');
-
-  // Strictly enforce login check on mount
-  useEffect(() => {
-    setIsMounted(true);
-    const email = localStorage.getItem('nexa_user_email');
-    if (!email) {
-      setLocation('/login');
-    }
-  }, [setLocation]);
-
-  // Load Referral & Team Database Telemetry
-  useEffect(() => {
-    if (!userEmail) return;
-    const loadReferralTeamData = async () => {
-      setTeamLoading(true);
-      try {
-        const profile = await fetchUserProfileFromDb(userEmail);
-        let refCode = profile?.referral_code || userRefCode;
-        if (!refCode) {
-          const synced = await syncUserProfile(userEmail, userName || userEmail.split('@')[0], walletBalance);
-          if (synced?.referral_code) refCode = synced.referral_code;
-        }
-        if (refCode) {
-          setUserRefCode(refCode);
-          try { localStorage.setItem(`nexa_ref_code_${userEmail}`, refCode); } catch (e) {}
-        }
-
-        // Fetch Direct Referrals (Level 1)
-        const directs = await fetchDirectReferralsFromDb(userEmail, refCode);
-        setDirectTeam(directs);
-
-        // Fetch Full Team Hierarchy (Multi-Level Network)
-        const hierarchy = await fetchFullTeamHierarchyFromDb(userEmail, refCode);
-        setTeamHierarchy(hierarchy);
-      } catch (err) {
-        console.error('Error loading team telemetry:', err);
-      } finally {
-        setTeamLoading(false);
-      }
-    };
-
-    loadReferralTeamData();
-  }, [userEmail, userName, walletBalance]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('nexa_auth_user');
-    localStorage.removeItem('nexa_user_name');
-    localStorage.removeItem('nexa_user_email');
-    setAvatarUrl(null);
-    setWalletBalance(0);
-    setPurchasedPackages([]);
-    setTransactions([]);
-    setKycData({
-      status: 'UNVERIFIED',
-      fullName: '',
-      dob: '',
-      country: 'United Arab Emirates',
-      idType: 'PASSPORT',
-      idNumber: '',
-    });
-    setLocation('/login');
-  };
   const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
-    try {
-      const email = localStorage.getItem('nexa_user_email') || '';
-      return email ? localStorage.getItem(`nexa_avatar_${email}`) || null : null;
-    } catch (e) {}
-    return null;
-  });
-
-  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file (PNG, JPG, JPEG, WebP).');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const base64 = reader.result as string;
-      setAvatarUrl(base64);
-      if (userEmail) {
-        try {
-          localStorage.setItem(`nexa_avatar_${userEmail}`, base64);
-        } catch (err) {}
-        await syncUserProfile(userEmail, userName, walletBalance, base64);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
+  // 2. Financial & Data States
   const [walletBalance, setWalletBalance] = useState<number>(() => {
     try {
       const email = localStorage.getItem('nexa_user_email') || '';
@@ -390,6 +278,14 @@ export function UserDashboard() {
       }
     } catch (e) {}
     return isDemo ? 4680.00 : 0.00;
+  });
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
+    try {
+      const email = localStorage.getItem('nexa_user_email') || '';
+      return email ? localStorage.getItem(`nexa_avatar_${email}`) || null : null;
+    } catch (e) {}
+    return null;
   });
 
   const [purchasedPackages, setPurchasedPackages] = useState<PurchasedPackage[]>(() => {
@@ -442,6 +338,111 @@ export function UserDashboard() {
       idNumber: '',
     };
   });
+
+  // 3. Referral & Team States
+  const [userRefCode, setUserRefCode] = useState<string>(() => {
+    try {
+      const email = localStorage.getItem('nexa_user_email') || '';
+      return email ? localStorage.getItem(`nexa_ref_code_${email}`) || '' : '';
+    } catch (e) {}
+    return '';
+  });
+  const [directTeam, setDirectTeam] = useState<any[]>([]);
+  const [teamHierarchy, setTeamHierarchy] = useState<any[]>([]);
+  const [teamLoading, setTeamLoading] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [teamTabFilter, setTeamTabFilter] = useState<'all' | 'direct' | 'network'>('all');
+
+  // 4. Authentication Check
+  useEffect(() => {
+    setIsMounted(true);
+    const email = localStorage.getItem('nexa_user_email');
+    if (!email) {
+      setLocation('/login');
+    }
+  }, [setLocation]);
+
+  // 5. Load Referral & Team Database Telemetry
+  useEffect(() => {
+    if (!userEmail) return;
+    const loadReferralTeamData = async () => {
+      setTeamLoading(true);
+      try {
+        const profile = await fetchUserProfileFromDb(userEmail);
+        let refCode = profile?.referral_code || userRefCode;
+        if (!refCode) {
+          const synced = await syncUserProfile(userEmail, userName || userEmail.split('@')[0], walletBalance);
+          if (synced?.referral_code) refCode = synced.referral_code;
+        }
+        if (refCode) {
+          setUserRefCode(refCode);
+          try { localStorage.setItem(`nexa_ref_code_${userEmail}`, refCode); } catch (e) {}
+        }
+
+        // Fetch Direct Referrals (Level 1)
+        const directs = await fetchDirectReferralsFromDb(userEmail, refCode);
+        setDirectTeam(directs);
+
+        // Fetch Full Team Hierarchy (Multi-Level Network)
+        const hierarchy = await fetchFullTeamHierarchyFromDb(userEmail, refCode);
+        setTeamHierarchy(hierarchy);
+      } catch (err) {
+        console.error('Error loading team telemetry:', err);
+      } finally {
+        setTeamLoading(false);
+      }
+    };
+
+    loadReferralTeamData();
+  }, [userEmail, userName, walletBalance]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('nexa_auth_user');
+    localStorage.removeItem('nexa_user_name');
+    localStorage.removeItem('nexa_user_email');
+    setAvatarUrl(null);
+    setWalletBalance(0);
+    setPurchasedPackages([]);
+    setTransactions([]);
+    setKycData({
+      status: 'UNVERIFIED',
+      fullName: '',
+      dob: '',
+      country: 'United Arab Emirates',
+      idType: 'PASSPORT',
+      idNumber: '',
+    });
+    setLocation('/login');
+  };
+
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, JPEG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size must be less than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result as string;
+      setAvatarUrl(base64);
+      if (userEmail) {
+        try {
+          localStorage.setItem(`nexa_avatar_${userEmail}`, base64);
+        } catch (err) {}
+        await syncUserProfile(userEmail, userName, walletBalance, base64);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // On mount or user switch, load user-specific cached data and sync from live Supabase DB
   useEffect(() => {
