@@ -260,22 +260,33 @@ export function UserDashboard() {
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem('nexa_auth_user');
     localStorage.removeItem('nexa_user_name');
     localStorage.removeItem('nexa_user_email');
-    localStorage.removeItem('nexa_wallet_balance');
-    localStorage.removeItem('nexa_purchased_packages');
-    localStorage.removeItem('nexa_transactions');
-    localStorage.removeItem('nexa_kyc_data');
-    localStorage.removeItem('nexa_auth_user');
+    setAvatarUrl(null);
+    setWalletBalance(0);
+    setPurchasedPackages([]);
+    setTransactions([]);
+    setKycData({
+      status: 'UNVERIFIED',
+      fullName: '',
+      dob: '',
+      country: 'United Arab Emirates',
+      idType: 'PASSPORT',
+      idNumber: '',
+    });
     setLocation('/login');
   };
 
   // Load User Data from localStorage / Supabase defaults
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || 'Alex Vance');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || 'alex.vance@nexatraders.com');
+  const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
+
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
     try {
-      return localStorage.getItem('nexa_user_avatar') || null;
+      const email = localStorage.getItem('nexa_user_email') || '';
+      return email ? localStorage.getItem(`nexa_avatar_${email}`) || null : null;
     } catch (e) {}
     return null;
   });
@@ -298,22 +309,20 @@ export function UserDashboard() {
     reader.onload = async () => {
       const base64 = reader.result as string;
       setAvatarUrl(base64);
-      try {
-        localStorage.setItem('nexa_user_avatar', base64);
-      } catch (err) {}
-
       if (userEmail) {
+        try {
+          localStorage.setItem(`nexa_avatar_${userEmail}`, base64);
+        } catch (err) {}
         await syncUserProfile(userEmail, userName, walletBalance, base64);
       }
     };
     reader.readAsDataURL(file);
   };
-  
-  const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
 
   const [walletBalance, setWalletBalance] = useState<number>(() => {
     try {
-      const saved = localStorage.getItem('nexa_wallet_balance');
+      const email = localStorage.getItem('nexa_user_email') || '';
+      const saved = email ? localStorage.getItem(`nexa_balance_${email}`) : null;
       if (saved !== null) {
         const val = parseFloat(saved);
         if (!isNaN(val)) return val;
@@ -324,7 +333,8 @@ export function UserDashboard() {
 
   const [purchasedPackages, setPurchasedPackages] = useState<PurchasedPackage[]>(() => {
     try {
-      const saved = localStorage.getItem('nexa_purchased_packages');
+      const email = localStorage.getItem('nexa_user_email') || '';
+      const saved = email ? localStorage.getItem(`nexa_packages_${email}`) : null;
       if (saved !== null) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) return parsed;
@@ -335,7 +345,8 @@ export function UserDashboard() {
 
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     try {
-      const saved = localStorage.getItem('nexa_transactions');
+      const email = localStorage.getItem('nexa_user_email') || '';
+      const saved = email ? localStorage.getItem(`nexa_tx_${email}`) : null;
       if (saved !== null) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) return parsed;
@@ -346,7 +357,8 @@ export function UserDashboard() {
 
   const [kycData, setKycData] = useState<KycData>(() => {
     try {
-      const saved = localStorage.getItem('nexa_kyc_data');
+      const email = localStorage.getItem('nexa_user_email') || '';
+      const saved = email ? localStorage.getItem(`nexa_kyc_${email}`) : null;
       if (saved !== null) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed === 'object') return parsed;
@@ -370,67 +382,137 @@ export function UserDashboard() {
     };
   });
 
-  // On mount, sync from live Supabase DB
+  // On mount or user switch, load user-specific cached data and sync from live Supabase DB
   useEffect(() => {
     if (!userEmail) return;
-    fetchUserProfileFromDb(userEmail).then(profile => {
+
+    const email = userEmail.toLowerCase();
+    const isDemoAccount = email === 'alex.vance@nexatraders.com';
+
+    // Hydrate avatar
+    const cachedAvatar = localStorage.getItem(`nexa_avatar_${email}`);
+    setAvatarUrl(cachedAvatar || null);
+
+    // Hydrate balance
+    const cachedBal = localStorage.getItem(`nexa_balance_${email}`);
+    if (cachedBal !== null) {
+      const parsed = parseFloat(cachedBal);
+      if (!isNaN(parsed)) setWalletBalance(parsed);
+    } else {
+      setWalletBalance(isDemoAccount ? 4680.00 : 0.00);
+    }
+
+    // Hydrate packages
+    const cachedPkgs = localStorage.getItem(`nexa_packages_${email}`);
+    if (cachedPkgs !== null) {
+      try { setPurchasedPackages(JSON.parse(cachedPkgs)); } catch (e) {}
+    } else {
+      setPurchasedPackages(isDemoAccount ? DEFAULT_PACKAGES : []);
+    }
+
+    // Hydrate transactions
+    const cachedTx = localStorage.getItem(`nexa_tx_${email}`);
+    if (cachedTx !== null) {
+      try { setTransactions(JSON.parse(cachedTx)); } catch (e) {}
+    } else {
+      setTransactions(isDemoAccount ? INITIAL_TRANSACTIONS : []);
+    }
+
+    // Hydrate kyc
+    const cachedKyc = localStorage.getItem(`nexa_kyc_${email}`);
+    if (cachedKyc !== null) {
+      try { setKycData(JSON.parse(cachedKyc)); } catch (e) {}
+    } else {
+      setKycData(isDemoAccount ? {
+        status: 'APPROVED',
+        fullName: 'Alex Vance',
+        dob: '1992-05-14',
+        country: 'United Arab Emirates',
+        idType: 'PASSPORT',
+        idNumber: 'N849102948',
+        submittedAt: '2026-08-10'
+      } : {
+        status: 'UNVERIFIED',
+        fullName: '',
+        dob: '',
+        country: 'United Arab Emirates',
+        idType: 'PASSPORT',
+        idNumber: '',
+      });
+    }
+
+    // Fetch Live Data from Supabase DB
+    fetchUserProfileFromDb(email).then(profile => {
       if (profile) {
+        if (profile.full_name) setUserName(profile.full_name);
         if (profile.wallet_balance !== undefined) {
           const bal = Number(profile.wallet_balance);
           if (!isNaN(bal)) {
             setWalletBalance(bal);
-            try {
-              localStorage.setItem('nexa_wallet_balance', bal.toString());
-            } catch (e) {}
+            localStorage.setItem(`nexa_balance_${email}`, bal.toString());
           }
         }
         if (profile.avatar_url) {
           setAvatarUrl(profile.avatar_url);
-          try {
-            localStorage.setItem('nexa_user_avatar', profile.avatar_url);
-          } catch (e) {}
+          localStorage.setItem(`nexa_avatar_${email}`, profile.avatar_url);
+        } else {
+          setAvatarUrl(null);
+          localStorage.removeItem(`nexa_avatar_${email}`);
         }
       }
     }).catch(() => {});
-    fetchUserPackagesFromDb(userEmail).then(pkgs => {
-      if (Array.isArray(pkgs)) setPurchasedPackages(pkgs);
+
+    fetchUserPackagesFromDb(email).then(pkgs => {
+      if (Array.isArray(pkgs) && pkgs.length > 0) {
+        setPurchasedPackages(pkgs);
+        localStorage.setItem(`nexa_packages_${email}`, JSON.stringify(pkgs));
+      }
     }).catch(() => {});
-    fetchTransactionsFromDb(userEmail).then(txs => {
-      if (Array.isArray(txs)) setTransactions(txs);
+
+    fetchTransactionsFromDb(email).then(txs => {
+      if (Array.isArray(txs) && txs.length > 0) {
+        setTransactions(txs);
+        localStorage.setItem(`nexa_tx_${email}`, JSON.stringify(txs));
+      }
     }).catch(() => {});
-    fetchKycFromDb(userEmail).then(kyc => {
-      if (kyc && typeof kyc === 'object') setKycData(kyc as any);
+
+    fetchKycFromDb(email).then(kyc => {
+      if (kyc && typeof kyc === 'object') {
+        setKycData(kyc as any);
+        localStorage.setItem(`nexa_kyc_${email}`, JSON.stringify(kyc));
+      }
     }).catch(() => {});
   }, [userEmail]);
 
-  // Save to localStorage & sync to Supabase Live Database
+  // Save to user-scoped localStorage & sync to Supabase Database
   useEffect(() => {
-    if (walletBalance === undefined || walletBalance === null) return;
+    if (walletBalance === undefined || walletBalance === null || !userEmail) return;
     try {
-      localStorage.setItem('nexa_wallet_balance', walletBalance.toString());
+      localStorage.setItem(`nexa_balance_${userEmail.toLowerCase()}`, walletBalance.toString());
     } catch (e) {}
-    if (userEmail) {
-      syncUserProfile(userEmail, userName, walletBalance);
-    }
-  }, [walletBalance, userEmail, userName]);
+    syncUserProfile(userEmail, userName, walletBalance, avatarUrl || undefined);
+  }, [walletBalance, userEmail, userName, avatarUrl]);
 
   useEffect(() => {
+    if (!userEmail) return;
     try {
-      localStorage.setItem('nexa_purchased_packages', JSON.stringify(purchasedPackages || []));
+      localStorage.setItem(`nexa_packages_${userEmail.toLowerCase()}`, JSON.stringify(purchasedPackages || []));
     } catch (e) {}
-  }, [purchasedPackages]);
+  }, [purchasedPackages, userEmail]);
 
   useEffect(() => {
+    if (!userEmail) return;
     try {
-      localStorage.setItem('nexa_transactions', JSON.stringify(transactions || []));
+      localStorage.setItem(`nexa_tx_${userEmail.toLowerCase()}`, JSON.stringify(transactions || []));
     } catch (e) {}
-  }, [transactions]);
+  }, [transactions, userEmail]);
 
   useEffect(() => {
+    if (!userEmail) return;
     try {
-      localStorage.setItem('nexa_kyc_data', JSON.stringify(kycData || {}));
+      localStorage.setItem(`nexa_kyc_${userEmail.toLowerCase()}`, JSON.stringify(kycData || {}));
     } catch (e) {}
-  }, [kycData]);
+  }, [kycData, userEmail]);
 
   // Aggregate Metrics
   const pkgsList = Array.isArray(purchasedPackages) ? purchasedPackages : [];

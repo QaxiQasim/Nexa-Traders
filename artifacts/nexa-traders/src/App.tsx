@@ -2154,42 +2154,57 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [, setLocation] = useLocation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState<string>('');
   const isRegister = mode === 'register';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    const finalEmail = email.trim() || 'alex.vance@nexatraders.com';
-    const rawName = name.trim() || (finalEmail.split('@')[0]) || 'Trader';
-    const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    setAuthError('');
 
-    // Fetch existing profile from Supabase so balance is NEVER reset to 0
-    let balanceToKeep = 0;
+    const finalEmail = email.trim().toLowerCase();
+    if (!finalEmail) {
+      setAuthError('Please enter a valid email address.');
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const dbProfile = await fetchUserProfileFromDb(finalEmail);
+
+      // UNREGISTERED USER LOGIN CHECK:
+      // If user tries to SIGN IN directly without an account, block them and ask to Sign Up!
+      if (!isRegister && !dbProfile) {
+        setLoading(false);
+        setAuthError(`No account found registered with email "${finalEmail}". Please Sign Up first!`);
+        return;
+      }
+
+      const rawName = isRegister
+        ? (name.trim() || finalEmail.split('@')[0])
+        : (dbProfile?.full_name || finalEmail.split('@')[0]);
+      const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+      let balanceToKeep = 0;
       if (dbProfile && dbProfile.wallet_balance !== undefined) {
         balanceToKeep = Number(dbProfile.wallet_balance) || 0;
-      } else {
-        const localBal = localStorage.getItem('nexa_wallet_balance');
-        if (localBal !== null) {
-          const parsed = parseFloat(localBal);
-          if (!isNaN(parsed)) balanceToKeep = parsed;
-        }
       }
-    } catch (err) {}
 
-    localStorage.setItem('nexa_user_name', formattedName);
-    localStorage.setItem('nexa_user_email', finalEmail);
-    localStorage.setItem('nexa_wallet_balance', balanceToKeep.toString());
-    localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
+      localStorage.setItem('nexa_user_name', formattedName);
+      localStorage.setItem('nexa_user_email', finalEmail);
+      localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
 
-    try {
+      // Sync/Create profile in Supabase DB
       await syncUserProfile(finalEmail, formattedName, balanceToKeep);
-    } catch (err) {}
 
-    setLoading(false);
-    window.location.href = '/dashboard';
+      setLoading(false);
+      window.location.href = '/dashboard';
+    } catch (err: any) {
+      setLoading(false);
+      setAuthError(err?.message || 'Authentication failed. Please try again.');
+    }
   };
 
   return (
@@ -2205,7 +2220,27 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
             {isRegister ? 'Create your NexaTraders account in under a minute.' : 'Sign in to access your NexaTraders User Dashboard.'}
           </p>
         </div>
-        <div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8">
+        <div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8 space-y-4">
+          {authError && (
+            <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 space-y-2">
+              <div className="flex items-center gap-2 font-bold">
+                <AlertCircle size={16} /> {authError}
+              </div>
+              {!isRegister && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthError('');
+                    setLocation('/register');
+                  }}
+                  className="w-full rounded-lg bg-primary py-2 text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all mt-1"
+                >
+                  Click Here to Sign Up (Create Account)
+                </button>
+              )}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {isRegister && (
               <label className="block text-sm">
@@ -2238,6 +2273,8 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                 required
                 type="password"
                 minLength={6}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
                 data-testid="input-auth-password"
@@ -2250,7 +2287,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
               data-testid={`button-auth-${mode}`}
             >
               {loading ? (
-                <span>Authenticating...</span>
+                <span>Checking account credentials...</span>
               ) : (
                 <>
                   {isRegister ? 'Create Account & Launch Dashboard' : 'Sign In to Dashboard'} <ArrowRight size={15} />
@@ -2261,7 +2298,10 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           <div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">
             {isRegister ? 'Already have access? ' : 'New to NexaTraders? '}
             <button
-              onClick={() => setLocation(isRegister ? '/login' : '/register')}
+              onClick={() => {
+                setAuthError('');
+                setLocation(isRegister ? '/login' : '/register');
+              }}
               className="text-primary hover:underline font-bold"
               data-testid="button-auth-switch"
             >
