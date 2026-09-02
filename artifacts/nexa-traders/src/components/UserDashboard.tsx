@@ -655,6 +655,56 @@ export function UserDashboard() {
   const [kycDocFileName, setKycDocFileName] = useState<string>('');
   const [kycFormError, setKycFormError] = useState<string>('');
 
+  // Live Camera Capture States
+  const [showCameraModal, setShowCameraModal] = useState(false);
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+
+  const startLiveCamera = async () => {
+    try {
+      setShowCameraModal(true);
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      setCameraStream(mediaStream);
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+        }
+      }, 300);
+    } catch (err) {
+      alert('Unable to access camera. Please allow camera permissions or upload photo from device file chooser.');
+      setShowCameraModal(false);
+    }
+  };
+
+  const stopLiveCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setShowCameraModal(false);
+  };
+
+  const captureLivePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        setKycDocFile(dataUrl);
+        setKycDocFileName(`camera_snap_${Date.now()}.jpg`);
+        setKycFormError('');
+        stopLiveCamera();
+      }
+    }
+  };
+
   const handleKycDocFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1648,30 +1698,56 @@ export function UserDashboard() {
                 </div>
               </div>
 
-              {/* Upload Dropzone with Mandatory File Input */}
+              {/* Upload Options: Live Camera Capture OR File Upload */}
               <div>
                 <label className="block text-muted-foreground mb-2 flex items-center justify-between">
-                  <span>Upload Front & Back Copy of Document (PNG, JPG, PDF) <span className="text-rose-400 font-bold">*MANDATORY</span></span>
+                  <span>Upload or Take Photo of Document (PNG, JPG, PDF) <span className="text-rose-400 font-bold">*MANDATORY</span></span>
                   {kycDocFileName && <span className="text-accent font-bold">✓ {kycDocFileName} Attached</span>}
                 </label>
-                <div className="rounded-2xl border-2 border-dashed border-primary/50 bg-primary/5 p-8 text-center hover:border-primary transition-all cursor-pointer relative overflow-hidden group">
+
+                {/* Option Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <button
+                    type="button"
+                    onClick={startLiveCamera}
+                    className="rounded-2xl border border-primary/50 bg-primary/10 p-4 font-mono text-xs font-bold text-primary hover:bg-primary/20 hover:border-primary transition-all flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <Camera size={18} /> 📷 Open Live Camera Capture
+                  </button>
+
+                  <label className="rounded-2xl border border-white/20 bg-white/5 p-4 font-mono text-xs font-bold text-foreground hover:bg-white/10 hover:border-white/30 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm relative overflow-hidden">
+                    <UploadCloud size={18} className="text-accent" /> 📁 Choose Photo / File
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handleKycDocFileChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                  </label>
+                </div>
+
+                {/* Dropzone Display / Preview Area */}
+                <div className="rounded-2xl border-2 border-dashed border-primary/50 bg-primary/5 p-6 text-center hover:border-primary transition-all cursor-pointer relative overflow-hidden group">
                   <input
                     type="file"
-                    required
                     accept="image/*,.pdf"
                     onChange={handleKycDocFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
                   />
                   {kycDocFile ? (
                     <div className="space-y-2">
-                      <CheckCircle2 size={36} className="mx-auto text-accent animate-bounce" />
+                      {kycDocFile.startsWith('data:image/') ? (
+                        <img src={kycDocFile} alt="Captured Document" className="h-28 mx-auto rounded-xl border border-accent/40 object-cover shadow-md" />
+                      ) : (
+                        <CheckCircle2 size={36} className="mx-auto text-accent animate-bounce" />
+                      )}
                       <p className="text-sm font-bold text-accent">Document Attached: {kycDocFileName}</p>
                       <p className="text-[11px] text-muted-foreground">Click to change attached document file</p>
                     </div>
                   ) : (
                     <div className="space-y-1">
-                      <UploadCloud size={36} className="mx-auto text-primary mb-2 group-hover:scale-110 transition-transform" />
-                      <p className="text-sm font-bold text-foreground">Click to upload document photo or drag & drop</p>
+                      <UploadCloud size={32} className="mx-auto text-primary mb-1 group-hover:scale-110 transition-transform" />
+                      <p className="text-sm font-bold text-foreground">Click here to upload photo or drag & drop</p>
                       <p className="text-[11px] text-muted-foreground mt-1">Maximum file size: 10MB (Clear Passport / ID Scan Required)</p>
                     </div>
                   )}
@@ -1685,6 +1761,55 @@ export function UserDashboard() {
                 Submit Identity Verification Request
               </button>
             </form>
+          </div>
+        )}
+
+        {/* LIVE CAMERA CAPTURE MODAL */}
+        {showCameraModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md font-mono">
+            <div className="w-full max-w-lg rounded-3xl border border-white/15 bg-[#0c100e] p-6 shadow-2xl space-y-5 text-center relative">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 className="text-base font-bold text-foreground font-sans flex items-center gap-2">
+                  <Camera size={18} className="text-primary animate-pulse" /> Live Document Camera Capture
+                </h3>
+                <button type="button" onClick={stopLiveCamera} className="text-muted-foreground hover:text-foreground">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="relative rounded-2xl overflow-hidden bg-black border border-white/10 aspect-video flex items-center justify-center shadow-inner">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+                <div className="absolute inset-4 border-2 border-dashed border-primary/60 rounded-xl pointer-events-none flex items-center justify-center">
+                  <span className="bg-black/70 text-primary font-bold text-[11px] px-3 py-1 rounded-full border border-primary/40 shadow-md">
+                    Position Document Inside Frame
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={stopLiveCamera}
+                  className="w-1/2 rounded-xl border border-white/15 bg-white/5 py-3 font-bold text-muted-foreground hover:text-foreground"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={captureLivePhoto}
+                  className="w-1/2 rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-3 font-black uppercase text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.35)] flex items-center justify-center gap-2 hover:scale-105 transition-all"
+                >
+                  <Camera size={16} /> Snap Photo 📸
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
