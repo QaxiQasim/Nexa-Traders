@@ -2211,31 +2211,54 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [refCodeInput, setRefCodeInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState<string>('');
   const [sponsorInfo, setSponsorInfo] = useState<{ code: string; email: string; name: string } | null>(null);
   const [refCodeNotice, setRefCodeNotice] = useState<string>('');
   const isRegister = mode === 'register';
 
+  const lookupSponsorCode = (code: string) => {
+    const clean = code.trim().toUpperCase();
+    if (!clean) {
+      setSponsorInfo(null);
+      setRefCodeNotice('');
+      return;
+    }
+
+    fetchProfileByReferralCode(clean).then(sponsor => {
+      if (sponsor) {
+        setSponsorInfo({
+          code: sponsor.referral_code || clean,
+          email: sponsor.email,
+          name: sponsor.full_name || sponsor.email.split('@')[0]
+        });
+        setRefCodeNotice('');
+        try { localStorage.setItem('nexa_pending_ref_code', clean); } catch (e) {}
+      } else {
+        setSponsorInfo(null);
+        if (clean.length >= 6) {
+          setRefCodeNotice(`⚠️ Referral code "${clean}" was not found. Standard account will be created.`);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get('ref') || localStorage.getItem('nexa_pending_ref_code');
     if (ref && ref.trim()) {
       const cleanRef = ref.trim().toUpperCase();
-      fetchProfileByReferralCode(cleanRef).then(sponsor => {
-        if (sponsor) {
-          setSponsorInfo({
-            code: sponsor.referral_code || cleanRef,
-            email: sponsor.email,
-            name: sponsor.full_name || sponsor.email.split('@')[0]
-          });
-          try { localStorage.setItem('nexa_pending_ref_code', cleanRef); } catch (e) {}
-        } else {
-          setRefCodeNotice(`⚠️ Referral code "${cleanRef}" is invalid or expired. Registering standard account.`);
-        }
-      });
+      setRefCodeInput(cleanRef);
+      lookupSponsorCode(cleanRef);
     }
   }, []);
+
+  const handleRefCodeInputChange = (val: string) => {
+    const clean = val.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setRefCodeInput(clean);
+    lookupSponsorCode(clean);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -2364,6 +2387,24 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                 />
               </label>
             )}
+
+            {isRegister && (
+              <label className="block text-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-muted-foreground">Referral Code</span>
+                  <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-wider">(Optional)</span>
+                </div>
+                <input
+                  type="text"
+                  value={refCodeInput}
+                  onChange={e => handleRefCodeInputChange(e.target.value)}
+                  placeholder="e.g. NEXA7K42"
+                  className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm uppercase tracking-wider"
+                  data-testid="input-auth-refcode"
+                />
+              </label>
+            )}
+
             <label className="block text-sm">
               <span className="mb-2 block text-muted-foreground">Email address</span>
               <input
