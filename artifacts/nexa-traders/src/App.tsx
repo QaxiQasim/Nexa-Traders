@@ -110,6 +110,31 @@ function SectionHeading({ eyebrow, title, copy, align = 'left' }: { eyebrow: str
 function Navbar() {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const email = localStorage.getItem('nexa_user_email');
+      const name = localStorage.getItem('nexa_user_name');
+      if (email) {
+        setUser({ name: name || 'Trader', email });
+      } else {
+        setUser(null);
+      }
+    };
+    checkAuth();
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('nexa_auth_user');
+    localStorage.removeItem('nexa_user_name');
+    localStorage.removeItem('nexa_user_email');
+    setUser(null);
+    window.location.href = '/login';
+  };
+
   const nav = [['/trades', 'Arbitrage Live Trades'], ['/packages', 'Packages'], ['/dashboard', 'Dashboard'], ['/about', 'Our edge'], ['/blog', 'Insights'], ['/contact', 'Contact']];
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
@@ -118,9 +143,26 @@ function Navbar() {
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
           {nav.map(([href, label]) => <Link key={href} href={href} className={`rounded-md px-3 py-2 text-sm transition-colors ${location === href || (href === '/blog' && location.startsWith('/blog/')) ? 'text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`} data-testid={`link-nav-${label.toLowerCase().replace(' ', '-')}`}>{label}</Link>)}
         </nav>
-        <div className="hidden items-center gap-3 md:flex">
-          <ButtonLink href="/login" variant="ghost" className="px-3">Sign in</ButtonLink>
-          <ButtonLink href="/register" className="px-4">Open an account <ArrowUpRight size={15} /></ButtonLink>
+        <div className="hidden items-center gap-3 md:flex font-mono text-xs">
+          {user ? (
+            <div className="flex items-center gap-2">
+              <ButtonLink href="/dashboard" className="px-4 bg-primary text-primary-foreground font-bold shadow-md flex items-center gap-1.5">
+                Dashboard ({user.name.split(' ')[0]}) <ArrowUpRight size={14} />
+              </ButtonLink>
+              <button
+                onClick={handleLogout}
+                className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition-all flex items-center gap-1"
+                title="Log out of account"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <>
+              <ButtonLink href="/login" variant="ghost" className="px-3">Sign in</ButtonLink>
+              <ButtonLink href="/register" className="px-4">Open an account <ArrowUpRight size={15} /></ButtonLink>
+            </>
+          )}
         </div>
         <button className="rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-foreground md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Toggle navigation" data-testid="button-toggle-navigation">
           {open ? <X size={21} /> : <Menu size={21} />}
@@ -130,7 +172,19 @@ function Navbar() {
         {open && <motion.nav initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-border/70 bg-background px-5 pb-5 md:hidden">
           <div className="flex flex-col gap-1 pt-3">
             {nav.map(([href, label]) => <Link key={href} href={href} onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground" data-testid={`link-mobile-${label.toLowerCase().replace(' ', '-')}`}>{label}</Link>)}
-            <div className="mt-2 flex gap-2 border-t border-border/60 pt-4"><ButtonLink href="/login" variant="outline" className="flex-1">Sign in</ButtonLink><ButtonLink href="/register" className="flex-1">Get started</ButtonLink></div>
+            {user ? (
+              <div className="mt-2 flex gap-2 border-t border-border/60 pt-4 font-mono text-xs">
+                <ButtonLink href="/dashboard" className="flex-1">Dashboard ({user.name.split(' ')[0]})</ButtonLink>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 rounded-lg border border-rose-500/40 bg-rose-500/10 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="mt-2 flex gap-2 border-t border-border/60 pt-4"><ButtonLink href="/login" variant="outline" className="flex-1">Sign in</ButtonLink><ButtonLink href="/register" className="flex-1">Get started</ButtonLink></div>
+            )}
           </div>
         </motion.nav>}
       </AnimatePresence>
