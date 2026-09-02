@@ -62,7 +62,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { articles, categories, faqs, packages, type Article, type PackageTier } from '@/data/content';
 import NotFound from '@/pages/not-found';
 import { UserDashboard } from '@/components/UserDashboard';
-import { fetchUserProfileFromDb, syncUserProfile } from '@/lib/supabase';
+import { fetchUserProfileFromDb, syncUserProfile, fetchProfileByReferralCode } from '@/lib/supabase';
 import { AdminLoginPage } from '@/components/admin/AdminLoginPage';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 
