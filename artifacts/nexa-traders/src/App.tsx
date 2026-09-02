@@ -61,6 +61,8 @@ import { articles, categories, faqs, packages, type Article, type PackageTier } 
 import NotFound from '@/pages/not-found';
 import { UserDashboard } from '@/components/UserDashboard';
 import { fetchUserProfileFromDb, syncUserProfile } from '@/lib/supabase';
+import { AdminLoginPage } from '@/components/admin/AdminLoginPage';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 const queryClient = new QueryClient();
 
@@ -2846,11 +2848,44 @@ function TradesPage() {
 
 function Router() {
   const [location] = useLocation();
-  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={Home} /><Route path="/trades" component={TradesPage} /><Route path="/packages" component={PackagesPage} /><Route path="/dashboard" component={UserDashboard} /><Route path="/about" component={AboutPage} /><Route path="/blog" component={BlogPage} /><Route path="/blog/:slug" component={ArticlePage} /><Route path="/privacy" component={PrivacyPage} /><Route path="/contact" component={ContactPage} /><Route path="/login">{() => <AuthPage mode="login" />}</Route><Route path="/register">{() => <AuthPage mode="register" />}</Route><Route component={NotFound} /></Switch></ErrorBoundary>;
+  return (
+    <ErrorBoundary resetKey={location}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/trades" component={TradesPage} />
+        <Route path="/packages" component={PackagesPage} />
+        <Route path="/dashboard" component={UserDashboard} />
+        <Route path="/admin/login" component={AdminLoginPage} />
+        <Route path="/admin" component={AdminLayout} />
+        <Route path="/about" component={AboutPage} />
+        <Route path="/blog" component={BlogPage} />
+        <Route path="/blog/:slug" component={ArticlePage} />
+        <Route path="/privacy" component={PrivacyPage} />
+        <Route path="/contact" component={ContactPage} />
+        <Route path="/login">{() => <AuthPage mode="login" />}</Route>
+        <Route path="/register">{() => <AuthPage mode="register" />}</Route>
+        <Route component={NotFound} />
+      </Switch>
+    </ErrorBoundary>
+  );
 }
 
 function App() {
-  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Navbar /><Router /><Footer /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
+  const [location] = useLocation();
+  const isAdminRoute = location.startsWith('/admin');
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          {!isAdminRoute && <Navbar />}
+          <Router />
+          {!isAdminRoute && <Footer />}
+        </WouterRouter>
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
 }
 
 export default App;

@@ -203,3 +203,151 @@ export async function insertTransactionToDb(email: string, tx: any) {
     console.warn('Supabase transaction notice: saved locally.');
   }
 }
+
+// ----------------------------------------------------
+// ADMIN DASHBOARD DATABASE OPERATIONS
+// ----------------------------------------------------
+
+export async function fetchAllUsersFromDb() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*&order=created_at.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function fetchAllAdminTransactions() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions?select=*&order=created_at.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function fetchAllAdminPackages() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages?select=*&order=created_at.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function fetchAllAdminKyc() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?select=*&order=submitted_at.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function updateWithdrawalStatusInDb(txId: string, status: 'COMPLETED' | 'REJECTED' | 'PROCESSING', userEmail?: string, amount?: number) {
+  try {
+    // 1. Update transaction status
+    const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/transactions?id=eq.${encodeURIComponent(txId)}`, {
+      method: 'PATCH',
+      headers: {
+        ...getHeaders(),
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ status })
+    });
+
+    // 2. If rejected, refund balance to user profile
+    if (status === 'REJECTED' && userEmail && amount && amount > 0) {
+      const userProfile = await fetchUserProfileFromDb(userEmail);
+      if (userProfile) {
+        const currentBal = Number(userProfile.wallet_balance) || 0;
+        const refundedBal = currentBal + amount;
+        await syncUserProfile(userEmail, userProfile.full_name || 'User', refundedBal);
+      }
+    }
+
+    return patchRes.ok;
+  } catch (err) {
+    console.error('Error updating withdrawal status:', err);
+    return false;
+  }
+}
+
+export async function updateKycStatusInDb(kycId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', rejectionReason?: string, userEmail?: string) {
+  try {
+    const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?id=eq.${encodeURIComponent(kycId)}`, {
+      method: 'PATCH',
+      headers: {
+        ...getHeaders(),
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        status,
+        rejection_reason: rejectionReason || null
+      })
+    });
+
+    if (userEmail) {
+      await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(userEmail)}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ kyc_status: status })
+      });
+    }
+
+    return patchRes.ok;
+  } catch (err) {
+    console.error('Error updating KYC status:', err);
+    return false;
+  }
+}
+
+export async function logAdminAuditAction(adminEmail: string, action: string, targetUser: string, details: string) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/admin_audit_logs`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        admin_email: adminEmail,
+        action,
+        target_user: targetUser,
+        details,
+        created_at: new Date().toISOString()
+      })
+    });
+  } catch (e) {}
+}
+
+export async function fetchAdminAuditLogs() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/admin_audit_logs?select=*&order=created_at.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
