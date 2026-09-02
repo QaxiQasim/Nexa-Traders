@@ -255,9 +255,18 @@ export function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
+  // Load User Data from localStorage
+  const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || '');
+  const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || '');
+
+  // Strictly enforce login check on mount
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    const email = localStorage.getItem('nexa_user_email');
+    if (!email) {
+      setLocation('/login');
+    }
+  }, [setLocation]);
 
   const handleLogout = () => {
     localStorage.removeItem('nexa_auth_user');
@@ -277,10 +286,6 @@ export function UserDashboard() {
     });
     setLocation('/login');
   };
-
-  // Load User Data from localStorage / Supabase defaults
-  const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || 'Alex Vance');
-  const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || 'alex.vance@nexatraders.com');
   const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {

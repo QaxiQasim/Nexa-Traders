@@ -2948,7 +2948,15 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/trades" component={TradesPage} />
         <Route path="/packages" component={PackagesPage} />
-        <Route path="/dashboard" component={UserDashboard} />
+        <Route path="/dashboard">
+          {() => {
+            const email = localStorage.getItem('nexa_user_email');
+            if (!email) {
+              return <AuthPage mode="login" />;
+            }
+            return <UserDashboard />;
+          }}
+        </Route>
         <Route path="/admin/login" component={AdminLoginPage} />
         <Route path="/admin" component={AdminLayout} />
         <Route path="/about" component={AboutPage} />
