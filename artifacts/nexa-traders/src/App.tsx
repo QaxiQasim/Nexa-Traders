@@ -2297,14 +2297,25 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       localStorage.setItem('nexa_user_email', finalEmail);
       localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
 
+      let activeSponsorEmail = sponsorInfo?.email;
+      let activeSponsorCode = sponsorInfo?.code;
+
+      if (isRegister && refCodeInput.trim() && (!activeSponsorEmail || !activeSponsorCode)) {
+        const foundSponsor = await fetchProfileByReferralCode(refCodeInput.trim().toUpperCase());
+        if (foundSponsor) {
+          activeSponsorEmail = foundSponsor.email;
+          activeSponsorCode = foundSponsor.referral_code || refCodeInput.trim().toUpperCase();
+        }
+      }
+
       // Sync/Create profile in Supabase DB with permanent referral & sponsor attribution
       const userProfile = await syncUserProfile(
         finalEmail,
         formattedName,
         balanceToKeep,
         undefined,
-        sponsorInfo?.email,
-        sponsorInfo?.code
+        activeSponsorEmail,
+        activeSponsorCode
       );
 
       if (userProfile?.referral_code) {

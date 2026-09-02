@@ -41,7 +41,7 @@ export async function fetchProfileByReferralCode(refCode: string) {
   if (!refCode || !refCode.trim()) return null;
   try {
     const cleanCode = refCode.trim().toUpperCase();
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?referral_code=eq.${encodeURIComponent(cleanCode)}`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?referral_code=ilike.${encodeURIComponent(cleanCode)}`, {
       method: 'GET',
       headers: getHeaders()
     });
@@ -127,9 +127,11 @@ export async function syncUserProfile(
 
 export async function fetchDirectReferralsFromDb(sponsorEmail: string, sponsorCode?: string) {
   try {
-    const url = sponsorCode
-      ? `${SUPABASE_URL}/rest/v1/profiles?or=(sponsor_email.eq.${encodeURIComponent(sponsorEmail)},sponsor_code.eq.${encodeURIComponent(sponsorCode)})&order=created_at.desc`
-      : `${SUPABASE_URL}/rest/v1/profiles?sponsor_email=eq.${encodeURIComponent(sponsorEmail)}&order=created_at.desc`;
+    const cleanEmail = (sponsorEmail || '').trim();
+    const cleanCode = (sponsorCode || '').trim();
+    const url = cleanCode
+      ? `${SUPABASE_URL}/rest/v1/profiles?or=(sponsor_email.ilike.${encodeURIComponent(cleanEmail)},sponsor_code.ilike.${encodeURIComponent(cleanCode)})&order=created_at.desc`
+      : `${SUPABASE_URL}/rest/v1/profiles?sponsor_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc`;
     const res = await fetch(url, {
       method: 'GET',
       headers: getHeaders()
