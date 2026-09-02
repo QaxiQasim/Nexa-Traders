@@ -719,9 +719,6 @@ export function UserDashboard() {
                   <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
                 </div>
                 <p className="text-[11px] text-muted-foreground font-mono truncate">{userEmail || ''}</p>
-                <div className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-accent/40 bg-accent/10 px-2 py-0.5 font-mono text-[9px] text-accent font-bold uppercase">
-                  <Zap size={9} className="fill-current" /> VIP QUANT TRADER
-                </div>
               </div>
             </div>
 
@@ -732,26 +729,6 @@ export function UserDashboard() {
                 <span className="text-base font-black text-primary">
                   ${(walletBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => {
-                    setActiveTab('deposit');
-                    setSidebarOpen(false);
-                  }}
-                  className="rounded-lg border border-accent/40 bg-accent/10 px-2 py-1.5 text-[10px] font-bold text-accent hover:bg-accent/20 transition-all flex items-center gap-0.5"
-                >
-                  Deposit <ArrowDownRight size={11} />
-                </button>
-                <button
-                  onClick={() => {
-                    setActiveTab('withdraw');
-                    setSidebarOpen(false);
-                  }}
-                  className="rounded-lg border border-primary/40 bg-primary/10 px-2 py-1.5 text-[10px] font-bold text-primary hover:bg-primary/20 transition-all flex items-center gap-0.5"
-                >
-                  Withdraw <ArrowUpRight size={11} />
-                </button>
               </div>
             </div>
           </div>
@@ -813,18 +790,6 @@ export function UserDashboard() {
 
         {/* SIDEBAR FOOTER TELEMETRY CARD */}
         <div className="mt-6 pt-4 border-t border-white/10 font-mono text-[11px] space-y-3">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-muted-foreground space-y-1.5">
-            <div className="flex items-center justify-between text-foreground font-bold text-xs">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-accent animate-pulse" /> Quantitative Engine
-              </span>
-              <span className="text-accent text-[10px]">99.99%</span>
-            </div>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              Multi-Exchange High Frequency Arbitrage Cluster online.
-            </p>
-          </div>
-
           <div className="space-y-2">
             <button
               onClick={handleLogout}
