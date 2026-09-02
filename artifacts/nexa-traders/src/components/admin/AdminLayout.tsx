@@ -17,6 +17,7 @@ import { AdminKyc } from './AdminKyc';
 import { AdminTransactions } from './AdminTransactions';
 import { AdminPackages } from './AdminPackages';
 import { AdminAuditLogs } from './AdminAuditLogs';
+import { AdminReferrals } from './AdminReferrals';
 
 export function AdminLayout() {
   const [adminSession, setAdminSession] = useState<any>(() => {
@@ -149,6 +150,7 @@ export function AdminLayout() {
             {[
               { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard, badge: null },
               { id: 'users', label: 'User Directory', icon: Users, badge: users.length },
+              { id: 'referrals', label: 'Referral & Team Hub', icon: Users, badge: users.length },
               { id: 'withdrawals', label: 'Withdrawal Requests', icon: ArrowUpRight, badge: pendingWithdrawalsCount || null, highlight: pendingWithdrawalsCount > 0 },
               { id: 'kyc', label: 'KYC Verifications', icon: ShieldCheck, badge: pendingKycCount || null, highlight: pendingKycCount > 0 },
               { id: 'transactions', label: 'Transactions Ledger', icon: DollarSign, badge: transactions.length },
@@ -362,9 +364,14 @@ export function AdminLayout() {
               transactions={transactions}
               packages={packages}
               kycRequests={kycRequests}
-              selectedUserEmail={selectedUserEmail}
-              onSelectUser={setSelectedUserEmail}
+              selectedEmail={selectedUserEmail}
+              onClearSelectedEmail={() => setSelectedUserEmail(null)}
+              onRefreshData={loadDatabaseData}
             />
+          )}
+
+          {activeTab === 'referrals' && (
+            <AdminReferrals users={users} />
           )}
 
           {activeTab === 'withdrawals' && (

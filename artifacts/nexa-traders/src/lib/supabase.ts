@@ -28,13 +28,56 @@ export async function fetchUserProfileFromDb(email: string) {
   }
 }
 
-export async function syncUserProfile(email: string, name: string, balance: number, avatarUrl?: string) {
+export function generateUniqueReferralCode(seed?: string): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let rand = '';
+  for (let i = 0; i < 4; i++) {
+    rand += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `NEXA${rand}`;
+}
+
+export async function fetchProfileByReferralCode(refCode: string) {
+  if (!refCode || !refCode.trim()) return null;
   try {
+    const cleanCode = refCode.trim().toUpperCase();
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?referral_code=eq.${encodeURIComponent(cleanCode)}`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    return data[0];
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function syncUserProfile(
+  email: string,
+  name: string,
+  balance: number,
+  avatarUrl?: string,
+  sponsorEmail?: string,
+  sponsorCode?: string
+) {
+  try {
+    const existing = await fetchUserProfileFromDb(email);
+    let myRefCode = existing?.referral_code;
+    if (!myRefCode) {
+      myRefCode = generateUniqueReferralCode(email);
+    }
+
     const payload: any = {
       full_name: name,
-      wallet_balance: balance
+      wallet_balance: balance,
+      referral_code: myRefCode
     };
+
     if (avatarUrl) payload.avatar_url = avatarUrl;
+    if (sponsorEmail && !existing?.sponsor_email) payload.sponsor_email = sponsorEmail;
+    if (sponsorCode && !existing?.sponsor_code) payload.sponsor_code = sponsorCode;
 
     // 1. Try PATCH update on existing profile row by email
     const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
@@ -49,25 +92,98 @@ export async function syncUserProfile(email: string, name: string, balance: numb
     if (patchRes.ok) {
       const data = await patchRes.json();
       if (Array.isArray(data) && data.length > 0) {
-        return true;
+        return data[0];
       }
     }
 
     // 2. If row does not exist yet, INSERT via POST
+    const newProfile = {
+      email,
+      full_name: name,
+      wallet_balance: balance,
+      avatar_url: avatarUrl || null,
+      referral_code: myRefCode,
+      sponsor_email: sponsorEmail || null,
+      sponsor_code: sponsorCode || null,
+      created_at: new Date().toISOString()
+    };
+
     const postRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({
-        email,
-        full_name: name,
-        wallet_balance: balance,
-        avatar_url: avatarUrl || null
-      })
+      body: JSON.stringify(newProfile)
     });
-    return postRes.ok;
+    
+    if (postRes.ok) {
+      const data = await postRes.json();
+      return Array.isArray(data) ? data[0] : newProfile;
+    }
+    return null;
   } catch (err) {
     console.warn('Supabase profile sync notice: stored locally.', err);
-    return false;
+    return null;
+  }
+}
+
+export async function fetchDirectReferralsFromDb(sponsorEmail: string, sponsorCode?: string) {
+  try {
+    const url = sponsorCode
+      ? `${SUPABASE_URL}/rest/v1/profiles?or=(sponsor_email.eq.${encodeURIComponent(sponsorEmail)},sponsor_code.eq.${encodeURIComponent(sponsorCode)})&order=created_at.desc`
+      : `${SUPABASE_URL}/rest/v1/profiles?sponsor_email=eq.${encodeURIComponent(sponsorEmail)}&order=created_at.desc`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function fetchFullTeamHierarchyFromDb(userEmail: string, userRefCode?: string) {
+  try {
+    const directList = await fetchDirectReferralsFromDb(userEmail, userRefCode);
+    const teamTree: Array<{ user: any; level: number; sponsorEmail: string }> = [];
+
+    for (const l1User of directList) {
+      teamTree.push({ user: l1User, level: 1, sponsorEmail: userEmail });
+
+      // Level 2
+      if (l1User.email) {
+        const l2List = await fetchDirectReferralsFromDb(l1User.email, l1User.referral_code);
+        for (const l2User of l2List) {
+          teamTree.push({ user: l2User, level: 2, sponsorEmail: l1User.email });
+
+          // Level 3
+          if (l2User.email) {
+            const l3List = await fetchDirectReferralsFromDb(l2User.email, l2User.referral_code);
+            for (const l3User of l3List) {
+              teamTree.push({ user: l3User, level: 3, sponsorEmail: l2User.email });
+            }
+          }
+        }
+      }
+    }
+
+    return teamTree;
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function fetchAllProfilesFromDb() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?order=created_at.desc`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
   }
 }
 

@@ -31,7 +31,12 @@ import {
   X,
   Layers,
   ChevronDown,
-  Camera
+  Camera,
+  Users,
+  Share2,
+  UserPlus,
+  Search,
+  Network
 } from 'lucide-react';
 import {
   AreaChart,
@@ -50,7 +55,9 @@ import {
   fetchUserPackagesFromDb,
   fetchKycFromDb,
   fetchTransactionsFromDb,
-  fetchUserProfileFromDb
+  fetchUserProfileFromDb,
+  fetchDirectReferralsFromDb,
+  fetchFullTeamHierarchyFromDb
 } from '@/lib/supabase';
 import { verifyBep20Transaction, DEFAULT_DEPOSIT_WALLET } from '@/lib/bep20';
 
@@ -251,13 +258,28 @@ const YIELD_GRAPH_DATA = [
 
 export function UserDashboard() {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState<'overview' | 'deposit' | 'packages' | 'buy' | 'kyc' | 'withdraw' | 'transactions'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'deposit' | 'packages' | 'buy' | 'team' | 'kyc' | 'withdraw' | 'transactions'>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Load User Data from localStorage
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || '');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || '');
+
+  // Referral & Team States
+  const [userRefCode, setUserRefCode] = useState<string>(() => {
+    try {
+      const email = localStorage.getItem('nexa_user_email') || '';
+      return email ? localStorage.getItem(`nexa_ref_code_${email}`) || '' : '';
+    } catch (e) {}
+    return '';
+  });
+  const [directTeam, setDirectTeam] = useState<any[]>([]);
+  const [teamHierarchy, setTeamHierarchy] = useState<any[]>([]);
+  const [teamLoading, setTeamLoading] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [teamTabFilter, setTeamTabFilter] = useState<'all' | 'direct' | 'network'>('all');
 
   // Strictly enforce login check on mount
   useEffect(() => {
@@ -267,6 +289,40 @@ export function UserDashboard() {
       setLocation('/login');
     }
   }, [setLocation]);
+
+  // Load Referral & Team Database Telemetry
+  useEffect(() => {
+    if (!userEmail) return;
+    const loadReferralTeamData = async () => {
+      setTeamLoading(true);
+      try {
+        const profile = await fetchUserProfileFromDb(userEmail);
+        let refCode = profile?.referral_code || userRefCode;
+        if (!refCode) {
+          const synced = await syncUserProfile(userEmail, userName || userEmail.split('@')[0], walletBalance);
+          if (synced?.referral_code) refCode = synced.referral_code;
+        }
+        if (refCode) {
+          setUserRefCode(refCode);
+          try { localStorage.setItem(`nexa_ref_code_${userEmail}`, refCode); } catch (e) {}
+        }
+
+        // Fetch Direct Referrals (Level 1)
+        const directs = await fetchDirectReferralsFromDb(userEmail, refCode);
+        setDirectTeam(directs);
+
+        // Fetch Full Team Hierarchy (Multi-Level Network)
+        const hierarchy = await fetchFullTeamHierarchyFromDb(userEmail, refCode);
+        setTeamHierarchy(hierarchy);
+      } catch (err) {
+        console.error('Error loading team telemetry:', err);
+      } finally {
+        setTeamLoading(false);
+      }
+    };
+
+    loadReferralTeamData();
+  }, [userEmail, userName, walletBalance]);
 
   const handleLogout = () => {
     localStorage.removeItem('nexa_auth_user');
@@ -1659,6 +1715,281 @@ export function UserDashboard() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* TAB 3.5: MY TEAM & REFERRAL HUB */}
+        {activeTab === 'team' && (
+          <div className="mt-8 space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-foreground tracking-tight font-mono flex items-center gap-2">
+                  <Users className="text-primary" size={24} /> My Team & Referral Hub
+                </h2>
+                <p className="text-xs text-muted-foreground font-mono mt-1">
+                  Invite friends, track direct referrals, and build your multi-level trading community.
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`;
+                  if (navigator.share) {
+                    navigator.share({ title: 'Nexa Traders', url }).catch(() => {});
+                  } else {
+                    navigator.clipboard.writeText(url);
+                    setCopiedLink(true);
+                    setTimeout(() => setCopiedLink(false), 2500);
+                  }
+                }}
+                className="rounded-xl border border-primary/50 bg-primary/10 px-4 py-2.5 text-xs font-bold font-mono text-primary hover:bg-primary/20 transition-all flex items-center gap-2"
+              >
+                <Share2 size={16} /> Share Referral Link
+              </button>
+            </div>
+
+            {/* REFERRAL CODE & REFERRAL LINK CARDS GRID */}
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Card 1: Referral Code */}
+              <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#131b17] to-[#0c110f] p-6 backdrop-blur-2xl shadow-xl relative overflow-hidden space-y-4">
+                <div className="absolute top-0 right-0 h-24 w-24 bg-primary/10 blur-2xl pointer-events-none" />
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">My Unique Referral Code</span>
+                  <span className="rounded-full bg-primary/20 border border-primary/30 px-3 py-0.5 text-[10px] font-mono text-primary font-bold">PERMANENT</span>
+                </div>
+                <div className="flex items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <span className="text-2xl font-black font-mono tracking-widest text-primary">
+                    {userRefCode || 'NEXA7K42'}
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(userRefCode || 'NEXA7K42');
+                      setCopiedCode(true);
+                      setTimeout(() => setCopiedCode(false), 2500);
+                    }}
+                    className="rounded-xl bg-primary px-4 py-2 text-xs font-bold font-mono text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5 shadow-md"
+                  >
+                    {copiedCode ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedCode ? 'Copied Code!' : 'Copy Code'}
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground font-mono">
+                  Share this code with your friends during Sign Up to add them directly to your team network.
+                </p>
+              </div>
+
+              {/* Card 2: Referral Link */}
+              <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#131b17] to-[#0c110f] p-6 backdrop-blur-2xl shadow-xl relative overflow-hidden space-y-4">
+                <div className="absolute top-0 right-0 h-24 w-24 bg-accent/10 blur-2xl pointer-events-none" />
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">My Unique Referral Link</span>
+                  <span className="rounded-full bg-accent/20 border border-accent/30 px-3 py-0.5 text-[10px] font-mono text-accent font-bold">AUTO ATTRIBUTION</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-2xl p-2.5">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`}
+                    className="w-full bg-transparent px-2 text-xs font-mono text-foreground outline-none truncate"
+                  />
+                  <button
+                    onClick={() => {
+                      const link = `${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`;
+                      navigator.clipboard.writeText(link);
+                      setCopiedLink(true);
+                      setTimeout(() => setCopiedLink(false), 2500);
+                    }}
+                    className="rounded-xl bg-accent px-4 py-2 text-xs font-bold font-mono text-accent-foreground hover:opacity-90 transition-all flex items-center gap-1.5 shadow-md flex-shrink-0"
+                  >
+                    {copiedLink ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedLink ? 'Copied!' : 'Copy Link'}
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground font-mono">
+                  Anyone registering through this link will automatically be connected as your permanent direct referral.
+                </p>
+              </div>
+            </div>
+
+            {/* TEAM STATISTICS KPI CARDS */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono">
+              <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
+                <div className="text-xs text-muted-foreground uppercase">Total Team Members</div>
+                <div className="mt-2 text-3xl font-black text-foreground">{teamHierarchy.length}</div>
+                <div className="mt-1 text-[10px] text-primary">All Network Levels</div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
+                <div className="text-xs text-muted-foreground uppercase">Direct Referrals</div>
+                <div className="mt-2 text-3xl font-black text-primary">{directTeam.length}</div>
+                <div className="mt-1 text-[10px] text-muted-foreground">Level 1 Direct Sponsor</div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
+                <div className="text-xs text-muted-foreground uppercase">Active Members</div>
+                <div className="mt-2 text-3xl font-black text-accent">
+                  {teamHierarchy.filter(item => (Number(item.user?.wallet_balance) > 0)).length}
+                </div>
+                <div className="mt-1 text-[10px] text-accent/80">Funded Accounts</div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
+                <div className="text-xs text-muted-foreground uppercase">Total Team Deposits</div>
+                <div className="mt-2 text-3xl font-black text-emerald-400">
+                  $ {teamHierarchy.reduce((sum, item) => sum + (Number(item.user?.wallet_balance) || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+                <div className="mt-1 text-[10px] text-emerald-400/80">USDT Cumulative Balance</div>
+              </div>
+            </div>
+
+            {/* TEAM SECTION CONTENTS: EMPTY STATE OR TEAM TABLE */}
+            {teamHierarchy.length === 0 ? (
+              /* ATTRACTIVE EMPTY STATE CARD */
+              <div className="rounded-3xl border border-white/10 bg-[#0a0f0d] p-8 sm:p-12 text-center space-y-6 max-w-2xl mx-auto shadow-2xl">
+                <div className="mx-auto grid h-20 w-20 place-items-center rounded-3xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_30px_rgba(232,185,73,0.2)]">
+                  <Users size={36} />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold font-mono text-foreground">You don't have any team members yet.</h3>
+                  <p className="text-xs font-mono text-muted-foreground max-w-md mx-auto">
+                    Invite friends and build your team. Share your unique referral code or link to start earning referral rewards across your network!
+                  </p>
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      const link = `${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`;
+                      navigator.clipboard.writeText(link);
+                      setCopiedLink(true);
+                      setTimeout(() => setCopiedLink(false), 2500);
+                    }}
+                    className="w-full sm:w-auto rounded-xl bg-primary px-6 py-3 text-xs font-bold font-mono text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center justify-center gap-2 shadow-lg"
+                  >
+                    {copiedLink ? <Check size={16} /> : <Copy size={16} />}
+                    {copiedLink ? 'Copied Referral Link!' : 'Copy Referral Link'}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`;
+                      if (navigator.share) {
+                        navigator.share({ title: 'Join Nexa Traders', url }).catch(() => {});
+                      } else {
+                        navigator.clipboard.writeText(url);
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2500);
+                      }
+                    }}
+                    className="w-full sm:w-auto rounded-xl border border-white/15 bg-white/5 px-6 py-3 text-xs font-bold font-mono text-foreground hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Share2 size={16} /> Invite Friends
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* PREMIUM TEAM MEMBERS TABLE */
+              <div className="rounded-3xl border border-white/10 bg-[#0a0f0d] overflow-hidden shadow-2xl space-y-4">
+                <div className="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-base font-bold font-mono text-foreground">My Referred Team Members</h3>
+                    <p className="text-xs font-mono text-muted-foreground">Showing verified user network accounts</p>
+                  </div>
+
+                  <div className="flex gap-2 font-mono text-xs">
+                    <button
+                      onClick={() => setTeamTabFilter('all')}
+                      className={`px-3 py-1.5 rounded-lg transition-all ${
+                        teamTabFilter === 'all' ? 'bg-primary text-primary-foreground font-bold' : 'bg-white/5 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      All ({teamHierarchy.length})
+                    </button>
+                    <button
+                      onClick={() => setTeamTabFilter('direct')}
+                      className={`px-3 py-1.5 rounded-lg transition-all ${
+                        teamTabFilter === 'direct' ? 'bg-primary text-primary-foreground font-bold' : 'bg-white/5 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Direct L1 ({directTeam.length})
+                    </button>
+                    <button
+                      onClick={() => setTeamTabFilter('network')}
+                      className={`px-3 py-1.5 rounded-lg transition-all ${
+                        teamTabFilter === 'network' ? 'bg-primary text-primary-foreground font-bold' : 'bg-white/5 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Level 2+ ({teamHierarchy.length - directTeam.length})
+                    </button>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left font-mono text-xs">
+                    <thead className="bg-white/5 border-b border-white/10 text-muted-foreground uppercase text-[10px]">
+                      <tr>
+                        <th className="px-6 py-4">User</th>
+                        <th className="px-6 py-4">User ID / Code</th>
+                        <th className="px-6 py-4">Hierarchy Level</th>
+                        <th className="px-6 py-4">Registration Date</th>
+                        <th className="px-6 py-4 text-center">Status</th>
+                        <th className="px-6 py-4 text-right">Wallet / Deposit</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {(teamTabFilter === 'direct' ? teamHierarchy.filter(t => t.level === 1) : teamTabFilter === 'network' ? teamHierarchy.filter(t => t.level > 1) : teamHierarchy).map((item, index) => {
+                        const u = item.user;
+                        const hasDeposit = Number(u.wallet_balance) > 0;
+                        const levelBadge = item.level === 1 ? 'bg-primary/20 text-primary border-primary/30' : item.level === 2 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+
+                        return (
+                          <tr key={u.id || u.email || index} className="hover:bg-white/[0.03] transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 border border-primary/30 font-bold text-primary">
+                                  {(u.full_name || u.email || 'U').charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <div className="font-bold text-foreground font-sans">{u.full_name || 'User'}</div>
+                                  <div className="text-[11px] text-muted-foreground">{u.email}</div>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="px-6 py-4 font-bold text-primary">
+                              {u.referral_code || `NT${10020 + index}`}
+                            </td>
+
+                            <td className="px-6 py-4">
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${levelBadge}`}>
+                                {item.level === 1 ? 'Direct L1' : `Level ${item.level}`}
+                              </span>
+                            </td>
+
+                            <td className="px-6 py-4 text-muted-foreground">
+                              {u.created_at ? u.created_at.substring(0, 10) : '2026-09-02'}
+                            </td>
+
+                            <td className="px-6 py-4 text-center">
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                                hasDeposit ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                              }`}>
+                                {hasDeposit ? 'Active' : 'Pending'}
+                              </span>
+                            </td>
+
+                            <td className="px-6 py-4 text-right font-bold text-emerald-400">
+                              $ {(Number(u.wallet_balance) || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

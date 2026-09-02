@@ -2212,7 +2212,29 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState<string>('');
+  const [sponsorInfo, setSponsorInfo] = useState<{ code: string; email: string; name: string } | null>(null);
+  const [refCodeNotice, setRefCodeNotice] = useState<string>('');
   const isRegister = mode === 'register';
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref') || localStorage.getItem('nexa_pending_ref_code');
+    if (ref && ref.trim()) {
+      const cleanRef = ref.trim().toUpperCase();
+      fetchProfileByReferralCode(cleanRef).then(sponsor => {
+        if (sponsor) {
+          setSponsorInfo({
+            code: sponsor.referral_code || cleanRef,
+            email: sponsor.email,
+            name: sponsor.full_name || sponsor.email.split('@')[0]
+          });
+          try { localStorage.setItem('nexa_pending_ref_code', cleanRef); } catch (e) {}
+        } else {
+          setRefCodeNotice(`⚠️ Referral code "${cleanRef}" is invalid or expired. Registering standard account.`);
+        }
+      });
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -2251,8 +2273,22 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       localStorage.setItem('nexa_user_email', finalEmail);
       localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
 
-      // Sync/Create profile in Supabase DB
-      await syncUserProfile(finalEmail, formattedName, balanceToKeep);
+      // Sync/Create profile in Supabase DB with permanent referral & sponsor attribution
+      const userProfile = await syncUserProfile(
+        finalEmail,
+        formattedName,
+        balanceToKeep,
+        undefined,
+        sponsorInfo?.email,
+        sponsorInfo?.code
+      );
+
+      if (userProfile?.referral_code) {
+        localStorage.setItem(`nexa_ref_code_${finalEmail}`, userProfile.referral_code);
+      }
+
+      // Clear pending referral code once registered
+      localStorage.removeItem('nexa_pending_ref_code');
 
       setLoading(false);
       window.location.href = '/dashboard';
@@ -2263,7 +2299,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   };
 
   return (
-    <div className="relative flex min-h-[calc(100dvh-72px)] items-center justify-center overflow-hidden px-5 py-16">
+    <div className="relative flex min-h-[calc(100dvh-72px)] items-center justify-center overflow-hidden px-5 py-16 font-sans">
       <div className="absolute inset-0 grid-fade opacity-60" />
       <div className="relative w-full max-w-md">
         <div className="mb-8 text-center">
@@ -2276,6 +2312,23 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8 space-y-4">
+          {/* Sponsor Identification Banner */}
+          {isRegister && sponsorInfo && (
+            <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 font-mono text-xs text-primary flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-2">
+                <Users size={16} className="text-primary animate-pulse" />
+                <span>Referred By: <strong className="text-foreground">{sponsorInfo.name}</strong> ({sponsorInfo.code})</span>
+              </div>
+              <span className="rounded bg-accent/20 text-accent px-2 py-0.5 text-[10px] font-bold uppercase">Verified Sponsor</span>
+            </div>
+          )}
+
+          {isRegister && refCodeNotice && (
+            <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 p-3 font-mono text-xs text-yellow-400 flex items-center gap-2">
+              <AlertCircle size={16} /> {refCodeNotice}
+            </div>
+          )}
+
           {authError && (
             <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 space-y-2">
               <div className="flex items-center gap-2 font-bold">
