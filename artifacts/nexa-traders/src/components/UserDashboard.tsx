@@ -650,25 +650,70 @@ export function UserDashboard() {
     }, 1800);
   };
 
+  // Handle KYC Document File Upload & Validation
+  const [kycDocFile, setKycDocFile] = useState<string | null>(null);
+  const [kycDocFileName, setKycDocFileName] = useState<string>('');
+  const [kycFormError, setKycFormError] = useState<string>('');
+
+  const handleKycDocFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Document file size must be less than 10MB.');
+      return;
+    }
+
+    setKycDocFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setKycDocFile(reader.result as string);
+      setKycFormError('');
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Handle KYC Submit
   const handleKycSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!kycForm.fullName || !kycForm.idNumber) {
-      alert('Please fill out all mandatory KYC fields.');
+    setKycFormError('');
+
+    const fullName = kycForm.fullName || kycData.fullName;
+    const dob = kycForm.dob || kycData.dob;
+    const country = kycForm.country || kycData.country || 'United Arab Emirates';
+    const idType = kycForm.idType || kycData.idType || 'PASSPORT';
+    const idNumber = kycForm.idNumber || kycData.idNumber;
+
+    if (!fullName || !fullName.trim()) {
+      setKycFormError('Full Legal Name (as on ID) is mandatory.');
       return;
     }
+    if (!dob) {
+      setKycFormError('Date of Birth is mandatory.');
+      return;
+    }
+    if (!idNumber || !idNumber.trim()) {
+      setKycFormError('Document Serial / Identification Number is mandatory.');
+      return;
+    }
+    if (!kycDocFile) {
+      setKycFormError('Document Photo Upload is Mandatory! Please click to select your ID/Passport photo before submitting.');
+      return;
+    }
+
     const updated: KycData = {
       status: 'PENDING',
-      fullName: kycForm.fullName,
-      dob: kycForm.dob || '1995-01-01',
-      country: kycForm.country,
-      idType: kycForm.idType,
-      idNumber: kycForm.idNumber,
+      fullName: fullName.trim(),
+      dob,
+      country,
+      idType,
+      idNumber: idNumber.trim(),
       submittedAt: new Date().toISOString().split('T')[0]
     };
     setKycData(updated);
     upsertKycToDb(userEmail, updated);
-    setKycMessage('Your KYC identity documents have been submitted successfully! Verification is currently in review.');
+    setKycMessage('Your KYC identity information & document photo have been submitted successfully! Verification is currently in review.');
+    setKycFormError('');
   };
 
   // Handle Withdrawal Request
@@ -1525,6 +1570,12 @@ export function UserDashboard() {
               </div>
             )}
 
+            {kycFormError && (
+              <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 flex items-center gap-2">
+                <AlertCircle size={16} /> {kycFormError}
+              </div>
+            )}
+
             {/* KYC Submission Form */}
             <form onSubmit={handleKycSubmit} className="rounded-3xl border border-white/10 bg-[#0f1412] p-6 sm:p-8 space-y-6 font-mono text-xs">
               <h3 className="text-lg font-bold text-foreground border-b border-white/10 pb-3 flex items-center gap-2">
@@ -1533,7 +1584,7 @@ export function UserDashboard() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-muted-foreground mb-2">Full Legal Name (as on ID)</label>
+                  <label className="block text-muted-foreground mb-2">Full Legal Name (as on ID) <span className="text-rose-400">*</span></label>
                   <input
                     type="text"
                     required
@@ -1545,7 +1596,7 @@ export function UserDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-muted-foreground mb-2">Date of Birth</label>
+                  <label className="block text-muted-foreground mb-2">Date of Birth <span className="text-rose-400">*</span></label>
                   <input
                     type="date"
                     required
@@ -1556,7 +1607,7 @@ export function UserDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-muted-foreground mb-2">Country of Residence</label>
+                  <label className="block text-muted-foreground mb-2">Country of Residence <span className="text-rose-400">*</span></label>
                   <select
                     value={kycForm.country || kycData.country}
                     onChange={e => setKycForm({ ...kycForm, country: e.target.value })}
@@ -1572,7 +1623,7 @@ export function UserDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-muted-foreground mb-2">Identification Document Type</label>
+                  <label className="block text-muted-foreground mb-2">Identification Document Type <span className="text-rose-400">*</span></label>
                   <select
                     value={kycForm.idType || kycData.idType}
                     onChange={e => setKycForm({ ...kycForm, idType: e.target.value as any })}
@@ -1585,7 +1636,7 @@ export function UserDashboard() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-muted-foreground mb-2">Document Serial / Identification Number</label>
+                  <label className="block text-muted-foreground mb-2">Document Serial / Identification Number <span className="text-rose-400">*</span></label>
                   <input
                     type="text"
                     required
@@ -1597,13 +1648,33 @@ export function UserDashboard() {
                 </div>
               </div>
 
-              {/* Upload Dropzone */}
+              {/* Upload Dropzone with Mandatory File Input */}
               <div>
-                <label className="block text-muted-foreground mb-2">Upload Front & Back Copy of Document (PNG, JPG, PDF)</label>
-                <div className="rounded-2xl border-2 border-dashed border-white/20 bg-white/[0.02] p-8 text-center hover:border-primary/50 transition-all cursor-pointer">
-                  <UploadCloud size={36} className="mx-auto text-primary mb-2" />
-                  <p className="text-sm font-bold text-foreground">Click to upload document photo or drag & drop</p>
-                  <p className="text-[11px] text-muted-foreground mt-1">Maximum file size: 10MB (Clear scan required)</p>
+                <label className="block text-muted-foreground mb-2 flex items-center justify-between">
+                  <span>Upload Front & Back Copy of Document (PNG, JPG, PDF) <span className="text-rose-400 font-bold">*MANDATORY</span></span>
+                  {kycDocFileName && <span className="text-accent font-bold">✓ {kycDocFileName} Attached</span>}
+                </label>
+                <div className="rounded-2xl border-2 border-dashed border-primary/50 bg-primary/5 p-8 text-center hover:border-primary transition-all cursor-pointer relative overflow-hidden group">
+                  <input
+                    type="file"
+                    required
+                    accept="image/*,.pdf"
+                    onChange={handleKycDocFileChange}
+                    className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
+                  />
+                  {kycDocFile ? (
+                    <div className="space-y-2">
+                      <CheckCircle2 size={36} className="mx-auto text-accent animate-bounce" />
+                      <p className="text-sm font-bold text-accent">Document Attached: {kycDocFileName}</p>
+                      <p className="text-[11px] text-muted-foreground">Click to change attached document file</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <UploadCloud size={36} className="mx-auto text-primary mb-2 group-hover:scale-110 transition-transform" />
+                      <p className="text-sm font-bold text-foreground">Click to upload document photo or drag & drop</p>
+                      <p className="text-[11px] text-muted-foreground mt-1">Maximum file size: 10MB (Clear Passport / ID Scan Required)</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
