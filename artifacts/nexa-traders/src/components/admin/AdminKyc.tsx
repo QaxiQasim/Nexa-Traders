@@ -173,12 +173,13 @@ export function AdminKyc({
                 <th className="pb-3 px-4">Document Number</th>
                 <th className="pb-3 px-4">Submission Date</th>
                 <th className="pb-3 px-4">Status</th>
+                <th className="pb-3 px-4">Admin Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {processedKyc.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-6 text-center text-muted-foreground">No processed KYC files recorded.</td>
+                  <td colSpan={6} className="py-6 text-center text-muted-foreground">No processed KYC files recorded.</td>
                 </tr>
               ) : (
                 processedKyc.map(kyc => (
@@ -195,6 +196,29 @@ export function AdminKyc({
                       }`}>
                         {kyc.status}
                       </span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      {kyc.status === 'APPROVED' ? (
+                        <button
+                          onClick={() => {
+                            setSelectedKyc(kyc);
+                            setActionType('REJECT');
+                          }}
+                          className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3 py-1.5 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 hover:border-rose-500 transition-all flex items-center gap-1 shadow-sm"
+                        >
+                          <XCircle size={13} /> Revoke / Reject
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSelectedKyc(kyc);
+                            setActionType('APPROVE');
+                          }}
+                          className="rounded-xl border border-accent/40 bg-accent/10 px-3 py-1.5 text-[11px] font-bold text-accent hover:bg-accent/20 hover:border-accent transition-all flex items-center gap-1 shadow-sm"
+                        >
+                          <CheckCircle2 size={13} /> Re-Approve
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
