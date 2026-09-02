@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import {
   Activity,
+  AlertCircle,
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
@@ -2229,10 +2230,10 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       const dbProfile = await fetchUserProfileFromDb(finalEmail);
 
       // UNREGISTERED USER LOGIN CHECK:
-      // If user tries to SIGN IN directly without an account, block them and ask to Sign Up!
+      // If user tries to SIGN IN directly without an account, block them and show Invalid Login notification!
       if (!isRegister && !dbProfile) {
         setLoading(false);
-        setAuthError(`No account found registered with email "${finalEmail}". Please Sign Up first!`);
+        setAuthError(`Invalid Login: No account exists with email "${finalEmail}". Please Sign Up first to create your account.`);
         return;
       }
 
