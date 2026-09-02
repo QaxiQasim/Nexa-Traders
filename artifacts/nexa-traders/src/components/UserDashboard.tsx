@@ -903,16 +903,6 @@ export function UserDashboard() {
               <ArrowDownRight size={15} /> Deposit
             </button>
             <button
-              onClick={() => {
-                setSelectedPlanForBuy(AVAILABLE_PLANS[1]);
-                setCustomInvestAmount(1000);
-                setActiveTab('buy');
-              }}
-              className="rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-4 py-2.5 text-xs font-black uppercase text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] transition-all hover:scale-105 flex items-center gap-1.5"
-            >
-              <Plus size={15} /> Buy Package
-            </button>
-            <button
               onClick={() => setActiveTab('withdraw')}
               className="rounded-xl border border-primary/50 bg-primary/10 px-4 py-2.5 text-xs font-bold text-primary hover:bg-primary/20 transition-all flex items-center gap-1.5"
             >
