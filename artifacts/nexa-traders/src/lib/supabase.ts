@@ -28,8 +28,14 @@ export async function fetchUserProfileFromDb(email: string) {
   }
 }
 
-export async function syncUserProfile(email: string, name: string, balance: number) {
+export async function syncUserProfile(email: string, name: string, balance: number, avatarUrl?: string) {
   try {
+    const payload: any = {
+      full_name: name,
+      wallet_balance: balance
+    };
+    if (avatarUrl) payload.avatar_url = avatarUrl;
+
     // 1. Try PATCH update on existing profile row by email
     const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
       method: 'PATCH',
@@ -37,10 +43,7 @@ export async function syncUserProfile(email: string, name: string, balance: numb
         ...getHeaders(),
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({
-        full_name: name,
-        wallet_balance: balance
-      })
+      body: JSON.stringify(payload)
     });
 
     if (patchRes.ok) {
@@ -57,7 +60,8 @@ export async function syncUserProfile(email: string, name: string, balance: numb
       body: JSON.stringify({
         email,
         full_name: name,
-        wallet_balance: balance
+        wallet_balance: balance,
+        avatar_url: avatarUrl || null
       })
     });
     return postRes.ok;

@@ -30,7 +30,8 @@ import {
   Menu,
   X,
   Layers,
-  ChevronDown
+  ChevronDown,
+  Camera
 } from 'lucide-react';
 import {
   AreaChart,
@@ -272,6 +273,41 @@ export function UserDashboard() {
   // Load User Data from localStorage / Supabase defaults
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || 'Alex Vance');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || 'alex.vance@nexatraders.com');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('nexa_user_avatar') || null;
+    } catch (e) {}
+    return null;
+  });
+
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, JPEG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size must be less than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result as string;
+      setAvatarUrl(base64);
+      try {
+        localStorage.setItem('nexa_user_avatar', base64);
+      } catch (err) {}
+
+      if (userEmail) {
+        await syncUserProfile(userEmail, userName, walletBalance, base64);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
   
   const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
 
@@ -338,12 +374,20 @@ export function UserDashboard() {
   useEffect(() => {
     if (!userEmail) return;
     fetchUserProfileFromDb(userEmail).then(profile => {
-      if (profile && profile.wallet_balance !== undefined) {
-        const bal = Number(profile.wallet_balance);
-        if (!isNaN(bal)) {
-          setWalletBalance(bal);
+      if (profile) {
+        if (profile.wallet_balance !== undefined) {
+          const bal = Number(profile.wallet_balance);
+          if (!isNaN(bal)) {
+            setWalletBalance(bal);
+            try {
+              localStorage.setItem('nexa_wallet_balance', bal.toString());
+            } catch (e) {}
+          }
+        }
+        if (profile.avatar_url) {
+          setAvatarUrl(profile.avatar_url);
           try {
-            localStorage.setItem('nexa_wallet_balance', bal.toString());
+            localStorage.setItem('nexa_user_avatar', profile.avatar_url);
           } catch (e) {}
         }
       }
@@ -710,9 +754,30 @@ export function UserDashboard() {
           <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#131b17] to-[#0c110f] p-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 h-16 w-16 bg-primary/10 blur-xl pointer-events-none" />
             <div className="flex items-center gap-3">
-              <div className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl border border-primary/50 bg-gradient-to-br from-primary/30 to-primary/10 text-primary font-black text-xl shadow-[0_0_20px_rgba(232,185,73,0.3)]">
-                {(userName || 'User').charAt(0)}
+              {/* Clickable Profile Image Upload Box */}
+              <div className="relative group cursor-pointer flex-shrink-0" title="Click to upload profile picture">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
+                />
+                <div className="grid h-12 w-12 place-items-center rounded-2xl border border-primary/50 bg-gradient-to-br from-primary/30 to-primary/10 text-primary font-black text-xl shadow-[0_0_20px_rgba(232,185,73,0.3)] overflow-hidden relative">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={userName} className="h-full w-full object-cover" />
+                  ) : (
+                    (userName || 'User').charAt(0)
+                  )}
+                  {/* Camera Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/65 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <Camera size={16} className="text-primary animate-pulse" />
+                  </div>
+                </div>
+                <div className="absolute -bottom-1 -right-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-black shadow-md z-10 pointer-events-none">
+                  <Camera size={10} className="font-bold" />
+                </div>
               </div>
+
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-extrabold text-foreground truncate">{userName || 'User'}</h2>
