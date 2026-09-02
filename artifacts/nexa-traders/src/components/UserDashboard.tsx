@@ -558,8 +558,8 @@ export function UserDashboard() {
       return;
     }
 
-    if (paymentMethod === 'WALLET' && walletBalance < amount) {
-      alert(`Insufficient wallet balance. You have $${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })} available.`);
+    if (walletBalance < amount) {
+      alert(`Insufficient account balance. You have $${walletBalance.toFixed(2)} USDT available, but package requires $${amount.toFixed(2)} USDT. Please deposit funds first.`);
       return;
     }
 
@@ -580,9 +580,10 @@ export function UserDashboard() {
     setPurchasedPackages([newPkg, ...purchasedPackages]);
     insertPackageToDb(userEmail, newPkg);
 
-    if (paymentMethod === 'WALLET') {
-      setWalletBalance(prev => prev - amount);
-    }
+    // Deduct package cost directly from available wallet balance
+    const newBal = Math.max(0, walletBalance - amount);
+    setWalletBalance(newBal);
+    syncUserProfile(userEmail, userName, newBal);
 
     const newTx: Transaction = {
       id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
@@ -596,7 +597,7 @@ export function UserDashboard() {
 
     setTransactions([newTx, ...transactions]);
     insertTransactionToDb(userEmail, newTx);
-    setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name} Plan for $${amount.toLocaleString()}! Package activated.`);
+    setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name} Plan for $${amount.toLocaleString()}! Remaining Balance: $${newBal.toFixed(2)} USDT.`);
     
     setTimeout(() => {
       setSelectedPlanForBuy(null);
