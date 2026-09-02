@@ -950,6 +950,7 @@ export function UserDashboard() {
     { id: 'deposit', label: 'Deposit Funds (BEP20)', icon: Wallet, badgeText: 'AUTO', badgeColor: 'bg-accent text-accent-foreground font-bold' },
     { id: 'packages', label: 'My Packages', icon: Package, badge: `${activePackagesCount}` },
     { id: 'buy', label: 'Packages Store', icon: Sparkles, badgeText: 'HOT', badgeColor: 'bg-primary text-primary-foreground' },
+    { id: 'team', label: 'My Team & Referral', icon: Users, badge: `${teamHierarchy.length}` },
     { id: 'kyc', label: 'KYC Verification', icon: ShieldCheck, statusBadge: (kycData && kycData.status) || 'UNVERIFIED' },
     { id: 'withdraw', label: 'Withdrawal Portal', icon: ArrowUpRight },
     { id: 'transactions', label: 'Transactions History', icon: History }

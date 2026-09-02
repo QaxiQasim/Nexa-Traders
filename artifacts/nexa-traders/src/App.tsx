@@ -49,6 +49,7 @@ import {
   TerminalSquare,
   TrendingUp,
   Twitter,
+  Users,
   WalletCards,
   X,
   Zap,
