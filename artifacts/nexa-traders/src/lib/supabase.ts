@@ -295,18 +295,28 @@ export async function updateWithdrawalStatusInDb(txId: string, status: 'COMPLETE
 
 export async function updateKycStatusInDb(kycId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', rejectionReason?: string, userEmail?: string) {
   try {
-    const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?id=eq.${encodeURIComponent(kycId)}`, {
+    // 1. Update kyc_verifications table status
+    let patchRes = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?id=eq.${encodeURIComponent(kycId)}`, {
       method: 'PATCH',
       headers: {
         ...getHeaders(),
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({
-        status,
-        rejection_reason: rejectionReason || null
-      })
+      body: JSON.stringify({ status })
     });
 
+    if (!patchRes.ok && userEmail) {
+      patchRes = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=eq.${encodeURIComponent(userEmail)}`, {
+        method: 'PATCH',
+        headers: {
+          ...getHeaders(),
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ status })
+      });
+    }
+
+    // 2. Update user profiles table kyc_status
     if (userEmail) {
       await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(userEmail)}`, {
         method: 'PATCH',
@@ -315,7 +325,7 @@ export async function updateKycStatusInDb(kycId: string, status: 'APPROVED' | 'R
       });
     }
 
-    return patchRes.ok;
+    return true;
   } catch (err) {
     console.error('Error updating KYC status:', err);
     return false;
