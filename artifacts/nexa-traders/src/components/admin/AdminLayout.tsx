@@ -112,6 +112,9 @@ export function AdminLayout() {
     }
   };
 
+  // Mobile Sidebar Toggle State
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   if (!adminSession) return null;
 
   return (
@@ -120,18 +123,29 @@ export function AdminLayout() {
       <div className="fixed top-0 right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="fixed bottom-0 left-10 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* SIDEBAR NAVIGATION */}
-      <aside className="w-64 border-r border-white/10 bg-[#090d0b]/90 backdrop-blur-2xl flex flex-col justify-between hidden md:flex z-30">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Nexa Trades Logo" className="h-9 w-auto object-contain" />
-            <div>
-              <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-widest block">ADMIN PORTAL</span>
-              <span className="text-xs font-bold text-foreground font-mono">Control Center</span>
+      {/* SIDEBAR NAVIGATION (Desktop + Mobile Drawer) */}
+      <aside className={`w-72 border-r border-white/10 bg-[#090d0b]/95 backdrop-blur-2xl flex flex-col justify-between fixed md:sticky top-0 h-screen z-40 transition-transform duration-300 ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}>
+        <div className="p-6 space-y-6 overflow-y-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="Nexa Trades Logo" className="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(232,185,73,0.4)]" />
+              <div>
+                <span className="text-[10px] font-mono font-black text-primary uppercase tracking-widest block">ADMIN PORTAL</span>
+                <span className="text-xs font-bold text-foreground font-mono">Control Center</span>
+              </div>
             </div>
+            {/* Mobile Close Button */}
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="md:hidden rounded-xl p-1.5 text-muted-foreground hover:bg-white/10"
+            >
+              <X size={18} />
+            </button>
           </div>
 
-          <nav className="space-y-1.5 font-mono text-xs">
+          <nav className="space-y-2 font-mono text-xs">
             {[
               { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard, badge: null },
               { id: 'users', label: 'User Directory', icon: Users, badge: users.length },
@@ -149,20 +163,35 @@ export function AdminLayout() {
                   onClick={() => {
                     setActiveTab(item.id);
                     if (item.id !== 'users') setSelectedUserEmail(null);
+                    setMobileMenuOpen(false);
                   }}
-                  className={`w-full rounded-2xl px-4 py-3 font-bold flex items-center justify-between transition-all ${
+                  className={`w-full rounded-2xl px-4 py-3.5 font-bold flex items-center justify-between transition-all duration-200 group relative ${
                     isActive
-                      ? 'bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 text-primary border border-primary/40 shadow-[0_0_20px_rgba(232,185,73,0.15)]'
-                      : 'text-muted-foreground hover:bg-white/5 hover:text-foreground border border-transparent'
+                      ? 'bg-gradient-to-r from-primary/30 via-primary/15 to-primary/5 text-primary border border-primary/60 shadow-[0_0_25px_rgba(232,185,73,0.25)] ring-1 ring-primary/30 translate-x-1'
+                      : 'text-muted-foreground hover:bg-white/[0.07] hover:border-white/15 hover:text-foreground hover:translate-x-1 border border-transparent'
                   }`}
                 >
+                  {/* Left Active Indicator Bar */}
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 rounded-r-full bg-primary shadow-[0_0_12px_#e8b949]" />
+                  )}
+
                   <div className="flex items-center gap-3">
-                    <Icon size={16} className={isActive ? 'text-primary' : item.highlight ? 'text-rose-400' : 'text-muted-foreground'} />
-                    <span>{item.label}</span>
+                    <div className={`p-1.5 rounded-xl transition-all ${
+                      isActive ? 'bg-primary/20 text-primary' : item.highlight ? 'bg-rose-500/20 text-rose-400' : 'bg-white/5 text-muted-foreground group-hover:text-foreground'
+                    }`}>
+                      <Icon size={16} />
+                    </div>
+                    <span className="whitespace-nowrap font-sans text-xs tracking-tight">{item.label}</span>
                   </div>
+
                   {item.badge !== null && item.badge !== undefined && (
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                      item.highlight ? 'bg-rose-500 text-white animate-pulse' : 'bg-white/10 text-muted-foreground'
+                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold shadow-sm ${
+                      item.highlight 
+                        ? 'bg-rose-500 text-white animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.5)]' 
+                        : isActive 
+                        ? 'bg-primary/20 text-primary border border-primary/30' 
+                        : 'bg-white/10 text-muted-foreground group-hover:bg-white/20 group-hover:text-foreground'
                     }`}>
                       {item.badge}
                     </span>
@@ -173,23 +202,36 @@ export function AdminLayout() {
           </nav>
         </div>
 
-        {/* Sidebar Footer */}
-        <div className="p-6 border-t border-white/10 font-mono text-xs space-y-3">
+        {/* Sidebar Footer & System Status Widget */}
+        <div className="p-6 border-t border-white/10 font-mono text-xs space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 space-y-2">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                </span>
+                Supabase Engine
+              </span>
+              <strong className="text-accent text-[10px]">CONNECTED</strong>
+            </div>
+          </div>
+
           <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-3">
-            <div className="grid h-8 w-8 place-items-center rounded-xl bg-primary/20 text-primary font-bold">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary/20 text-primary font-bold shadow-sm">
               SA
             </div>
             <div className="truncate">
-              <strong className="block text-foreground text-xs truncate">Link2blove@gmail.com</strong>
+              <strong className="block text-foreground text-xs truncate font-sans">Link2blove@gmail.com</strong>
               <span className="text-[10px] text-accent font-bold">SUPERADMIN AUTHORIZED</span>
             </div>
           </div>
 
           <button
             onClick={handleAdminLogout}
-            className="w-full rounded-xl border border-rose-500/30 bg-rose-500/10 py-2.5 font-bold text-rose-400 hover:bg-rose-500/20 transition-all flex items-center justify-center gap-2 text-xs"
+            className="w-full rounded-2xl border border-rose-500/30 bg-rose-500/10 py-3 font-bold text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 transition-all flex items-center justify-center gap-2 text-xs shadow-md"
           >
-            <LogOut size={14} /> Admin Logout
+            <LogOut size={15} /> Admin Logout
           </button>
         </div>
       </aside>
@@ -198,6 +240,14 @@ export function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* TOP BAR */}
         <header className="sticky top-0 z-20 h-16 border-b border-white/10 bg-[#070a09]/90 backdrop-blur-2xl px-6 flex items-center justify-between gap-4 font-mono">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            className="md:hidden rounded-xl border border-white/15 bg-white/5 p-2 text-muted-foreground hover:text-foreground"
+          >
+            <LayoutDashboard size={18} />
+          </button>
+
           {/* Global User Search Box */}
           <form onSubmit={handleGlobalSearchSubmit} className="relative flex-1 max-w-md">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
