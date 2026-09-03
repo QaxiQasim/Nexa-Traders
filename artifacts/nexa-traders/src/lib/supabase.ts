@@ -149,30 +149,73 @@ export async function fetchFullTeamHierarchyFromDb(userEmail: string, userRefCod
     const directList = await fetchDirectReferralsFromDb(userEmail, userRefCode);
     const allPackages = await fetchAllAdminPackages();
 
-    const getPackageSum = (uEmail: string, fallbackWallet: number) => {
+    const getUserPackageData = (uEmail: string, fallbackWallet: number) => {
       const userPkgs = allPackages.filter((p: any) => p.user_email?.toLowerCase() === (uEmail || '').toLowerCase());
       const sum = userPkgs.reduce((acc: number, item: any) => acc + (Number(item.amount) || 0), 0);
-      return sum > 0 ? sum : (Number(fallbackWallet) || 0);
+      
+      const mappedPkgs = userPkgs.map((item: any) => ({
+        id: item.id || `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
+        name: item.package_name || 'Standard Trader Plan',
+        amount: Number(item.amount) || 0,
+        dailyRoi: Number(item.daily_roi) || 2.5,
+        totalRoiCap: Number(item.total_roi_cap) || (Number(item.amount) * 3),
+        earnedRoi: Number(item.earned_roi) || 0,
+        remainingRoi: Number(item.remaining_roi) || 0,
+        purchaseDate: item.purchase_date || item.created_at?.substring(0, 10) || new Date().toISOString().substring(0, 10),
+        expiryDate: item.expiry_date || new Date().toISOString().substring(0, 10),
+        status: item.status || 'ACTIVE'
+      }));
+
+      if (mappedPkgs.length > 0) {
+        return { sum, packages: mappedPkgs };
+      }
+
+      if (Number(fallbackWallet) > 0) {
+        const fallbackAmt = Number(fallbackWallet);
+        return {
+          sum: fallbackAmt,
+          packages: [{
+            id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
+            name: 'Starter Trader Package',
+            amount: fallbackAmt,
+            dailyRoi: 2.0,
+            totalRoiCap: fallbackAmt * 3,
+            earnedRoi: 0,
+            remainingRoi: fallbackAmt * 3,
+            purchaseDate: new Date().toISOString().substring(0, 10),
+            expiryDate: new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString().substring(0, 10),
+            status: 'ACTIVE'
+          }]
+        };
+      }
+
+      return { sum: 0, packages: [] };
     };
 
     const teamTree: Array<{ user: any; level: number; sponsorEmail: string }> = [];
 
     for (const l1User of directList) {
-      l1User.package_investment = getPackageSum(l1User.email, l1User.wallet_balance);
+      const data = getUserPackageData(l1User.email, l1User.wallet_balance);
+      l1User.package_investment = data.sum;
+      l1User.packages = data.packages;
       teamTree.push({ user: l1User, level: 1, sponsorEmail: userEmail });
 
       // Level 2
       if (l1User.email) {
         const l2List = await fetchDirectReferralsFromDb(l1User.email, l1User.referral_code);
         for (const l2User of l2List) {
-          l2User.package_investment = getPackageSum(l2User.email, l2User.wallet_balance);
+          const l2Data = getUserPackageData(l2User.email, l2User.wallet_balance);
+          l2User.package_investment = l2Data.sum;
+          l2User.packages = l2Data.packages;
           teamTree.push({ user: l2User, level: 2, sponsorEmail: l1User.email });
 
           // Level 3
           if (l2User.email) {
             const l3List = await fetchDirectReferralsFromDb(l2User.email, l2User.referral_code);
             for (const l3User of l3List) {
-              l3User.package_investment = getPackageSum(l3User.email, l3User.wallet_balance);
+              const l3Data = getUserPackageData(l3User.email, l3User.wallet_balance);
+              l3User.package_investment = l3Data.sum;
+              l3User.packages = l3Data.packages;
               teamTree.push({ user: l3User, level: 3, sponsorEmail: l2User.email });
             }
           }
