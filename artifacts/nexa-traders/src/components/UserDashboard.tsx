@@ -145,10 +145,10 @@ const AVAILABLE_PLANS = [
     max: 300,
     totalRoi: '90%',
     totalReturn: '$570',
-    dailyRoi: '$3.8/day',
-    dailyRoiNum: 1.26,
+    dailyRoi: '$3.17/day',
+    dailyRoiNum: 3.17,
     totalCapPct: 190,
-    duration: '5 Months',
+    duration: '6 Months',
     slots: '4 active',
     features: ['Multi-Exchange Spreads', 'Institutional Liquidity', 'Dedicated Account Assistant', 'Instant Capital Compound']
   },
