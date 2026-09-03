@@ -661,13 +661,21 @@ export function UserDashboard() {
 
         const dailyAmt = getDailyRoiAmountForPackage(pkg);
         const now = Date.now();
-        const lastPayoutTime = pkg.lastRoiPayout 
-          ? new Date(pkg.lastRoiPayout).getTime() 
-          : (pkg.purchaseDate ? new Date(pkg.purchaseDate).getTime() : now - 24 * 3600 * 1000);
+        
+        let lastPayoutTime = now;
+        if (pkg.lastRoiPayout) {
+          const parsed = new Date(pkg.lastRoiPayout).getTime();
+          if (!isNaN(parsed) && parsed > 0) lastPayoutTime = parsed;
+        } else if (pkg.purchaseDate) {
+          const parsed = new Date(pkg.purchaseDate).getTime();
+          if (!isNaN(parsed) && parsed > 0) lastPayoutTime = parsed;
+        }
 
-        const elapsedMs = now - lastPayoutTime;
+        if (lastPayoutTime > now) lastPayoutTime = now;
+
+        const elapsedMs = Math.max(0, now - lastPayoutTime);
         const elapsed24hCycles = Math.floor(elapsedMs / (24 * 60 * 60 * 1000));
-        const cyclesToProcess = forceManual ? Math.max(1, elapsed24hCycles || 1) : elapsed24hCycles;
+        const cyclesToProcess = forceManual ? Math.max(1, elapsed24hCycles) : elapsed24hCycles;
 
         if (cyclesToProcess > 0 && pkg.remainingRoi > 0) {
           const payoutAmount = Math.min(parseFloat((dailyAmt * cyclesToProcess).toFixed(2)), pkg.remainingRoi);
@@ -679,6 +687,7 @@ export function UserDashboard() {
             const newRemaining = parseFloat(Math.max(0, pkg.remainingRoi - payoutAmount).toFixed(2));
             const newStatus = newRemaining <= 0 ? 'COMPLETED' : 'ACTIVE';
             const timeStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+            const newLastPayoutStr = new Date(lastPayoutTime + cyclesToProcess * 24 * 60 * 60 * 1000).toISOString();
 
             const roiTx: Transaction = {
               id: `TX-ROI-${Math.floor(100000 + Math.random() * 900000)}`,
@@ -698,7 +707,7 @@ export function UserDashboard() {
               earnedRoi: newEarned,
               remainingRoi: newRemaining,
               status: newStatus,
-              lastRoiPayout: new Date().toISOString()
+              lastRoiPayout: newLastPayoutStr
             };
           }
         }
@@ -866,7 +875,8 @@ export function UserDashboard() {
         remainingRoi: totalCap,
         purchaseDate: new Date().toISOString().split('T')[0],
         expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        status: 'ACTIVE'
+        status: 'ACTIVE',
+        lastRoiPayout: new Date().toISOString()
       };
 
       setPurchasedPackages(prev => [newPkg, ...prev]);
@@ -917,7 +927,8 @@ export function UserDashboard() {
       remainingRoi: totalCap,
       purchaseDate: new Date().toISOString().split('T')[0],
       expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      status: 'ACTIVE'
+      status: 'ACTIVE',
+      lastRoiPayout: new Date().toISOString()
     };
 
     setPurchasedPackages([newPkg, ...purchasedPackages]);

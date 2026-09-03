@@ -262,7 +262,8 @@ export async function fetchUserPackagesFromDb(email: string) {
       remainingRoi: isNaN(Number(item.remaining_roi)) ? 0 : Number(item.remaining_roi),
       purchaseDate: item.purchase_date || new Date().toISOString().substring(0, 10),
       expiryDate: item.expiry_date || new Date().toISOString().substring(0, 10),
-      status: item.status || 'ACTIVE'
+      status: item.status || 'ACTIVE',
+      lastRoiPayout: item.last_roi_payout || item.last_payout || item.purchase_date || new Date().toISOString()
     }));
   } catch (err) {
     return null;
@@ -288,7 +289,8 @@ export async function insertPackageToDb(email: string, pkg: any) {
         remaining_roi: pkg.remainingRoi,
         purchase_date: pkg.purchaseDate,
         expiry_date: pkg.expiryDate,
-        status: pkg.status
+        status: pkg.status,
+        last_roi_payout: pkg.lastRoiPayout || pkg.purchaseDate || new Date().toISOString()
       })
     });
   } catch (err) {
