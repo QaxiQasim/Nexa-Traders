@@ -2143,7 +2143,7 @@ export function UserDashboard() {
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1 text-[11px]">
                               <div>
-                                <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Purchase Date (Kab Buy Kiya)</span>
+                                <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Purchase Date</span>
                                 <span className="font-bold text-foreground flex items-center gap-1 mt-0.5">
                                   <Calendar size={12} className="text-primary" /> {pkg.purchaseDate || pkg.created_at?.substring(0, 10) || '2026-09-03'}
                                 </span>
