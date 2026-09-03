@@ -1438,22 +1438,12 @@ export function UserDashboard() {
                     <h3 className="font-bold text-base text-foreground font-mono flex items-center gap-2">
                       <Package size={16} className="text-primary" /> Active Plans ({activePackagesCount})
                     </h3>
-                    {activePackagesCount > 0 ? (
-                      <button
-                        onClick={() => triggerDailyRoiPayoutForPackages(true)}
-                        className="text-[10px] bg-accent/20 border border-accent/40 text-accent hover:bg-accent/30 font-mono font-bold px-2.5 py-1 rounded-xl transition-all animate-pulse flex items-center gap-1"
-                        title="Claim 24-Hour Daily ROI Payout for active packages"
-                      >
-                        <Zap size={12} /> Claim 24h ROI
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setActiveTab('packages')}
-                        className="text-xs text-primary hover:underline font-mono font-bold"
-                      >
-                        View All
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setActiveTab('packages')}
+                      className="text-xs text-primary hover:underline font-mono font-bold"
+                    >
+                      View All
+                    </button>
                   </div>
 
                   <div className="mt-5 space-y-4">
@@ -1485,15 +1475,6 @@ export function UserDashboard() {
                               <div className="h-full bg-gradient-to-r from-primary via-accent to-emerald-400 transition-all duration-500" style={{ width: `${pct}%` }} />
                             </div>
                           </div>
-
-                          {pkg.status === 'ACTIVE' && (
-                            <button
-                              onClick={() => triggerDailyRoiPayoutForPackages(true, pkg.id)}
-                              className="w-full rounded-xl border border-accent/40 bg-accent/10 py-1.5 font-mono text-[11px] font-bold text-accent hover:bg-accent/20 transition-all flex items-center justify-center gap-1 shadow-xs"
-                            >
-                              <Zap size={12} /> Credit +${dailyRate.toFixed(2)} ROI
-                            </button>
-                          )}
                         </div>
                       );
                     })}
@@ -1724,14 +1705,6 @@ export function UserDashboard() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2.5 self-start">
-                {activePackagesCount > 0 && (
-                  <button
-                    onClick={() => triggerDailyRoiPayoutForPackages(true)}
-                    className="rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-mono text-xs font-bold text-accent hover:bg-accent/25 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.25)] animate-pulse"
-                  >
-                    <Zap size={15} /> Trigger 24h ROI Payouts
-                  </button>
-                )}
                 <button
                   onClick={() => setActiveTab('buy')}
                   className="rounded-xl bg-primary px-5 py-2.5 font-mono text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5"
@@ -1806,14 +1779,6 @@ export function UserDashboard() {
                     </div>
 
                     <div className="mt-8 flex flex-col gap-2.5">
-                      {pkg.status === 'ACTIVE' && (
-                        <button
-                          onClick={() => triggerDailyRoiPayoutForPackages(true, pkg.id)}
-                          className="w-full rounded-xl bg-gradient-to-r from-accent via-emerald-400 to-accent py-3 font-mono text-xs font-black uppercase text-accent-foreground shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5"
-                        >
-                          <Zap size={14} /> Claim +${dailyAmt.toFixed(2)} Daily ROI
-                        </button>
-                      )}
                       <button
                         onClick={() => {
                           const planMatch = AVAILABLE_PLANS.find(p => p.name === pkg.name);
@@ -1822,7 +1787,7 @@ export function UserDashboard() {
                             setCustomInvestAmount(pkg.amount);
                           }
                         }}
-                        className="w-full rounded-xl border border-primary/50 bg-primary/10 py-2.5 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
+                        className="w-full rounded-xl border border-primary/50 bg-primary/10 py-3 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
                       >
                         Top-Up Plan
                       </button>
