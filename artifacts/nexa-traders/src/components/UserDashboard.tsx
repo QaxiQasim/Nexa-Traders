@@ -634,9 +634,9 @@ export function UserDashboard() {
 
   // Aggregate Metrics
   const pkgsList = Array.isArray(purchasedPackages) ? purchasedPackages : [];
-  const totalInvested = pkgsList.reduce((acc, p) => acc + (p?.amount || 0), 0);
-  const totalEarnedRoi = pkgsList.reduce((acc, p) => acc + (p?.earnedRoi || 0), 0);
-  const totalRemainingRoi = pkgsList.reduce((acc, p) => acc + (p?.remainingRoi || 0), 0);
+  const totalInvested = pkgsList.reduce((acc, p) => acc + Number(p?.amount || 0), 0);
+  const totalEarnedRoi = pkgsList.reduce((acc, p) => acc + Number(p?.earnedRoi || 0), 0);
+  const totalRemainingRoi = pkgsList.reduce((acc, p) => acc + Number(p?.remainingRoi || 0), 0);
   const activePackagesCount = pkgsList.filter(p => p && p.status === 'ACTIVE').length;
 
   // ----------------------------------------------------
