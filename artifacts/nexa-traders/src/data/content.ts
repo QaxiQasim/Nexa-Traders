@@ -11,11 +11,11 @@ export type PackageTier = {
 };
 
 export const packages: PackageTier[] = [
-  { name: 'Spark', amount: '$100', slots: 2, roi: '85%', returnAmount: '$185', duration: '6 Months', daily: '$1/day', accent: 'gold' },
+  { name: 'Spark', amount: '$100', slots: 2, roi: '85%', returnAmount: '$185', duration: '6 Months', daily: '$1.03/day', accent: 'gold' },
   { name: 'Boost', amount: '$300', slots: 4, roi: '90%', returnAmount: '$570', duration: '6 Months', daily: '$3.17/day', accent: 'blue' },
   { name: 'Rise', amount: '$1,000', slots: 5, roi: '95%', returnAmount: '$1,950', duration: '6 Months', daily: '$10.83/day', accent: 'green', featured: true },
-  { name: 'Titan', amount: '$5,000', slots: 6, roi: '100%', returnAmount: '$10,000', duration: '5 Months', daily: '$66/day', accent: 'orange' },
-  { name: 'Supreme', amount: '$10,000', slots: 8, roi: '120%', returnAmount: '$22,000', duration: '4 Months', daily: '$183/day', accent: 'plum' },
+  { name: 'Titan', amount: '$5,000', slots: 6, roi: '100%', returnAmount: '$10,000', duration: '5 Months', daily: '$66.67/day', accent: 'orange' },
+  { name: 'Supreme', amount: '$10,000', slots: 8, roi: '120%', returnAmount: '$22,000', duration: '4 Months', daily: '$183.33/day', accent: 'plum' },
 ];
 
 export type Article = {

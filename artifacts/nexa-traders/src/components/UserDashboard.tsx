@@ -131,8 +131,8 @@ const AVAILABLE_PLANS = [
     max: 100,
     totalRoi: '85%',
     totalReturn: '$185',
-    dailyRoi: '$1/day',
-    dailyRoiNum: 1.0,
+    dailyRoi: '$1.03/day',
+    dailyRoiNum: 1.03,
     totalCapPct: 185,
     duration: '6 Months',
     slots: '2 active',
@@ -175,8 +175,8 @@ const AVAILABLE_PLANS = [
     max: 5000,
     totalRoi: '100%',
     totalReturn: '$10,000',
-    dailyRoi: '$66/day',
-    dailyRoiNum: 1.32,
+    dailyRoi: '$66.67/day',
+    dailyRoiNum: 66.67,
     totalCapPct: 200,
     duration: '5 Months',
     slots: '6 active',
@@ -189,8 +189,8 @@ const AVAILABLE_PLANS = [
     max: 100000,
     totalRoi: '120%',
     totalReturn: '$22,000',
-    dailyRoi: '$183/day',
-    dailyRoiNum: 1.83,
+    dailyRoi: '$183.33/day',
+    dailyRoiNum: 183.33,
     totalCapPct: 220,
     duration: '4 Months',
     slots: '8 active',
@@ -616,12 +616,131 @@ export function UserDashboard() {
     } catch (e) {}
   }, [kycData, userEmail]);
 
+  const getDailyRoiAmountForPackage = (pkg: any): number => {
+  if (!pkg) return 0;
+  const nameLower = (pkg.name || '').toLowerCase();
+  if (nameLower.includes('spark')) return 1.03;
+  if (nameLower.includes('boost')) return 3.17;
+  if (nameLower.includes('rise')) return 10.83;
+  if (nameLower.includes('titan')) return 66.67;
+  if (nameLower.includes('supreme')) return 183.33;
+
+  if (typeof pkg.dailyRoi === 'number' && pkg.dailyRoi > 0) {
+    if (pkg.dailyRoi >= 1.0) return pkg.dailyRoi;
+    return (pkg.amount * pkg.dailyRoi) / 100;
+  }
+  return pkg.amount ? pkg.amount * 0.01 : 1.0;
+}
+
   // Aggregate Metrics
   const pkgsList = Array.isArray(purchasedPackages) ? purchasedPackages : [];
   const totalInvested = pkgsList.reduce((acc, p) => acc + (p?.amount || 0), 0);
   const totalEarnedRoi = pkgsList.reduce((acc, p) => acc + (p?.earnedRoi || 0), 0);
   const totalRemainingRoi = pkgsList.reduce((acc, p) => acc + (p?.remainingRoi || 0), 0);
   const activePackagesCount = pkgsList.filter(p => p && p.status === 'ACTIVE').length;
+
+  // ----------------------------------------------------
+  // AUTOMATIC 24-HOUR DAILY ROI ACCRUAL ENGINE
+  // ----------------------------------------------------
+  const [roiAccrualToast, setRoiAccrualToast] = useState<string>('');
+
+  const triggerDailyRoiPayoutForPackages = (forceManual: boolean = false, targetPkgId?: string) => {
+    if (!userEmail) return;
+
+    setPurchasedPackages(prevPackages => {
+      const currentList = Array.isArray(prevPackages) ? prevPackages : [];
+      if (currentList.length === 0) return currentList;
+
+      let balanceAdder = 0;
+      let isUpdated = false;
+      const createdTxs: Transaction[] = [];
+
+      const nextPackages = currentList.map(pkg => {
+        if (!pkg || pkg.status !== 'ACTIVE') return pkg;
+        if (targetPkgId && pkg.id !== targetPkgId) return pkg;
+
+        const dailyAmt = getDailyRoiAmountForPackage(pkg);
+        const now = Date.now();
+        const lastPayoutTime = pkg.lastRoiPayout 
+          ? new Date(pkg.lastRoiPayout).getTime() 
+          : (pkg.purchaseDate ? new Date(pkg.purchaseDate).getTime() : now - 24 * 3600 * 1000);
+
+        const elapsedMs = now - lastPayoutTime;
+        const elapsed24hCycles = Math.floor(elapsedMs / (24 * 60 * 60 * 1000));
+        const cyclesToProcess = forceManual ? Math.max(1, elapsed24hCycles || 1) : elapsed24hCycles;
+
+        if (cyclesToProcess > 0 && pkg.remainingRoi > 0) {
+          const payoutAmount = Math.min(parseFloat((dailyAmt * cyclesToProcess).toFixed(2)), pkg.remainingRoi);
+
+          if (payoutAmount > 0) {
+            isUpdated = true;
+            balanceAdder += payoutAmount;
+            const newEarned = parseFloat((pkg.earnedRoi + payoutAmount).toFixed(2));
+            const newRemaining = parseFloat(Math.max(0, pkg.remainingRoi - payoutAmount).toFixed(2));
+            const newStatus = newRemaining <= 0 ? 'COMPLETED' : 'ACTIVE';
+            const timeStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+            const roiTx: Transaction = {
+              id: `TX-ROI-${Math.floor(100000 + Math.random() * 900000)}`,
+              date: timeStr,
+              type: 'DAILY_ROI',
+              title: `Daily ROI Credit (${pkg.name} Plan)`,
+              amount: payoutAmount,
+              status: 'COMPLETED',
+              txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
+            };
+
+            createdTxs.push(roiTx);
+
+            return {
+              ...pkg,
+              dailyRoi: dailyAmt,
+              earnedRoi: newEarned,
+              remainingRoi: newRemaining,
+              status: newStatus,
+              lastRoiPayout: new Date().toISOString()
+            };
+          }
+        }
+        return pkg;
+      });
+
+      if (isUpdated && balanceAdder > 0) {
+        setWalletBalance(currentBal => {
+          const finalBal = currentBal + balanceAdder;
+          syncUserProfile(userEmail, userName, finalBal);
+          try { localStorage.setItem(`nexa_balance_${userEmail.toLowerCase()}`, finalBal.toString()); } catch (e) {}
+          return finalBal;
+        });
+
+        setTransactions(prevTxs => {
+          const updatedTxsList = [...createdTxs, ...prevTxs];
+          try { localStorage.setItem(`nexa_tx_${userEmail.toLowerCase()}`, JSON.stringify(updatedTxsList)); } catch (e) {}
+          return updatedTxsList;
+        });
+
+        nextPackages.forEach(p => insertPackageToDb(userEmail, p));
+        createdTxs.forEach(t => insertTransactionToDb(userEmail, t));
+
+        setRoiAccrualToast(`⚡ Success! Credited +$${balanceAdder.toFixed(2)} USDT Daily ROI to wallet & ledger.`);
+        setTimeout(() => setRoiAccrualToast(''), 4500);
+      }
+
+      return nextPackages;
+    });
+  };
+
+  // Run Auto Daily ROI check on mount & every 60s
+  useEffect(() => {
+    if (!userEmail) return;
+    triggerDailyRoiPayoutForPackages(false);
+
+    const interval = setInterval(() => {
+      triggerDailyRoiPayoutForPackages(false);
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [userEmail]);
 
   // Package Store & Modal State
   const [selectedPlanForBuy, setSelectedPlanForBuy] = useState<any | null>(null);
@@ -1319,12 +1438,22 @@ export function UserDashboard() {
                     <h3 className="font-bold text-base text-foreground font-mono flex items-center gap-2">
                       <Package size={16} className="text-primary" /> Active Plans ({activePackagesCount})
                     </h3>
-                    <button
-                      onClick={() => setActiveTab('packages')}
-                      className="text-xs text-primary hover:underline font-mono font-bold"
-                    >
-                      View All
-                    </button>
+                    {activePackagesCount > 0 ? (
+                      <button
+                        onClick={() => triggerDailyRoiPayoutForPackages(true)}
+                        className="text-[10px] bg-accent/20 border border-accent/40 text-accent hover:bg-accent/30 font-mono font-bold px-2.5 py-1 rounded-xl transition-all animate-pulse flex items-center gap-1"
+                        title="Claim 24-Hour Daily ROI Payout for active packages"
+                      >
+                        <Zap size={12} /> Claim 24h ROI
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setActiveTab('packages')}
+                        className="text-xs text-primary hover:underline font-mono font-bold"
+                      >
+                        View All
+                      </button>
+                    )}
                   </div>
 
                   <div className="mt-5 space-y-4">
@@ -1333,26 +1462,38 @@ export function UserDashboard() {
                       const earned = Number(pkg?.earnedRoi || 0);
                       const totalCap = Number(pkg?.totalRoiCap || 1);
                       const pct = Math.min(100, Math.round((earned / totalCap) * 100));
+                      const dailyRate = getDailyRoiAmountForPackage(pkg);
+
                       return (
-                        <div key={pkg.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 font-mono">
+                        <div key={pkg.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 font-mono space-y-2.5">
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-foreground text-sm">{pkg.name} Plan</span>
-                            <span className="text-xs font-bold text-primary">${amount.toLocaleString()}</span>
+                            <span className="text-xs font-bold text-primary">${amount.toLocaleString()} USDT</span>
                           </div>
-                          <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                            <span>Daily: <strong className="text-accent">+{pkg.dailyRoi}%</strong></span>
+                          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                            <span>Daily Yield: <strong className="text-accent">+${dailyRate.toFixed(2)}/day</strong></span>
                             <span>Earned: <strong className="text-primary">${earned.toFixed(2)}</strong></span>
                           </div>
+
                           {/* Progress Bar */}
-                          <div className="mt-3">
+                          <div>
                             <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
-                              <span>ROI Cap Progress</span>
-                              <span>{pct}%</span>
+                              <span>ROI Cap (${earned.toFixed(0)} / ${totalCap.toFixed(0)})</span>
+                              <span className="text-accent font-bold">{pct}%</span>
                             </div>
                             <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                              <div className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500" style={{ width: `${pct}%` }} />
+                              <div className="h-full bg-gradient-to-r from-primary via-accent to-emerald-400 transition-all duration-500" style={{ width: `${pct}%` }} />
                             </div>
                           </div>
+
+                          {pkg.status === 'ACTIVE' && (
+                            <button
+                              onClick={() => triggerDailyRoiPayoutForPackages(true, pkg.id)}
+                              className="w-full rounded-xl border border-accent/40 bg-accent/10 py-1.5 font-mono text-[11px] font-bold text-accent hover:bg-accent/20 transition-all flex items-center justify-center gap-1 shadow-xs"
+                            >
+                              <Zap size={12} /> Credit +${dailyRate.toFixed(2)} ROI
+                            </button>
+                          )}
                         </div>
                       );
                     })}
@@ -1582,12 +1723,22 @@ export function UserDashboard() {
                   Individual tracking for all your purchased Quantitative Arbitrage plans.
                 </p>
               </div>
-              <button
-                onClick={() => setActiveTab('buy')}
-                className="rounded-xl bg-primary px-5 py-2.5 font-mono text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5 self-start"
-              >
-                <Plus size={15} /> Buy New Package
-              </button>
+              <div className="flex flex-wrap gap-2.5 self-start">
+                {activePackagesCount > 0 && (
+                  <button
+                    onClick={() => triggerDailyRoiPayoutForPackages(true)}
+                    className="rounded-xl border border-accent/40 bg-accent/15 px-4 py-2.5 font-mono text-xs font-bold text-accent hover:bg-accent/25 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.25)] animate-pulse"
+                  >
+                    <Zap size={15} /> Trigger 24h ROI Payouts
+                  </button>
+                )}
+                <button
+                  onClick={() => setActiveTab('buy')}
+                  className="rounded-xl bg-primary px-5 py-2.5 font-mono text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5"
+                >
+                  <Plus size={15} /> Buy New Package
+                </button>
+              </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -1597,6 +1748,8 @@ export function UserDashboard() {
                 const remaining = Number(pkg?.remainingRoi || 0);
                 const totalCap = Number(pkg?.totalRoiCap || 1);
                 const progressPct = Math.min(100, Math.round((earned / totalCap) * 100));
+                const dailyAmt = getDailyRoiAmountForPackage(pkg);
+
                 return (
                   <div
                     key={pkg.id}
@@ -1621,7 +1774,7 @@ export function UserDashboard() {
                         </div>
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Daily ROI Rate</span>
-                          <strong className="text-accent text-sm">+{pkg.dailyRoi}% / Day</strong>
+                          <strong className="text-accent text-sm">+${dailyAmt.toFixed(2)} / Day</strong>
                         </div>
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Total Earned ROI</span>
@@ -1652,7 +1805,15 @@ export function UserDashboard() {
                       </div>
                     </div>
 
-                    <div className="mt-8 flex gap-3">
+                    <div className="mt-8 flex flex-col gap-2.5">
+                      {pkg.status === 'ACTIVE' && (
+                        <button
+                          onClick={() => triggerDailyRoiPayoutForPackages(true, pkg.id)}
+                          className="w-full rounded-xl bg-gradient-to-r from-accent via-emerald-400 to-accent py-3 font-mono text-xs font-black uppercase text-accent-foreground shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Zap size={14} /> Claim +${dailyAmt.toFixed(2)} Daily ROI
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           const planMatch = AVAILABLE_PLANS.find(p => p.name === pkg.name);
@@ -1661,7 +1822,7 @@ export function UserDashboard() {
                             setCustomInvestAmount(pkg.amount);
                           }
                         }}
-                        className="w-full rounded-xl border border-primary/50 bg-primary/10 py-3 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
+                        className="w-full rounded-xl border border-primary/50 bg-primary/10 py-2.5 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
                       >
                         Top-Up Plan
                       </button>
@@ -2763,6 +2924,14 @@ export function UserDashboard() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* DAILY ROI ACCRUAL FLOATING TOAST NOTIFICATION */}
+      {roiAccrualToast && (
+        <div className="fixed bottom-6 right-6 z-50 rounded-2xl border border-accent/50 bg-[#0a1410] px-5 py-4 text-xs font-mono text-accent shadow-2xl flex items-center gap-3">
+          <Zap size={20} className="text-accent animate-pulse" />
+          <span className="font-bold text-sm text-foreground">{roiAccrualToast}</span>
         </div>
       )}
     </div>
