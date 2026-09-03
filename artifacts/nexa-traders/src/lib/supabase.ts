@@ -147,21 +147,32 @@ export async function fetchDirectReferralsFromDb(sponsorEmail: string, sponsorCo
 export async function fetchFullTeamHierarchyFromDb(userEmail: string, userRefCode?: string) {
   try {
     const directList = await fetchDirectReferralsFromDb(userEmail, userRefCode);
+    const allPackages = await fetchAllAdminPackages();
+
+    const getPackageSum = (uEmail: string, fallbackWallet: number) => {
+      const userPkgs = allPackages.filter((p: any) => p.user_email?.toLowerCase() === (uEmail || '').toLowerCase());
+      const sum = userPkgs.reduce((acc: number, item: any) => acc + (Number(item.amount) || 0), 0);
+      return sum > 0 ? sum : (Number(fallbackWallet) || 0);
+    };
+
     const teamTree: Array<{ user: any; level: number; sponsorEmail: string }> = [];
 
     for (const l1User of directList) {
+      l1User.package_investment = getPackageSum(l1User.email, l1User.wallet_balance);
       teamTree.push({ user: l1User, level: 1, sponsorEmail: userEmail });
 
       // Level 2
       if (l1User.email) {
         const l2List = await fetchDirectReferralsFromDb(l1User.email, l1User.referral_code);
         for (const l2User of l2List) {
+          l2User.package_investment = getPackageSum(l2User.email, l2User.wallet_balance);
           teamTree.push({ user: l2User, level: 2, sponsorEmail: l1User.email });
 
           // Level 3
           if (l2User.email) {
             const l3List = await fetchDirectReferralsFromDb(l2User.email, l2User.referral_code);
             for (const l3User of l3List) {
+              l3User.package_investment = getPackageSum(l3User.email, l3User.wallet_balance);
               teamTree.push({ user: l3User, level: 3, sponsorEmail: l2User.email });
             }
           }

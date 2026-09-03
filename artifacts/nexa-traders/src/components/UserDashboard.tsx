@@ -1830,17 +1830,23 @@ export function UserDashboard() {
               <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
                 <div className="text-xs text-muted-foreground uppercase">Active Members</div>
                 <div className="mt-2 text-3xl font-black text-accent">
-                  {teamHierarchy.filter(item => (Number(item.user?.wallet_balance) > 0)).length}
+                  {teamHierarchy.filter(item => {
+                    const inv = item.user?.package_investment !== undefined ? Number(item.user.package_investment) : (Number(item.user?.wallet_balance) || 0);
+                    return inv > 0;
+                  }).length}
                 </div>
-                <div className="mt-1 text-[10px] text-accent/80">Funded Accounts</div>
+                <div className="mt-1 text-[10px] text-accent/80">Active Package Investors</div>
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
-                <div className="text-xs text-muted-foreground uppercase">Total Team Deposits</div>
+                <div className="text-xs text-muted-foreground uppercase">Total Team Packages</div>
                 <div className="mt-2 text-3xl font-black text-emerald-400">
-                  $ {teamHierarchy.reduce((sum, item) => sum + (Number(item.user?.wallet_balance) || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  $ {teamHierarchy.reduce((sum, item) => {
+                    const inv = item.user?.package_investment !== undefined ? Number(item.user.package_investment) : (Number(item.user?.wallet_balance) || 0);
+                    return sum + inv;
+                  }, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div className="mt-1 text-[10px] text-emerald-400/80">USDT Cumulative Balance</div>
+                <div className="mt-1 text-[10px] text-emerald-400/80">USDT Packages Investment</div>
               </div>
             </div>
 
@@ -1936,13 +1942,14 @@ export function UserDashboard() {
                         <th className="px-6 py-4">Hierarchy Level</th>
                         <th className="px-6 py-4">Registration Date</th>
                         <th className="px-6 py-4 text-center">Status</th>
-                        <th className="px-6 py-4 text-right">Wallet / Deposit</th>
+                        <th className="px-6 py-4 text-right">Packages Purchased</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {(teamTabFilter === 'direct' ? teamHierarchy.filter(t => t.level === 1) : teamTabFilter === 'network' ? teamHierarchy.filter(t => t.level > 1) : teamHierarchy).map((item, index) => {
                         const u = item.user;
-                        const hasDeposit = Number(u.wallet_balance) > 0;
+                        const packageInv = Number(u.package_investment !== undefined ? u.package_investment : u.wallet_balance) || 0;
+                        const hasDeposit = packageInv > 0;
                         const levelBadge = item.level === 1 ? 'bg-primary/20 text-primary border-primary/30' : item.level === 2 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-purple-500/20 text-purple-400 border-purple-500/30';
 
                         return (
@@ -1982,7 +1989,7 @@ export function UserDashboard() {
                             </td>
 
                             <td className="px-6 py-4 text-right font-bold text-emerald-400">
-                              $ {(Number(u.wallet_balance) || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT
+                              $ {packageInv.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT
                             </td>
                           </tr>
                         );
