@@ -93,6 +93,7 @@ export interface KycData {
   idType: 'PASSPORT' | 'NATIONAL_ID' | 'DRIVERS_LICENSE';
   idNumber: string;
   submittedAt?: string;
+  documentImage?: string | null;
 }
 
 const DEFAULT_PACKAGES: PurchasedPackage[] = [
@@ -941,7 +942,8 @@ export function UserDashboard() {
       country,
       idType,
       idNumber: idNumber.trim(),
-      submittedAt: new Date().toISOString().split('T')[0]
+      submittedAt: new Date().toISOString().split('T')[0],
+      documentImage: kycDocFile || null
     };
     setKycData(updated);
     upsertKycToDb(userEmail, updated);

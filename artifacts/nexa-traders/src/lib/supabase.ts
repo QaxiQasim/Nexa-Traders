@@ -322,6 +322,26 @@ export async function fetchKycFromDb(email: string) {
 
 export async function upsertKycToDb(email: string, kyc: any) {
   try {
+    const record = {
+      id: kyc.id || `KYC-${Math.floor(10000 + Math.random() * 90000)}`,
+      user_email: email,
+      full_name: kyc.fullName || (email || '').split('@')[0],
+      dob: kyc.dob || '1995-01-01',
+      country: kyc.country || 'United Arab Emirates',
+      document_type: kyc.idType || 'PASSPORT',
+      document_number: kyc.idNumber || 'N849102948',
+      document_image: kyc.documentImage || null,
+      status: kyc.status || 'PENDING',
+      submitted_at: kyc.submittedAt || new Date().toISOString().substring(0, 10)
+    };
+
+    try {
+      const locList = JSON.parse(localStorage.getItem('nexa_all_kyc_submissions') || '[]');
+      const filtered = locList.filter((item: any) => item.user_email?.toLowerCase() !== email.toLowerCase());
+      localStorage.setItem('nexa_all_kyc_submissions', JSON.stringify([record, ...filtered]));
+      localStorage.setItem(`nexa_kyc_${email.toLowerCase()}`, JSON.stringify(record));
+    } catch (e) {}
+
     await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications`, {
       method: 'POST',
       headers: {
@@ -330,9 +350,9 @@ export async function upsertKycToDb(email: string, kyc: any) {
       },
       body: JSON.stringify({
         user_email: email,
-        document_type: kyc.idType || 'PASSPORT',
-        document_number: kyc.idNumber || 'N849102948',
-        status: kyc.status || 'PENDING'
+        document_type: record.document_type,
+        document_number: record.document_number,
+        status: record.status
       })
     });
   } catch (err) {
@@ -428,15 +448,40 @@ export async function fetchAllAdminPackages() {
 
 export async function fetchAllAdminKyc() {
   try {
+    let dbKyc: any[] = [];
     const res = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?select=*&order=submitted_at.desc`, {
       method: 'GET',
       headers: getHeaders()
     });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) dbKyc = data;
+    }
+
+    let localKyc: any[] = [];
+    try {
+      localKyc = JSON.parse(localStorage.getItem('nexa_all_kyc_submissions') || '[]');
+    } catch (e) {}
+
+    const map = new Map<string, any>();
+    for (const item of dbKyc) {
+      if (item.user_email) map.set(item.user_email.toLowerCase(), item);
+    }
+    for (const item of localKyc) {
+      if (item.user_email) {
+        const existing = map.get(item.user_email.toLowerCase()) || {};
+        map.set(item.user_email.toLowerCase(), { ...existing, ...item });
+      }
+    }
+
+    const merged = Array.from(map.values());
+    return merged.length > 0 ? merged : dbKyc;
   } catch (err) {
-    return [];
+    try {
+      return JSON.parse(localStorage.getItem('nexa_all_kyc_submissions') || '[]');
+    } catch (e) {
+      return [];
+    }
   }
 }
 
