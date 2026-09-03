@@ -1449,7 +1449,7 @@ function PackagesPage() {
     ],
     [
       'Which subscription plan is recommended for scaling?',
-      'The RISE ($1,000) plan is marked as Most Selected, offering 95% total ROI ($2,000 return) across 5 active slots.',
+      'The RISE ($1,000) plan is marked as Most Selected, offering 95% total ROI ($1,950 return) across 5 active slots.',
     ],
     [
       'Can I hold multiple active subscriptions simultaneously?',
