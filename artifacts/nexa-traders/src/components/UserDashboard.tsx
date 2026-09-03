@@ -899,11 +899,7 @@ export function UserDashboard() {
   // Handle Buy Package Confirmation
   const handleConfirmPurchase = () => {
     if (!selectedPlanForBuy) return;
-    const amount = Number(customInvestAmount);
-    if (isNaN(amount) || amount < selectedPlanForBuy.min || amount > selectedPlanForBuy.max) {
-      alert(`Investment amount must be between $${selectedPlanForBuy.min} and $${selectedPlanForBuy.max}`);
-      return;
-    }
+    const amount = Number(selectedPlanForBuy.min || selectedPlanForBuy.price || 100);
 
     if (walletBalance < amount) {
       alert(`Insufficient account balance. You have $${walletBalance.toFixed(2)} USDT available, but package requires $${amount.toFixed(2)} USDT. Please deposit funds first.`);
@@ -2752,18 +2748,24 @@ export function UserDashboard() {
               </div>
             ) : (
               <div className="mt-6 space-y-5">
-                <div>
-                  <label className="block text-muted-foreground mb-2">
-                    Enter Investment Amount (${selectedPlanForBuy.min.toLocaleString()} – ${selectedPlanForBuy.max.toLocaleString()})
-                  </label>
-                  <input
-                    type="number"
-                    min={selectedPlanForBuy.min}
-                    max={selectedPlanForBuy.max}
-                    value={customInvestAmount}
-                    onChange={e => setCustomInvestAmount(Number(e.target.value))}
-                    className="w-full rounded-xl border border-primary/40 bg-white/[0.04] px-4 py-3.5 text-foreground text-base font-bold outline-none focus:border-primary"
-                  />
+                {/* FIXED PLAN SPECIFICATIONS & DETAILS */}
+                <div className="rounded-2xl border border-primary/30 bg-gradient-to-b from-[#141b18] to-[#0a0f0d] p-5 space-y-3 font-mono text-xs shadow-inner">
+                  <div className="flex justify-between items-center border-b border-white/10 pb-2.5">
+                    <span className="text-muted-foreground">Investment Capital (Fixed)</span>
+                    <strong className="text-primary text-base font-black">${(selectedPlanForBuy.min || selectedPlanForBuy.price || 100).toLocaleString()}.00 USDT</strong>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span className="text-muted-foreground">Contract Duration</span>
+                    <span className="text-foreground font-bold">{selectedPlanForBuy.duration || '6 Months'}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span className="text-muted-foreground">Daily ROI Yield</span>
+                    <strong className="text-accent font-bold">+{selectedPlanForBuy.dailyRoi} / Day</strong>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Total Return Cap</span>
+                    <strong className="text-primary font-bold">{selectedPlanForBuy.totalReturn || selectedPlanForBuy.returnCap || `$${(selectedPlanForBuy.min * (selectedPlanForBuy.totalCapPct / 100)).toFixed(2)}`} ({selectedPlanForBuy.totalCapPct || 190}%)</strong>
+                  </div>
                 </div>
 
                 <div>
@@ -2858,17 +2860,6 @@ export function UserDashboard() {
                     </button>
                   </div>
                 )}
-
-                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2 text-xs">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Daily ROI Payout:</span>
-                    <strong className="text-accent">+{selectedPlanForBuy.dailyRoi} (${(customInvestAmount * (selectedPlanForBuy.dailyRoiNum / 100)).toFixed(2)}/day)</strong>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Total ROI Return Cap:</span>
-                    <strong className="text-primary">${(customInvestAmount * (selectedPlanForBuy.totalCapPct / 100)).toFixed(2)} ({selectedPlanForBuy.totalCapPct}%)</strong>
-                  </div>
-                </div>
 
                 <div className="flex gap-3 pt-2">
                   <button
