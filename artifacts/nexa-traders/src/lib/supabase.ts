@@ -433,9 +433,26 @@ export async function processDirectReferralCommission(purchaserEmail: string, pa
       return isAct && capLeft > 0;
     });
 
-    // CRITICAL RULE: If Sponsor has NO active packages, 10% reward is LAPSED ($0 paid)
+    const rawCommAmount = Number((packageAmount * 0.10).toFixed(2));
+
+    // CRITICAL RULE: If Sponsor has NO active packages, 10% reward is LAPSED ($0 paid) & logged as MISSED_BONUS
     if (activeSponsorPkgs.length === 0) {
       console.log(`Sponsor ${sponsorEmailLower} has no active package or remaining ROI cap. Referral bonus lapsed.`);
+      const missedTx = {
+        id: `TX-MISSED-${Math.floor(10000 + Math.random() * 90000)}`,
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        type: 'MISSED_BONUS',
+        title: 'Missed Direct Referral Income',
+        description: `⚠️ You missed $${rawCommAmount.toFixed(2)} referral income from ${emailLower} (${packageName} Plan) due to low/zero account cap`,
+        amount: 0,
+        status: 'LAPSED',
+        txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
+      };
+      await insertTransactionToDb(sponsorEmailLower, missedTx);
+      try {
+        const existingTxs = JSON.parse(localStorage.getItem(`nexa_tx_${sponsorEmailLower}`) || '[]');
+        localStorage.setItem(`nexa_tx_${sponsorEmailLower}`, JSON.stringify([missedTx, ...existingTxs]));
+      } catch (e) {}
       return;
     }
 
@@ -451,7 +468,6 @@ export async function processDirectReferralCommission(purchaserEmail: string, pa
     }
 
     // 4. Compute 10% Raw Bonus, Capped by Sponsor's Total Available Remaining Cap
-    const rawCommAmount = Number((packageAmount * 0.10).toFixed(2));
     const actualCommAmount = Number((Math.min(rawCommAmount, totalAvailableCap)).toFixed(2));
 
     if (actualCommAmount <= 0) return;

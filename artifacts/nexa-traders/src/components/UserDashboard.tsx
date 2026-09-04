@@ -1999,6 +1999,50 @@ export function UserDashboard() {
               </div>
             </div>
 
+            {/* MISSED REFERRAL INCOME WARNING BANNER (When Sponsor Has 0 Active Package Cap) */}
+            {(() => {
+              const activeCapAvailable = (purchasedPackages || [])
+                .filter(p => p.status === 'ACTIVE')
+                .reduce((acc, p) => acc + Math.max(0, Number(p.remainingRoi !== undefined ? p.remainingRoi : (Number(p.totalRoiCap) - Number(p.earnedRoi)))), 0);
+              const hasActiveReferrals = directTeam.some(item => {
+                const u = item.user || item;
+                const inv = u.package_investment !== undefined ? Number(u.package_investment) : (Number(u.wallet_balance) || 0);
+                return inv > 0;
+              });
+
+              if (activeCapAvailable === 0 && hasActiveReferrals) {
+                return (
+                  <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-[#161208] to-amber-500/10 p-6 backdrop-blur-2xl shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+                    <div className="flex items-center gap-4">
+                      <div className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
+                        <AlertCircle size={24} className="animate-pulse" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <strong className="text-amber-400 text-sm font-sans font-bold uppercase tracking-wider">
+                            ⚠️ You Missed Referral Income Because of Low/Zero Account Cap!
+                          </strong>
+                          <span className="rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold">
+                            INACTIVE ACCOUNT
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground text-xs font-mono">
+                          Your direct referral(s) have active package subscriptions, but you don't have an active subscription package cap to receive 10% direct commissions. Activate a package now so you don't miss future referral rewards!
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('buy')}
+                      className="w-full sm:w-auto flex-shrink-0 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3.5 text-xs font-black font-mono uppercase text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:scale-105 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Zap size={16} /> Activate Package Now
+                    </button>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
             {/* TEAM STATISTICS KPI CARDS */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono">
               <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
@@ -2116,6 +2160,9 @@ export function UserDashboard() {
                         const u = item.user || item;
                         const packageInv = Number(u.package_investment !== undefined ? u.package_investment : u.wallet_balance) || 0;
                         const hasDeposit = packageInv > 0;
+                        const activeCapAvailable = (purchasedPackages || [])
+                          .filter(p => p.status === 'ACTIVE')
+                          .reduce((acc, p) => acc + Math.max(0, Number(p.remainingRoi !== undefined ? p.remainingRoi : (Number(p.totalRoiCap) - Number(p.earnedRoi)))), 0);
 
                         return (
                           <tr key={u.id || u.email || index} className="hover:bg-white/[0.03] transition-colors">
@@ -2140,22 +2187,36 @@ export function UserDashboard() {
                             </td>
 
                             <td className="px-6 py-4 text-center">
-                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                                hasDeposit ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                              }`}>
-                                {hasDeposit ? 'Active Investor' : 'Registered'}
-                              </span>
+                              <div className="flex flex-col items-center gap-1">
+                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                                  hasDeposit ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                                }`}>
+                                  {hasDeposit ? 'Active Investor' : 'Registered'}
+                                </span>
+                                {hasDeposit && activeCapAvailable === 0 && (
+                                  <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                                    ⚠️ Missed 10% Bonus (Low Cap)
+                                  </span>
+                                )}
+                              </div>
                             </td>
 
                             <td className="px-6 py-4 text-right">
-                              <button
-                                onClick={() => handleOpenMemberPackages(u)}
-                                className="group inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 font-mono text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/60 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
-                                title="Click to view detailed packages purchased by this member"
-                              >
-                                <span>$ {packageInv.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
-                                <ExternalLink size={12} className="opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-emerald-400" />
-                              </button>
+                              <div className="flex flex-col items-end gap-1">
+                                <button
+                                  onClick={() => handleOpenMemberPackages(u)}
+                                  className="group inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 font-mono text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/60 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
+                                  title="Click to view detailed packages purchased by this member"
+                                >
+                                  <span>$ {packageInv.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
+                                  <ExternalLink size={12} className="opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-emerald-400" />
+                                </button>
+                                {hasDeposit && activeCapAvailable === 0 && (
+                                  <span className="text-[10px] text-amber-400 font-bold font-mono">
+                                    ⚠️ Missed $ {(packageInv * 0.10).toFixed(2)} Bonus
+                                  </span>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         );
