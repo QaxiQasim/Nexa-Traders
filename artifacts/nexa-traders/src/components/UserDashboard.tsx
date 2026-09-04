@@ -1900,10 +1900,10 @@ export function UserDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-black text-foreground tracking-tight font-mono flex items-center gap-2">
-                  <Users className="text-primary" size={24} /> My Team & Referral Hub
+                  <Users className="text-primary" size={24} /> My Direct Referral Network
                 </h2>
                 <p className="text-xs text-muted-foreground font-mono mt-1">
-                  Invite friends, track direct referrals, and build your multi-level trading community.
+                  Invite friends, track your direct referrals, and earn direct income on active package subscriptions.
                 </p>
               </div>
 
@@ -1950,7 +1950,7 @@ export function UserDashboard() {
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground font-mono">
-                  Share this code with your friends during Sign Up to add them directly to your team network.
+                  Share this code with your friends during Sign Up to add them directly as your direct referral.
                 </p>
               </div>
 
@@ -1990,42 +1990,50 @@ export function UserDashboard() {
             {/* TEAM STATISTICS KPI CARDS */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono">
               <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
-                <div className="text-xs text-muted-foreground uppercase">Total Team Members</div>
-                <div className="mt-2 text-3xl font-black text-foreground">{teamHierarchy.length}</div>
-                <div className="mt-1 text-[10px] text-primary">All Network Levels</div>
+                <div className="text-xs text-muted-foreground uppercase">Direct Team Members</div>
+                <div className="mt-2 text-3xl font-black text-foreground">{directTeam.length}</div>
+                <div className="mt-1 text-[10px] text-primary">Direct Sponsored Referrals</div>
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
-                <div className="text-xs text-muted-foreground uppercase">Direct Referrals</div>
-                <div className="mt-2 text-3xl font-black text-primary">{directTeam.length}</div>
-                <div className="mt-1 text-[10px] text-muted-foreground">Level 1 Direct Sponsor</div>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
-                <div className="text-xs text-muted-foreground uppercase">Active Members</div>
-                <div className="mt-2 text-3xl font-black text-accent">
-                  {teamHierarchy.filter(item => {
-                    const inv = item.user?.package_investment !== undefined ? Number(item.user.package_investment) : (Number(item.user?.wallet_balance) || 0);
+                <div className="text-xs text-muted-foreground uppercase">Active Direct Investors</div>
+                <div className="mt-2 text-3xl font-black text-primary">
+                  {directTeam.filter(item => {
+                    const u = item.user || item;
+                    const inv = u.package_investment !== undefined ? Number(u.package_investment) : (Number(u.wallet_balance) || 0);
                     return inv > 0;
                   }).length}
                 </div>
-                <div className="mt-1 text-[10px] text-accent/80">Active Package Investors</div>
+                <div className="mt-1 text-[10px] text-muted-foreground">Active Package Holders</div>
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
-                <div className="text-xs text-muted-foreground uppercase">Total Team Packages</div>
+                <div className="text-xs text-muted-foreground uppercase">Direct Sales Volume</div>
                 <div className="mt-2 text-3xl font-black text-emerald-400">
-                  $ {teamHierarchy.reduce((sum, item) => {
-                    const inv = item.user?.package_investment !== undefined ? Number(item.user.package_investment) : (Number(item.user?.wallet_balance) || 0);
+                  $ {directTeam.reduce((sum, item) => {
+                    const u = item.user || item;
+                    const inv = u.package_investment !== undefined ? Number(u.package_investment) : (Number(u.wallet_balance) || 0);
                     return sum + inv;
                   }, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div className="mt-1 text-[10px] text-emerald-400/80">USDT Packages Investment</div>
+                <div className="mt-1 text-[10px] text-emerald-400/80">Total Package Investment</div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
+                <div className="text-xs text-muted-foreground uppercase">Direct Referral Commission</div>
+                <div className="mt-2 text-3xl font-black text-accent">
+                  $ {(directTeam.reduce((sum, item) => {
+                    const u = item.user || item;
+                    const inv = u.package_investment !== undefined ? Number(u.package_investment) : (Number(u.wallet_balance) || 0);
+                    return sum + (inv * 0.07);
+                  }, 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+                <div className="mt-1 text-[10px] text-accent/80">7% Direct Bonus Earned</div>
               </div>
             </div>
 
             {/* TEAM SECTION CONTENTS: EMPTY STATE OR TEAM TABLE */}
-            {teamHierarchy.length === 0 ? (
+            {directTeam.length === 0 ? (
               /* ATTRACTIVE EMPTY STATE CARD */
               <div className="rounded-3xl border border-white/10 bg-[#0a0f0d] p-8 sm:p-12 text-center space-y-6 max-w-2xl mx-auto shadow-2xl">
                 <div className="mx-auto grid h-20 w-20 place-items-center rounded-3xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_30px_rgba(232,185,73,0.2)]">
@@ -2033,9 +2041,9 @@ export function UserDashboard() {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold font-mono text-foreground">You don't have any team members yet.</h3>
+                  <h3 className="text-xl font-bold font-mono text-foreground">You don't have any direct referrals yet.</h3>
                   <p className="text-xs font-mono text-muted-foreground max-w-md mx-auto">
-                    Invite friends and build your team. Share your unique referral code or link to start earning referral rewards across your network!
+                    Invite friends to join. Share your unique referral code or link to start earning 7% direct referral rewards!
                   </p>
                 </div>
 
@@ -2071,39 +2079,12 @@ export function UserDashboard() {
                 </div>
               </div>
             ) : (
-              /* PREMIUM TEAM MEMBERS TABLE */
+              /* PREMIUM DIRECT TEAM MEMBERS TABLE */
               <div className="rounded-3xl border border-white/10 bg-[#0a0f0d] overflow-hidden shadow-2xl space-y-4">
                 <div className="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-base font-bold font-mono text-foreground">My Referred Team Members</h3>
-                    <p className="text-xs font-mono text-muted-foreground">Showing verified user network accounts</p>
-                  </div>
-
-                  <div className="flex gap-2 font-mono text-xs">
-                    <button
-                      onClick={() => setTeamTabFilter('all')}
-                      className={`px-3 py-1.5 rounded-lg transition-all ${
-                        teamTabFilter === 'all' ? 'bg-primary text-primary-foreground font-bold' : 'bg-white/5 text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      All ({teamHierarchy.length})
-                    </button>
-                    <button
-                      onClick={() => setTeamTabFilter('direct')}
-                      className={`px-3 py-1.5 rounded-lg transition-all ${
-                        teamTabFilter === 'direct' ? 'bg-primary text-primary-foreground font-bold' : 'bg-white/5 text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Direct L1 ({directTeam.length})
-                    </button>
-                    <button
-                      onClick={() => setTeamTabFilter('network')}
-                      className={`px-3 py-1.5 rounded-lg transition-all ${
-                        teamTabFilter === 'network' ? 'bg-primary text-primary-foreground font-bold' : 'bg-white/5 text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Level 2+ ({teamHierarchy.length - directTeam.length})
-                    </button>
+                    <h3 className="text-base font-bold font-mono text-foreground">My Direct Referred Members ({directTeam.length})</h3>
+                    <p className="text-xs font-mono text-muted-foreground">Showing verified direct sponsored user accounts</p>
                   </div>
                 </div>
 
@@ -2112,19 +2093,17 @@ export function UserDashboard() {
                     <thead className="bg-white/5 border-b border-white/10 text-muted-foreground uppercase text-[10px]">
                       <tr>
                         <th className="px-6 py-4">User</th>
-                        <th className="px-6 py-4">User ID / Code</th>
-                        <th className="px-6 py-4">Hierarchy Level</th>
+                        <th className="px-6 py-4">Referral Code</th>
                         <th className="px-6 py-4">Registration Date</th>
                         <th className="px-6 py-4 text-center">Status</th>
                         <th className="px-6 py-4 text-right">Packages Purchased</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                      {(teamTabFilter === 'direct' ? teamHierarchy.filter(t => t.level === 1) : teamTabFilter === 'network' ? teamHierarchy.filter(t => t.level > 1) : teamHierarchy).map((item, index) => {
-                        const u = item.user;
+                      {directTeam.map((item, index) => {
+                        const u = item.user || item;
                         const packageInv = Number(u.package_investment !== undefined ? u.package_investment : u.wallet_balance) || 0;
                         const hasDeposit = packageInv > 0;
-                        const levelBadge = item.level === 1 ? 'bg-primary/20 text-primary border-primary/30' : item.level === 2 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-purple-500/20 text-purple-400 border-purple-500/30';
 
                         return (
                           <tr key={u.id || u.email || index} className="hover:bg-white/[0.03] transition-colors">
@@ -2144,12 +2123,6 @@ export function UserDashboard() {
                               {u.referral_code || `NT${10020 + index}`}
                             </td>
 
-                            <td className="px-6 py-4">
-                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${levelBadge}`}>
-                                {item.level === 1 ? 'Direct L1' : `Level ${item.level}`}
-                              </span>
-                            </td>
-
                             <td className="px-6 py-4 text-muted-foreground">
                               {u.created_at ? u.created_at.substring(0, 10) : '2026-09-02'}
                             </td>
@@ -2158,7 +2131,7 @@ export function UserDashboard() {
                               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                                 hasDeposit ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                               }`}>
-                                {hasDeposit ? 'Active' : 'Pending'}
+                                {hasDeposit ? 'Active Investor' : 'Registered'}
                               </span>
                             </td>
 

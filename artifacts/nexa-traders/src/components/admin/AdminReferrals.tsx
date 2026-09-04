@@ -88,11 +88,11 @@ export function AdminReferrals({ users }: AdminReferralsProps) {
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
             <h1 className="text-2xl font-bold tracking-tight text-foreground font-sans">
-              Referral & Network Hierarchy Manager
+              Direct Referral & Sponsor Manager
             </h1>
           </div>
           <p className="text-xs text-muted-foreground font-mono mt-1">
-            Real-time Database Direct Referrals, Sponsor Attribution & Network Trees
+            Real-time Database Direct Referrals & Direct Sponsor Attribution
           </p>
         </div>
 
