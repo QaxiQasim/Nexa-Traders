@@ -466,10 +466,10 @@ export async function fetchAllAdminKyc() {
     } catch (e) {}
 
     const map = new Map<string, any>();
-    for (const item of dbKyc) {
+    for (const item of localKyc) {
       if (item.user_email) map.set(item.user_email.toLowerCase(), item);
     }
-    for (const item of localKyc) {
+    for (const item of dbKyc) {
       if (item.user_email) {
         const existing = map.get(item.user_email.toLowerCase()) || {};
         map.set(item.user_email.toLowerCase(), { ...existing, ...item });
@@ -518,16 +518,41 @@ export async function updateWithdrawalStatusInDb(txId: string, status: 'COMPLETE
 
 export async function updateKycStatusInDb(kycId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', rejectionReason?: string, userEmail?: string) {
   try {
-    // 1. Update kyc_verifications table by user_email (100% reliable)
-    if (userEmail) {
-      await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=eq.${encodeURIComponent(userEmail)}`, {
+    const emailLower = (userEmail || '').toLowerCase();
+
+    // 1. Update kyc_verifications table by user_email
+    if (emailLower) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=ilike.${encodeURIComponent(emailLower)}`, {
         method: 'PATCH',
         headers: {
           ...getHeaders(),
           'Prefer': 'return=representation'
         },
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status, rejection_reason: rejectionReason || null })
       });
+
+      let updatedRows = [];
+      try {
+        if (res.ok) updatedRows = await res.json();
+      } catch (e) {}
+
+      // If no existing DB record matched the PATCH, upsert it directly
+      if (!Array.isArray(updatedRows) || updatedRows.length === 0) {
+        await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications`, {
+          method: 'POST',
+          headers: {
+            ...getHeaders(),
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify({
+            id: kycId || `KYC-${Math.floor(10000 + Math.random() * 90000)}`,
+            user_email: emailLower,
+            status,
+            rejection_reason: rejectionReason || null,
+            submitted_at: new Date().toISOString()
+          })
+        });
+      }
     }
 
     // 2. Update kyc_verifications table by ID if provided
@@ -538,17 +563,56 @@ export async function updateKycStatusInDb(kycId: string, status: 'APPROVED' | 'R
           ...getHeaders(),
           'Prefer': 'return=representation'
         },
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status, rejection_reason: rejectionReason || null })
       });
     }
 
     // 3. Update user profiles table kyc_status
-    if (userEmail) {
-      await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(userEmail)}`, {
+    if (emailLower) {
+      await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=ilike.${encodeURIComponent(emailLower)}`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify({ kyc_status: status })
       });
+    }
+
+    // 4. Update local storage caches for full consistency
+    if (emailLower) {
+      try {
+        const singleKey = `nexa_kyc_${emailLower}`;
+        const rawSingle = localStorage.getItem(singleKey);
+        if (rawSingle) {
+          const parsed = JSON.parse(rawSingle);
+          parsed.status = status;
+          if (rejectionReason) parsed.rejectionReason = rejectionReason;
+          localStorage.setItem(singleKey, JSON.stringify(parsed));
+        } else {
+          localStorage.setItem(singleKey, JSON.stringify({ status, rejectionReason }));
+        }
+      } catch (e) {}
+
+      try {
+        const allKycRaw = localStorage.getItem('nexa_all_kyc_submissions');
+        if (allKycRaw) {
+          const list: any[] = JSON.parse(allKycRaw);
+          const updatedList = list.map((item: any) => {
+            if (item.user_email && item.user_email.toLowerCase() === emailLower) {
+              return { ...item, status, rejection_reason: rejectionReason };
+            }
+            return item;
+          });
+          localStorage.setItem('nexa_all_kyc_submissions', JSON.stringify(updatedList));
+        }
+      } catch (e) {}
+
+      try {
+        const userRaw = localStorage.getItem(`nexa_user_${emailLower}`);
+        if (userRaw) {
+          const parsedUser = JSON.parse(userRaw);
+          parsedUser.kyc_status = status;
+          localStorage.setItem(`nexa_user_${emailLower}`, JSON.stringify(parsedUser));
+        }
+      } catch (e) {}
     }
 
     return true;
