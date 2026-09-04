@@ -58,7 +58,8 @@ import {
   fetchTransactionsFromDb,
   fetchUserProfileFromDb,
   fetchDirectReferralsFromDb,
-  fetchFullTeamHierarchyFromDb
+  fetchFullTeamHierarchyFromDb,
+  processDirectReferralCommission
 } from '@/lib/supabase';
 import { verifyBep20Transaction, DEFAULT_DEPOSIT_WALLET } from '@/lib/bep20';
 
@@ -882,6 +883,9 @@ export function UserDashboard() {
       setPurchasedPackages(prev => [newPkg, ...prev]);
       insertPackageToDb(userEmail, newPkg);
 
+      // Trigger 10% Direct Referral Commission to Sponsor
+      processDirectReferralCommission(userEmail, amount, selectedPlanForBuy?.name || 'Rise');
+
       const newTx: Transaction = {
         id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
         date: new Date().toISOString().replace('T', ' ').substring(0, 16),
@@ -933,6 +937,9 @@ export function UserDashboard() {
 
     setPurchasedPackages([newPkg, ...purchasedPackages]);
     insertPackageToDb(userEmail, newPkg);
+
+    // Trigger 10% Direct Referral Commission to Sponsor
+    processDirectReferralCommission(userEmail, amount, selectedPlanForBuy.name);
 
     // Deduct package cost directly from available wallet balance
     const newBal = Math.max(0, walletBalance - amount);

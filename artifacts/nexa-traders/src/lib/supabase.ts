@@ -298,6 +298,131 @@ export async function insertPackageToDb(email: string, pkg: any) {
   }
 }
 
+export async function processDirectReferralCommission(purchaserEmail: string, packageAmount: number, packageName: string) {
+  try {
+    const emailLower = (purchaserEmail || '').toLowerCase().trim();
+    if (!emailLower || packageAmount <= 0) return;
+
+    // 1. Find Purchaser (Person B)'s Profile to locate Person A (Sponsor)
+    let sponsorEmail = '';
+    let sponsorCode = '';
+
+    const userProfile = await fetchUserProfileFromDb(emailLower);
+    if (userProfile) {
+      sponsorEmail = userProfile.sponsor_email || '';
+      sponsorCode = userProfile.sponsor_code || '';
+    }
+
+    // Check localStorage fallbacks for sponsor info
+    if (!sponsorEmail) {
+      sponsorEmail = localStorage.getItem(`nexa_sponsor_email_${emailLower}`) || '';
+    }
+    if (!sponsorCode) {
+      sponsorCode = localStorage.getItem(`nexa_sponsor_code_${emailLower}`) || '';
+    }
+
+    // If sponsorCode exists without sponsorEmail, lookup sponsor user in DB
+    if (!sponsorEmail && sponsorCode) {
+      const allUsers = await fetchAllUsersFromDb();
+      const sponsorUser = allUsers.find((u: any) => 
+        (u.referral_code && u.referral_code.toUpperCase() === sponsorCode.toUpperCase())
+      );
+      if (sponsorUser && sponsorUser.email) {
+        sponsorEmail = sponsorUser.email;
+      }
+    }
+
+    if (!sponsorEmail || sponsorEmail.toLowerCase() === emailLower) {
+      console.log('No sponsor found for direct referral commission credit.');
+      return;
+    }
+
+    const sponsorEmailLower = sponsorEmail.toLowerCase().trim();
+
+    // 2. Compute 10% Direct Commission
+    const commAmount = Number((packageAmount * 0.10).toFixed(2));
+    if (commAmount <= 0) return;
+
+    // 3. Credit Sponsor (Person A)'s Wallet Balance
+    let currentSponsorBal = 0;
+    const sponsorProfile = await fetchUserProfileFromDb(sponsorEmailLower);
+    if (sponsorProfile && sponsorProfile.wallet_balance !== undefined) {
+      currentSponsorBal = Number(sponsorProfile.wallet_balance) || 0;
+    } else {
+      const localBal = localStorage.getItem(`nexa_balance_${sponsorEmailLower}`);
+      currentSponsorBal = localBal ? Number(localBal) : 0;
+    }
+
+    const newSponsorBal = Number((currentSponsorBal + commAmount).toFixed(2));
+
+    // Update Sponsor's Profile in Supabase DB & Local Storage
+    await syncUserProfile(sponsorEmailLower, sponsorProfile?.full_name || sponsorEmailLower.split('@')[0], newSponsorBal);
+    localStorage.setItem(`nexa_balance_${sponsorEmailLower}`, newSponsorBal.toString());
+
+    // 4. Record Transaction in Sponsor's Ledger History
+    const commTx = {
+      id: `TX-COMM-${Math.floor(10000 + Math.random() * 90000)}`,
+      date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      type: 'REFERRAL_BONUS',
+      title: '10% Direct Referral Commission',
+      description: `+$${commAmount.toFixed(2)} Direct Bonus from ${emailLower} (${packageName} Plan)`,
+      amount: commAmount,
+      status: 'COMPLETED',
+      txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
+    };
+
+    await insertTransactionToDb(sponsorEmailLower, commTx);
+
+    // Save to local storage for sponsor transactions
+    try {
+      const existingTxs = JSON.parse(localStorage.getItem(`nexa_tx_${sponsorEmailLower}`) || '[]');
+      localStorage.setItem(`nexa_tx_${sponsorEmailLower}`, JSON.stringify([commTx, ...existingTxs]));
+    } catch (e) {}
+
+    // 5. Deduct 10% from Sponsor's Active Package ROI Cap (Counts towards Sponsor's Package Earned ROI)
+    let sponsorPkgs = await fetchUserPackagesFromDb(sponsorEmailLower);
+    if (!Array.isArray(sponsorPkgs) || sponsorPkgs.length === 0) {
+      try {
+        sponsorPkgs = JSON.parse(localStorage.getItem(`nexa_packages_${sponsorEmailLower}`) || '[]');
+      } catch (e) {
+        sponsorPkgs = [];
+      }
+    }
+
+    if (Array.isArray(sponsorPkgs) && sponsorPkgs.length > 0) {
+      let remainingToDeduct = commAmount;
+      const updatedPkgs = sponsorPkgs.map((pkg: any) => {
+        if (pkg.status === 'ACTIVE' && remainingToDeduct > 0 && Number(pkg.remainingRoi) > 0) {
+          const capLeft = Number(pkg.totalRoiCap) - Number(pkg.earnedRoi);
+          const deductAmt = Math.min(remainingToDeduct, capLeft);
+          const newEarned = Number((Number(pkg.earnedRoi) + deductAmt).toFixed(2));
+          const newRemaining = Math.max(0, Number((Number(pkg.totalRoiCap) - newEarned).toFixed(2)));
+          const newStatus = newRemaining <= 0 ? 'COMPLETED' : 'ACTIVE';
+
+          remainingToDeduct -= deductAmt;
+
+          const updatedPkg = {
+            ...pkg,
+            earnedRoi: newEarned,
+            remainingRoi: newRemaining,
+            status: newStatus
+          };
+
+          // Save package update to DB
+          insertPackageToDb(sponsorEmailLower, updatedPkg);
+          return updatedPkg;
+        }
+        return pkg;
+      });
+
+      // Save updated packages to Sponsor's Local Storage
+      localStorage.setItem(`nexa_packages_${sponsorEmailLower}`, JSON.stringify(updatedPkgs));
+    }
+  } catch (err) {
+    console.error('Error processing direct referral commission:', err);
+  }
+}
+
 export async function fetchKycFromDb(email: string) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=eq.${encodeURIComponent(email)}`, {
