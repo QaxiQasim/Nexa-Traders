@@ -2299,13 +2299,23 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
 
       let activeSponsorEmail = sponsorInfo?.email;
       let activeSponsorCode = sponsorInfo?.code;
+      const refCodeToUse = (refCodeInput.trim() || localStorage.getItem('nexa_pending_ref_code') || '').toUpperCase();
 
-      if (isRegister && refCodeInput.trim() && (!activeSponsorEmail || !activeSponsorCode)) {
-        const foundSponsor = await fetchProfileByReferralCode(refCodeInput.trim().toUpperCase());
+      if (isRegister && refCodeToUse && (!activeSponsorEmail || !activeSponsorCode)) {
+        const foundSponsor = await fetchProfileByReferralCode(refCodeToUse);
         if (foundSponsor) {
           activeSponsorEmail = foundSponsor.email;
-          activeSponsorCode = foundSponsor.referral_code || refCodeInput.trim().toUpperCase();
+          activeSponsorCode = foundSponsor.referral_code || refCodeToUse;
+        } else {
+          activeSponsorCode = refCodeToUse;
         }
+      }
+
+      if (activeSponsorEmail) {
+        try { localStorage.setItem(`nexa_sponsor_email_${finalEmail}`, activeSponsorEmail); } catch (e) {}
+      }
+      if (activeSponsorCode) {
+        try { localStorage.setItem(`nexa_sponsor_code_${finalEmail}`, activeSponsorCode); } catch (e) {}
       }
 
       // Sync/Create profile in Supabase DB with permanent referral & sponsor attribution

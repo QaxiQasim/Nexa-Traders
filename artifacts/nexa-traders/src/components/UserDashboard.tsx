@@ -436,6 +436,8 @@ export function UserDashboard() {
     };
 
     loadReferralTeamData();
+    const teamInterval = setInterval(loadReferralTeamData, 8000);
+    return () => clearInterval(teamInterval);
   }, [userEmail, userName, walletBalance]);
 
   const handleLogout = () => {
@@ -545,46 +547,49 @@ export function UserDashboard() {
     }
 
     // Fetch Live Data from Supabase DB
-    fetchUserProfileFromDb(email).then(profile => {
-      if (profile) {
-        if (profile.full_name) setUserName(profile.full_name);
-        if (profile.wallet_balance !== undefined) {
-          const bal = Number(profile.wallet_balance);
-          if (!isNaN(bal)) {
-            setWalletBalance(bal);
-            localStorage.setItem(`nexa_balance_${email}`, bal.toString());
+    const pollUserData = () => {
+      fetchUserProfileFromDb(email).then(profile => {
+        if (profile) {
+          if (profile.full_name) setUserName(profile.full_name);
+          if (profile.wallet_balance !== undefined) {
+            const bal = Number(profile.wallet_balance);
+            if (!isNaN(bal)) {
+              setWalletBalance(bal);
+              localStorage.setItem(`nexa_balance_${email}`, bal.toString());
+            }
+          }
+          if (profile.avatar_url) {
+            setAvatarUrl(profile.avatar_url);
+            localStorage.setItem(`nexa_avatar_${email}`, profile.avatar_url);
           }
         }
-        if (profile.avatar_url) {
-          setAvatarUrl(profile.avatar_url);
-          localStorage.setItem(`nexa_avatar_${email}`, profile.avatar_url);
-        } else {
-          setAvatarUrl(null);
-          localStorage.removeItem(`nexa_avatar_${email}`);
+      }).catch(() => {});
+
+      fetchUserPackagesFromDb(email).then(pkgs => {
+        if (Array.isArray(pkgs) && pkgs.length > 0) {
+          setPurchasedPackages(pkgs);
+          localStorage.setItem(`nexa_packages_${email}`, JSON.stringify(pkgs));
         }
-      }
-    }).catch(() => {});
+      }).catch(() => {});
 
-    fetchUserPackagesFromDb(email).then(pkgs => {
-      if (Array.isArray(pkgs) && pkgs.length > 0) {
-        setPurchasedPackages(pkgs);
-        localStorage.setItem(`nexa_packages_${email}`, JSON.stringify(pkgs));
-      }
-    }).catch(() => {});
+      fetchTransactionsFromDb(email).then(txs => {
+        if (Array.isArray(txs) && txs.length > 0) {
+          setTransactions(txs);
+          localStorage.setItem(`nexa_tx_${email}`, JSON.stringify(txs));
+        }
+      }).catch(() => {});
 
-    fetchTransactionsFromDb(email).then(txs => {
-      if (Array.isArray(txs) && txs.length > 0) {
-        setTransactions(txs);
-        localStorage.setItem(`nexa_tx_${email}`, JSON.stringify(txs));
-      }
-    }).catch(() => {});
+      fetchKycFromDb(email).then(kyc => {
+        if (kyc && typeof kyc === 'object') {
+          setKycData(kyc as any);
+          localStorage.setItem(`nexa_kyc_${email}`, JSON.stringify(kyc));
+        }
+      }).catch(() => {});
+    };
 
-    fetchKycFromDb(email).then(kyc => {
-      if (kyc && typeof kyc === 'object') {
-        setKycData(kyc as any);
-        localStorage.setItem(`nexa_kyc_${email}`, JSON.stringify(kyc));
-      }
-    }).catch(() => {});
+    pollUserData();
+    const userInterval = setInterval(pollUserData, 8000);
+    return () => clearInterval(userInterval);
   }, [userEmail]);
 
   // Save to user-scoped localStorage & sync to Supabase Database

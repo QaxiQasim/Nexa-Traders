@@ -15,7 +15,9 @@ const getHeaders = () => ({
 
 export async function fetchUserProfileFromDb(email: string) {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
+    const clean = (email || '').trim();
+    if (!clean) return null;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=ilike.${encodeURIComponent(clean)}`, {
       method: 'GET',
       headers: getHeaders()
     });
@@ -63,10 +65,21 @@ export async function syncUserProfile(
   sponsorCode?: string
 ) {
   try {
-    const existing = await fetchUserProfileFromDb(email);
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const existing = await fetchUserProfileFromDb(cleanEmail);
     let myRefCode = existing?.referral_code;
     if (!myRefCode) {
-      myRefCode = generateUniqueReferralCode(email);
+      myRefCode = generateUniqueReferralCode(cleanEmail);
+    }
+
+    const effectiveSponsorEmail = sponsorEmail || existing?.sponsor_email || (typeof window !== 'undefined' ? localStorage.getItem(`nexa_sponsor_email_${cleanEmail}`) : null);
+    const effectiveSponsorCode = sponsorCode || existing?.sponsor_code || (typeof window !== 'undefined' ? localStorage.getItem(`nexa_sponsor_code_${cleanEmail}`) : null);
+
+    if (effectiveSponsorEmail && typeof window !== 'undefined') {
+      try { localStorage.setItem(`nexa_sponsor_email_${cleanEmail}`, effectiveSponsorEmail); } catch (e) {}
+    }
+    if (effectiveSponsorCode && typeof window !== 'undefined') {
+      try { localStorage.setItem(`nexa_sponsor_code_${cleanEmail}`, effectiveSponsorCode); } catch (e) {}
     }
 
     const payload: any = {
@@ -76,11 +89,11 @@ export async function syncUserProfile(
     };
 
     if (avatarUrl) payload.avatar_url = avatarUrl;
-    if (sponsorEmail && !existing?.sponsor_email) payload.sponsor_email = sponsorEmail;
-    if (sponsorCode && !existing?.sponsor_code) payload.sponsor_code = sponsorCode;
+    if (effectiveSponsorEmail) payload.sponsor_email = effectiveSponsorEmail;
+    if (effectiveSponsorCode) payload.sponsor_code = effectiveSponsorCode;
 
-    // 1. Try PATCH update on existing profile row by email
-    const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
+    // 1. Try PATCH update on existing profile row by email (ilike)
+    const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=ilike.${encodeURIComponent(cleanEmail)}`, {
       method: 'PATCH',
       headers: {
         ...getHeaders(),
@@ -98,13 +111,13 @@ export async function syncUserProfile(
 
     // 2. If row does not exist yet, INSERT via POST
     const newProfile = {
-      email,
+      email: cleanEmail,
       full_name: name,
       wallet_balance: balance,
       avatar_url: avatarUrl || null,
       referral_code: myRefCode,
-      sponsor_email: sponsorEmail || null,
-      sponsor_code: sponsorCode || null,
+      sponsor_email: effectiveSponsorEmail || null,
+      sponsor_code: effectiveSponsorCode || null,
       created_at: new Date().toISOString()
     };
 
@@ -118,7 +131,7 @@ export async function syncUserProfile(
       const data = await postRes.json();
       return Array.isArray(data) ? data[0] : newProfile;
     }
-    return null;
+    return newProfile;
   } catch (err) {
     console.warn('Supabase profile sync notice: stored locally.', err);
     return null;
@@ -129,16 +142,80 @@ export async function fetchDirectReferralsFromDb(sponsorEmail: string, sponsorCo
   try {
     const cleanEmail = (sponsorEmail || '').trim();
     const cleanCode = (sponsorCode || '').trim();
-    const url = cleanCode
-      ? `${SUPABASE_URL}/rest/v1/profiles?or=(sponsor_email.ilike.${encodeURIComponent(cleanEmail)},sponsor_code.ilike.${encodeURIComponent(cleanCode)})&order=created_at.desc`
-      : `${SUPABASE_URL}/rest/v1/profiles?sponsor_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc`;
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: getHeaders()
+    
+    let dbProfiles: any[] = [];
+    if (cleanEmail || cleanCode) {
+      const url = cleanCode
+        ? `${SUPABASE_URL}/rest/v1/profiles?or=(sponsor_email.ilike.${encodeURIComponent(cleanEmail)},sponsor_code.ilike.${encodeURIComponent(cleanCode)})&order=created_at.desc`
+        : `${SUPABASE_URL}/rest/v1/profiles?sponsor_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc`;
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) dbProfiles = data;
+      }
+    }
+
+    // Also check local storage profiles / all users to merge referrals
+    let allUsersFromDb: any[] = [];
+    try {
+      const allUsersRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*`, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+      if (allUsersRes.ok) {
+        const data = await allUsersRes.json();
+        if (Array.isArray(data)) allUsersFromDb = data;
+      }
+    } catch (e) {}
+
+    const map = new Map<string, any>();
+    for (const u of dbProfiles) {
+      if (u.email) map.set(u.email.toLowerCase(), u);
+    }
+    for (const u of allUsersFromDb) {
+      const matchesEmail = cleanEmail && u.sponsor_email && u.sponsor_email.toLowerCase() === cleanEmail.toLowerCase();
+      const matchesCode = cleanCode && u.sponsor_code && u.sponsor_code.toUpperCase() === cleanCode.toUpperCase();
+      if (matchesEmail || matchesCode) {
+        if (u.email && !map.has(u.email.toLowerCase())) {
+          map.set(u.email.toLowerCase(), u);
+        }
+      }
+    }
+
+    const mergedDirects = Array.from(map.values());
+    const allPackages = await fetchAllAdminPackages();
+
+    // Map each direct referral to compute active packages investment
+    return mergedDirects.map((user: any) => {
+      const uEmail = (user.email || '').toLowerCase();
+      const dbUserPkgs = allPackages.filter((p: any) => (p.user_email || '').toLowerCase() === uEmail);
+      
+      let localUserPkgs: any[] = [];
+      try {
+        localUserPkgs = JSON.parse(localStorage.getItem(`nexa_packages_${uEmail}`) || '[]');
+      } catch (e) {}
+
+      const pkgMap = new Map<string, any>();
+      for (const p of localUserPkgs) {
+        if (p.id || p.name) pkgMap.set(p.id || p.name, p);
+      }
+      for (const p of dbUserPkgs) {
+        const pId = p.id || p.package_name;
+        if (pId) pkgMap.set(pId, p);
+      }
+
+      const combinedPkgs = Array.from(pkgMap.values());
+      const packageSum = combinedPkgs.reduce((acc: number, item: any) => acc + (Number(item.amount) || 0), 0);
+
+      return {
+        ...user,
+        package_investment: packageSum,
+        packages: combinedPkgs
+      };
     });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
   } catch (err) {
     return [];
   }
