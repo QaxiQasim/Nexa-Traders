@@ -349,6 +349,7 @@ export async function fetchUserPackagesFromDb(email: string) {
 
 export async function insertPackageToDb(email: string, pkg: any) {
   try {
+    const emailLower = (email || '').toLowerCase().trim();
     await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages`, {
       method: 'POST',
       headers: {
@@ -356,18 +357,17 @@ export async function insertPackageToDb(email: string, pkg: any) {
         'Prefer': 'resolution=merge-duplicates'
       },
       body: JSON.stringify({
-        id: pkg.id,
-        user_email: email,
-        package_name: pkg.name,
-        amount: pkg.amount,
-        daily_roi: pkg.dailyRoi,
-        total_roi_cap: pkg.totalRoiCap,
-        earned_roi: pkg.earnedRoi,
-        remaining_roi: pkg.remainingRoi,
-        purchase_date: pkg.purchaseDate,
-        expiry_date: pkg.expiryDate,
-        status: pkg.status,
-        last_roi_payout: pkg.lastRoiPayout || pkg.purchaseDate || new Date().toISOString()
+        id: pkg.id || `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
+        user_email: emailLower,
+        package_name: pkg.name || pkg.package_name || 'Standard',
+        amount: Number(pkg.amount) || 0,
+        daily_roi: Number(pkg.dailyRoi || pkg.daily_roi) || 1.0,
+        total_roi_cap: Number(pkg.totalRoiCap || pkg.total_roi_cap) || 185,
+        earned_roi: Number(pkg.earnedRoi || pkg.earned_roi) || 0,
+        remaining_roi: Number(pkg.remainingRoi || pkg.remaining_roi) || 185,
+        purchase_date: pkg.purchaseDate || pkg.purchase_date || new Date().toISOString().substring(0, 10),
+        expiry_date: pkg.expiryDate || pkg.expiry_date || new Date().toISOString().substring(0, 10),
+        status: pkg.status || 'ACTIVE'
       })
     });
   } catch (err) {

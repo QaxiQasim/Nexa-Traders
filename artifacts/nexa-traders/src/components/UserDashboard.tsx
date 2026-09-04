@@ -2037,10 +2037,10 @@ export function UserDashboard() {
                   $ {(directTeam.reduce((sum, item) => {
                     const u = item.user || item;
                     const inv = u.package_investment !== undefined ? Number(u.package_investment) : (Number(u.wallet_balance) || 0);
-                    return sum + (inv * 0.07);
+                    return sum + (inv * 0.10);
                   }, 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div className="mt-1 text-[10px] text-accent/80">7% Direct Bonus Earned</div>
+                <div className="mt-1 text-[10px] text-accent/80">10% Direct Bonus Earned</div>
               </div>
             </div>
 
@@ -2055,7 +2055,7 @@ export function UserDashboard() {
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold font-mono text-foreground">You don't have any direct referrals yet.</h3>
                   <p className="text-xs font-mono text-muted-foreground max-w-md mx-auto">
-                    Invite friends to join. Share your unique referral code or link to start earning 7% direct referral rewards!
+                    Invite friends to join. Share your unique referral code or link to start earning 10% direct referral rewards!
                   </p>
                 </div>
 
