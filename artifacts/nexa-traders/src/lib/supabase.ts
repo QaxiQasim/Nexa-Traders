@@ -329,19 +329,26 @@ export async function fetchUserPackagesFromDb(email: string) {
     if (!res.ok) return null;
     const data = await res.json();
     if (!Array.isArray(data)) return [];
-    return data.map((item: any) => ({
-      id: item.id || `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: item.package_name || 'Standard',
-      amount: isNaN(Number(item.amount)) ? 0 : Number(item.amount),
-      dailyRoi: isNaN(Number(item.daily_roi)) ? 0 : Number(item.daily_roi),
-      totalRoiCap: isNaN(Number(item.total_roi_cap)) ? 1 : Number(item.total_roi_cap),
-      earnedRoi: isNaN(Number(item.earned_roi)) ? 0 : Number(item.earned_roi),
-      remainingRoi: isNaN(Number(item.remaining_roi)) ? 0 : Number(item.remaining_roi),
-      purchaseDate: item.purchase_date || new Date().toISOString().substring(0, 10),
-      expiryDate: item.expiry_date || new Date().toISOString().substring(0, 10),
-      status: item.status || 'ACTIVE',
-      lastRoiPayout: item.last_roi_payout || item.last_payout || item.purchase_date || new Date().toISOString()
-    }));
+    return data.map((item: any) => {
+      const earnedRoi = isNaN(Number(item.earned_roi)) ? 0 : Number(item.earned_roi);
+      const totalRoiCap = isNaN(Number(item.total_roi_cap)) ? 185 : Number(item.total_roi_cap);
+      const computedRemaining = Math.max(0, Number((totalRoiCap - earnedRoi).toFixed(2)));
+      const isCompleted = computedRemaining <= 0 || item.status === 'COMPLETED';
+
+      return {
+        id: item.id || `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
+        name: item.package_name || 'Standard',
+        amount: isNaN(Number(item.amount)) ? 0 : Number(item.amount),
+        dailyRoi: isNaN(Number(item.daily_roi)) ? 0 : Number(item.daily_roi),
+        totalRoiCap: totalRoiCap,
+        earnedRoi: earnedRoi,
+        remainingRoi: computedRemaining,
+        purchaseDate: item.purchase_date || new Date().toISOString().substring(0, 10),
+        expiryDate: item.expiry_date || new Date().toISOString().substring(0, 10),
+        status: isCompleted ? 'COMPLETED' : (item.status || 'ACTIVE'),
+        lastRoiPayout: item.last_roi_payout || item.last_payout || item.purchase_date || new Date().toISOString()
+      };
+    });
   } catch (err) {
     return null;
   }
@@ -350,6 +357,11 @@ export async function fetchUserPackagesFromDb(email: string) {
 export async function insertPackageToDb(email: string, pkg: any) {
   try {
     const emailLower = (email || '').toLowerCase().trim();
+    const earnedRoi = Number(pkg.earnedRoi || pkg.earned_roi) || 0;
+    const totalRoiCap = Number(pkg.totalRoiCap || pkg.total_roi_cap) || 185;
+    const computedRemaining = Math.max(0, Number((totalRoiCap - earnedRoi).toFixed(2)));
+    const status = (computedRemaining <= 0 || pkg.status === 'COMPLETED') ? 'COMPLETED' : (pkg.status || 'ACTIVE');
+
     await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages`, {
       method: 'POST',
       headers: {
@@ -362,12 +374,12 @@ export async function insertPackageToDb(email: string, pkg: any) {
         package_name: pkg.name || pkg.package_name || 'Standard',
         amount: Number(pkg.amount) || 0,
         daily_roi: Number(pkg.dailyRoi || pkg.daily_roi) || 1.0,
-        total_roi_cap: Number(pkg.totalRoiCap || pkg.total_roi_cap) || 185,
-        earned_roi: Number(pkg.earnedRoi || pkg.earned_roi) || 0,
-        remaining_roi: Number(pkg.remainingRoi || pkg.remaining_roi) || 185,
+        total_roi_cap: totalRoiCap,
+        earned_roi: earnedRoi,
+        remaining_roi: computedRemaining,
         purchase_date: pkg.purchaseDate || pkg.purchase_date || new Date().toISOString().substring(0, 10),
         expiry_date: pkg.expiryDate || pkg.expiry_date || new Date().toISOString().substring(0, 10),
-        status: pkg.status || 'ACTIVE'
+        status: status
       })
     });
   } catch (err) {

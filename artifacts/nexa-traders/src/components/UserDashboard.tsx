@@ -642,8 +642,15 @@ export function UserDashboard() {
   const pkgsList = Array.isArray(purchasedPackages) ? purchasedPackages : [];
   const totalInvested = pkgsList.reduce((acc, p) => acc + Number(p?.amount || 0), 0);
   const totalEarnedRoi = pkgsList.reduce((acc, p) => acc + Number(p?.earnedRoi || 0), 0);
-  const totalRemainingRoi = pkgsList.reduce((acc, p) => acc + Number(p?.remainingRoi || 0), 0);
-  const activePackagesCount = pkgsList.filter(p => p && p.status === 'ACTIVE').length;
+  const totalRemainingRoi = pkgsList.reduce((acc, p) => {
+    if (!p || p.status === 'COMPLETED') return acc;
+    const cap = Number(p.totalRoiCap) || (Number(p.amount) * 1.85) || 0;
+    const earned = Number(p.earnedRoi) || 0;
+    if (earned >= cap) return acc;
+    const rem = Math.max(0, Number((cap - earned).toFixed(2)));
+    return acc + rem;
+  }, 0);
+  const activePackagesCount = pkgsList.filter(p => p && p.status === 'ACTIVE' && Number(p.earnedRoi || 0) < Number(p.totalRoiCap || 1)).length;
 
   // ----------------------------------------------------
   // AUTOMATIC 24-HOUR DAILY ROI ACCRUAL ENGINE
@@ -1737,8 +1744,8 @@ export function UserDashboard() {
               {(purchasedPackages || []).map(pkg => {
                 const amount = Number(pkg?.amount || 0);
                 const earned = Number(pkg?.earnedRoi || 0);
-                const remaining = Number(pkg?.remainingRoi || 0);
                 const totalCap = Number(pkg?.totalRoiCap || 1);
+                const remaining = pkg.status === 'COMPLETED' || earned >= totalCap ? 0 : Math.max(0, Number((totalCap - earned).toFixed(2)));
                 const progressPct = Math.min(100, Math.round((earned / totalCap) * 100));
                 const dailyAmt = getDailyRoiAmountForPackage(pkg);
 
