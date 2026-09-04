@@ -364,7 +364,9 @@ export function AdminLayout() {
               transactions={transactions}
               packages={packages}
               kycRequests={kycRequests}
+              selectedUserEmail={selectedUserEmail}
               selectedEmail={selectedUserEmail}
+              onSelectUser={(email) => setSelectedUserEmail(email)}
               onClearSelectedEmail={() => setSelectedUserEmail(null)}
               onRefreshData={loadDatabaseData}
             />

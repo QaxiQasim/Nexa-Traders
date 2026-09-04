@@ -9,8 +9,11 @@ interface AdminUsersProps {
   transactions: any[];
   packages: any[];
   kycRequests: any[];
-  selectedUserEmail: string | null;
-  onSelectUser: (email: string | null) => void;
+  selectedUserEmail?: string | null;
+  selectedEmail?: string | null;
+  onSelectUser?: (email: string | null) => void;
+  onClearSelectedEmail?: () => void;
+  onRefreshData?: () => void;
 }
 
 export function AdminUsers({
@@ -18,11 +21,25 @@ export function AdminUsers({
   transactions,
   packages,
   kycRequests,
-  selectedUserEmail,
-  onSelectUser
+  selectedUserEmail: propSelectedUserEmail,
+  selectedEmail,
+  onSelectUser,
+  onClearSelectedEmail
 }: AdminUsersProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+
+  // Internal selection fallback state
+  const [internalEmail, setInternalEmail] = useState<string | null>(null);
+
+  // Active email preference: propSelectedUserEmail > selectedEmail > internalEmail
+  const activeSelectedEmail = (propSelectedUserEmail !== undefined && propSelectedUserEmail !== null ? propSelectedUserEmail : undefined) ?? selectedEmail ?? internalEmail;
+
+  const handleUserSelect = (email: string | null) => {
+    setInternalEmail(email);
+    if (onSelectUser) onSelectUser(email);
+    if (email === null && onClearSelectedEmail) onClearSelectedEmail();
+  };
 
   // Filtered Users List
   const filteredUsers = users.filter(u => {
@@ -43,13 +60,13 @@ export function AdminUsers({
   });
 
   // Selected User Object & Computations for 360° Drawer
-  const selectedUserObj = selectedUserEmail 
-    ? users.find(u => u.email.toLowerCase() === selectedUserEmail.toLowerCase()) || { email: selectedUserEmail, full_name: selectedUserEmail.split('@')[0], wallet_balance: 0 }
+  const selectedUserObj = activeSelectedEmail 
+    ? users.find(u => (u.email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) || { email: activeSelectedEmail, full_name: activeSelectedEmail.split('@')[0], wallet_balance: 0 }
     : null;
 
-  const userTxs = selectedUserEmail ? transactions.filter(t => (t.user_email || '').toLowerCase() === selectedUserEmail.toLowerCase()) : [];
-  const userPkgs = selectedUserEmail ? packages.filter(p => (p.user_email || '').toLowerCase() === selectedUserEmail.toLowerCase()) : [];
-  const userKyc = selectedUserEmail ? kycRequests.find(k => (k.user_email || '').toLowerCase() === selectedUserEmail.toLowerCase()) : null;
+  const userTxs = activeSelectedEmail ? transactions.filter(t => (t.user_email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) : [];
+  const userPkgs = activeSelectedEmail ? packages.filter(p => (p.user_email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) : [];
+  const userKyc = activeSelectedEmail ? kycRequests.find(k => (k.user_email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) : null;
 
   const userTotalDeposits = userTxs.filter(t => t.type === 'DEPOSIT' && t.status === 'COMPLETED').reduce((sum, t) => sum + Number(t.amount || 0), 0);
   const userTotalWithdrawals = userTxs.filter(t => t.type === 'WITHDRAWAL' && (t.status === 'COMPLETED' || t.status === 'APPROVED')).reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
@@ -151,7 +168,7 @@ export function AdminUsers({
                     </td>
                     <td className="py-4 px-4">
                       <button
-                        onClick={() => onSelectUser(user.email)}
+                        onClick={() => handleUserSelect(user.email)}
                         className="rounded-xl border border-primary/40 bg-primary/10 px-3 py-1.5 font-bold text-primary hover:bg-primary/20 transition-all flex items-center gap-1 text-[11px]"
                       >
                         View 360° Profile <ExternalLink size={13} />
@@ -177,7 +194,7 @@ export function AdminUsers({
                 <span className="text-xs text-muted-foreground">{selectedUserObj.email}</span>
               </div>
               <button
-                onClick={() => onSelectUser(null)}
+                onClick={() => handleUserSelect(null)}
                 className="rounded-xl p-2 text-muted-foreground hover:bg-white/10 hover:text-foreground"
               >
                 <X size={20} />
