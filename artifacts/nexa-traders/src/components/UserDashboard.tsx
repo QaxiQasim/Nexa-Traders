@@ -79,7 +79,7 @@ export interface PurchasedPackage {
 export interface Transaction {
   id: string;
   date: string;
-  type: 'DEPOSIT' | 'PACKAGE_PURCHASE' | 'DAILY_ROI' | 'WITHDRAWAL';
+  type: 'DEPOSIT' | 'PACKAGE_PURCHASE' | 'DAILY_ROI' | 'WITHDRAWAL' | 'REFERRAL_BONUS';
   title: string;
   amount: number;
   status: 'COMPLETED' | 'PENDING' | 'FAILED';
@@ -2693,11 +2693,12 @@ export function UserDashboard() {
                       <td className="py-4 px-4">
                         <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${
                           tx.type === 'DAILY_ROI' ? 'bg-accent/15 text-accent border border-accent/30' :
+                          tx.type === 'REFERRAL_BONUS' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
                           tx.type === 'DEPOSIT' ? 'bg-primary/15 text-primary border border-primary/30' :
                           tx.type === 'PACKAGE_PURCHASE' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30' :
                           'bg-orange-500/15 text-orange-400 border border-orange-500/30'
                         }`}>
-                          {tx.type}
+                          {tx.type === 'REFERRAL_BONUS' ? 'REFERRAL BONUS' : tx.type}
                         </span>
                       </td>
                       <td className="py-4 px-4 text-foreground font-bold">{tx.title}</td>
