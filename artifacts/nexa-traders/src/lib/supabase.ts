@@ -416,11 +416,47 @@ export async function processDirectReferralCommission(purchaserEmail: string, pa
 
     const sponsorEmailLower = sponsorEmail.toLowerCase().trim();
 
-    // 2. Compute 10% Direct Commission
-    const commAmount = Number((packageAmount * 0.10).toFixed(2));
-    if (commAmount <= 0) return;
+    // 2. Fetch Sponsor (Person A)'s Active Packages FIRST
+    let sponsorPkgs = await fetchUserPackagesFromDb(sponsorEmailLower);
+    if (!Array.isArray(sponsorPkgs) || sponsorPkgs.length === 0) {
+      try {
+        sponsorPkgs = JSON.parse(localStorage.getItem(`nexa_packages_${sponsorEmailLower}`) || '[]');
+      } catch (e) {
+        sponsorPkgs = [];
+      }
+    }
 
-    // 3. Credit Sponsor (Person A)'s Wallet Balance
+    // Filter ONLY active packages with remaining ROI cap > 0
+    const activeSponsorPkgs = (sponsorPkgs || []).filter((pkg: any) => {
+      const isAct = pkg.status === 'ACTIVE';
+      const capLeft = Number(pkg.remainingRoi !== undefined ? pkg.remainingRoi : (Number(pkg.totalRoiCap) - Number(pkg.earnedRoi)));
+      return isAct && capLeft > 0;
+    });
+
+    // CRITICAL RULE: If Sponsor has NO active packages, 10% reward is LAPSED ($0 paid)
+    if (activeSponsorPkgs.length === 0) {
+      console.log(`Sponsor ${sponsorEmailLower} has no active package or remaining ROI cap. Referral bonus lapsed.`);
+      return;
+    }
+
+    // 3. Compute Sponsor's Total Available Remaining Cap across active packages
+    const totalAvailableCap = activeSponsorPkgs.reduce((sum: number, pkg: any) => {
+      const capLeft = Math.max(0, Number(pkg.totalRoiCap) - Number(pkg.earnedRoi));
+      return sum + capLeft;
+    }, 0);
+
+    if (totalAvailableCap <= 0) {
+      console.log(`Sponsor ${sponsorEmailLower} has zero remaining ROI cap. Referral bonus lapsed.`);
+      return;
+    }
+
+    // 4. Compute 10% Raw Bonus, Capped by Sponsor's Total Available Remaining Cap
+    const rawCommAmount = Number((packageAmount * 0.10).toFixed(2));
+    const actualCommAmount = Number((Math.min(rawCommAmount, totalAvailableCap)).toFixed(2));
+
+    if (actualCommAmount <= 0) return;
+
+    // 5. Credit Sponsor (Person A)'s Wallet Balance with the Capped Commission
     let currentSponsorBal = 0;
     const sponsorProfile = await fetchUserProfileFromDb(sponsorEmailLower);
     if (sponsorProfile && sponsorProfile.wallet_balance !== undefined) {
@@ -430,20 +466,22 @@ export async function processDirectReferralCommission(purchaserEmail: string, pa
       currentSponsorBal = localBal ? Number(localBal) : 0;
     }
 
-    const newSponsorBal = Number((currentSponsorBal + commAmount).toFixed(2));
+    const newSponsorBal = Number((currentSponsorBal + actualCommAmount).toFixed(2));
 
     // Update Sponsor's Profile in Supabase DB & Local Storage
     await syncUserProfile(sponsorEmailLower, sponsorProfile?.full_name || sponsorEmailLower.split('@')[0], newSponsorBal);
-    localStorage.setItem(`nexa_balance_${sponsorEmailLower}`, newSponsorBal.toString());
+    try {
+      localStorage.setItem(`nexa_balance_${sponsorEmailLower}`, newSponsorBal.toString());
+    } catch (e) {}
 
-    // 4. Record Transaction in Sponsor's Ledger History
+    // 6. Record Transaction in Sponsor's Ledger History
     const commTx = {
       id: `TX-COMM-${Math.floor(10000 + Math.random() * 90000)}`,
       date: new Date().toISOString().replace('T', ' ').substring(0, 16),
       type: 'REFERRAL_BONUS',
       title: '10% Direct Referral Commission',
-      description: `+$${commAmount.toFixed(2)} Direct Bonus from ${emailLower} (${packageName} Plan)`,
-      amount: commAmount,
+      description: `+$${actualCommAmount.toFixed(2)} Direct Bonus from ${emailLower} (${packageName} Plan)`,
+      amount: actualCommAmount,
       status: 'COMPLETED',
       txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
     };
@@ -456,45 +494,36 @@ export async function processDirectReferralCommission(purchaserEmail: string, pa
       localStorage.setItem(`nexa_tx_${sponsorEmailLower}`, JSON.stringify([commTx, ...existingTxs]));
     } catch (e) {}
 
-    // 5. Deduct 10% from Sponsor's Active Package ROI Cap (Counts towards Sponsor's Package Earned ROI)
-    let sponsorPkgs = await fetchUserPackagesFromDb(sponsorEmailLower);
-    if (!Array.isArray(sponsorPkgs) || sponsorPkgs.length === 0) {
-      try {
-        sponsorPkgs = JSON.parse(localStorage.getItem(`nexa_packages_${sponsorEmailLower}`) || '[]');
-      } catch (e) {
-        sponsorPkgs = [];
+    // 7. Deduct Capped Commission from Sponsor's Active Package ROI Caps (Fills up Sponsor's Package Earned ROI)
+    let remainingToDeduct = actualCommAmount;
+    const updatedPkgs = (sponsorPkgs || []).map((pkg: any) => {
+      if (pkg.status === 'ACTIVE' && remainingToDeduct > 0 && (Number(pkg.totalRoiCap) - Number(pkg.earnedRoi)) > 0) {
+        const capLeft = Number(pkg.totalRoiCap) - Number(pkg.earnedRoi);
+        const deductAmt = Math.min(remainingToDeduct, capLeft);
+        const newEarned = Number((Number(pkg.earnedRoi) + deductAmt).toFixed(2));
+        const newRemaining = Math.max(0, Number((Number(pkg.totalRoiCap) - newEarned).toFixed(2)));
+        const newStatus = newRemaining <= 0 ? 'COMPLETED' : 'ACTIVE';
+
+        remainingToDeduct -= deductAmt;
+
+        const updatedPkg = {
+          ...pkg,
+          earnedRoi: newEarned,
+          remainingRoi: newRemaining,
+          status: newStatus
+        };
+
+        // Save package update to DB
+        insertPackageToDb(sponsorEmailLower, updatedPkg);
+        return updatedPkg;
       }
-    }
+      return pkg;
+    });
 
-    if (Array.isArray(sponsorPkgs) && sponsorPkgs.length > 0) {
-      let remainingToDeduct = commAmount;
-      const updatedPkgs = sponsorPkgs.map((pkg: any) => {
-        if (pkg.status === 'ACTIVE' && remainingToDeduct > 0 && Number(pkg.remainingRoi) > 0) {
-          const capLeft = Number(pkg.totalRoiCap) - Number(pkg.earnedRoi);
-          const deductAmt = Math.min(remainingToDeduct, capLeft);
-          const newEarned = Number((Number(pkg.earnedRoi) + deductAmt).toFixed(2));
-          const newRemaining = Math.max(0, Number((Number(pkg.totalRoiCap) - newEarned).toFixed(2)));
-          const newStatus = newRemaining <= 0 ? 'COMPLETED' : 'ACTIVE';
-
-          remainingToDeduct -= deductAmt;
-
-          const updatedPkg = {
-            ...pkg,
-            earnedRoi: newEarned,
-            remainingRoi: newRemaining,
-            status: newStatus
-          };
-
-          // Save package update to DB
-          insertPackageToDb(sponsorEmailLower, updatedPkg);
-          return updatedPkg;
-        }
-        return pkg;
-      });
-
-      // Save updated packages to Sponsor's Local Storage
+    // Save updated packages to Sponsor's Local Storage
+    try {
       localStorage.setItem(`nexa_packages_${sponsorEmailLower}`, JSON.stringify(updatedPkgs));
-    }
+    } catch (e) {}
   } catch (err) {
     console.error('Error processing direct referral commission:', err);
   }
