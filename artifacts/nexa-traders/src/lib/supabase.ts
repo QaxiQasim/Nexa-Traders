@@ -526,26 +526,40 @@ export async function fetchKycFromDb(email: string) {
 
 export async function upsertKycToDb(email: string, kyc: any) {
   try {
+    const emailLower = (email || '').toLowerCase().trim();
+    const validUuid = (kyc.id && kyc.id.includes('-') && kyc.id.length > 20)
+      ? kyc.id
+      : (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
+
     const record = {
-      id: kyc.id || `KYC-${Math.floor(10000 + Math.random() * 90000)}`,
-      user_email: email,
+      id: validUuid,
+      user_email: emailLower,
       full_name: kyc.fullName || (email || '').split('@')[0],
       dob: kyc.dob || '1995-01-01',
       country: kyc.country || 'United Arab Emirates',
       document_type: kyc.idType || 'PASSPORT',
       document_number: kyc.idNumber || 'N849102948',
-      document_image: kyc.documentImage || null,
+      document_image: kyc.documentImage || kyc.document_url || null,
       status: kyc.status || 'PENDING',
-      submitted_at: kyc.submittedAt || new Date().toISOString().substring(0, 10)
+      submitted_at: kyc.submittedAt || new Date().toISOString()
     };
 
+    // Update profiles table kyc_status
+    await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=ilike.${encodeURIComponent(emailLower)}`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+      body: JSON.stringify({ kyc_status: record.status })
+    });
+
+    // Save to local storage cache
     try {
       const locList = JSON.parse(localStorage.getItem('nexa_all_kyc_submissions') || '[]');
-      const filtered = locList.filter((item: any) => item.user_email?.toLowerCase() !== email.toLowerCase());
+      const filtered = locList.filter((item: any) => item.user_email?.toLowerCase() !== emailLower);
       localStorage.setItem('nexa_all_kyc_submissions', JSON.stringify([record, ...filtered]));
-      localStorage.setItem(`nexa_kyc_${email.toLowerCase()}`, JSON.stringify(record));
+      localStorage.setItem(`nexa_kyc_${emailLower}`, JSON.stringify(record));
     } catch (e) {}
 
+    // POST only valid schema columns to kyc_verifications table in Supabase
     await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications`, {
       method: 'POST',
       headers: {
@@ -553,10 +567,13 @@ export async function upsertKycToDb(email: string, kyc: any) {
         'Prefer': 'resolution=merge-duplicates'
       },
       body: JSON.stringify({
-        user_email: email,
+        id: record.id,
+        user_email: emailLower,
         document_type: record.document_type,
         document_number: record.document_number,
-        status: record.status
+        document_url: record.document_image,
+        status: record.status,
+        submitted_at: record.submitted_at
       })
     });
   } catch (err) {
@@ -667,6 +684,18 @@ export async function fetchAllAdminKyc() {
       localKyc = JSON.parse(localStorage.getItem('nexa_all_kyc_submissions') || '[]');
     } catch (e) {}
 
+    let dbProfiles: any[] = [];
+    try {
+      const pRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=email,kyc_status,full_name`, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+      if (pRes.ok) {
+        const pData = await pRes.json();
+        if (Array.isArray(pData)) dbProfiles = pData;
+      }
+    } catch (e) {}
+
     const map = new Map<string, any>();
     for (const item of localKyc) {
       if (item.user_email) map.set(item.user_email.toLowerCase(), item);
@@ -675,6 +704,28 @@ export async function fetchAllAdminKyc() {
       if (item.user_email) {
         const existing = map.get(item.user_email.toLowerCase()) || {};
         map.set(item.user_email.toLowerCase(), { ...existing, ...item });
+      }
+    }
+
+    // Overwrite with profiles table kyc_status if present and not UNVERIFIED (Profiles table is ultimate source of truth!)
+    for (const prof of dbProfiles) {
+      if (prof.email && prof.kyc_status && prof.kyc_status !== 'UNVERIFIED') {
+        const pEmail = prof.email.toLowerCase();
+        const existing = map.get(pEmail);
+        if (existing) {
+          existing.status = prof.kyc_status;
+        } else {
+          const genUuid = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0');
+          map.set(pEmail, {
+            id: genUuid,
+            user_email: prof.email,
+            full_name: prof.full_name || prof.email.split('@')[0],
+            status: prof.kyc_status,
+            document_type: 'PASSPORT',
+            document_number: 'N849102948',
+            submitted_at: new Date().toISOString()
+          });
+        }
       }
     }
 
@@ -720,56 +771,9 @@ export async function updateWithdrawalStatusInDb(txId: string, status: 'COMPLETE
 
 export async function updateKycStatusInDb(kycId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING', rejectionReason?: string, userEmail?: string) {
   try {
-    const emailLower = (userEmail || '').toLowerCase();
+    const emailLower = (userEmail || '').toLowerCase().trim();
 
-    // 1. Update kyc_verifications table by user_email
-    if (emailLower) {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=ilike.${encodeURIComponent(emailLower)}`, {
-        method: 'PATCH',
-        headers: {
-          ...getHeaders(),
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify({ status, rejection_reason: rejectionReason || null })
-      });
-
-      let updatedRows = [];
-      try {
-        if (res.ok) updatedRows = await res.json();
-      } catch (e) {}
-
-      // If no existing DB record matched the PATCH, upsert it directly
-      if (!Array.isArray(updatedRows) || updatedRows.length === 0) {
-        await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications`, {
-          method: 'POST',
-          headers: {
-            ...getHeaders(),
-            'Prefer': 'resolution=merge-duplicates'
-          },
-          body: JSON.stringify({
-            id: kycId || `KYC-${Math.floor(10000 + Math.random() * 90000)}`,
-            user_email: emailLower,
-            status,
-            rejection_reason: rejectionReason || null,
-            submitted_at: new Date().toISOString()
-          })
-        });
-      }
-    }
-
-    // 2. Update kyc_verifications table by ID if provided
-    if (kycId) {
-      await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?id=eq.${encodeURIComponent(kycId)}`, {
-        method: 'PATCH',
-        headers: {
-          ...getHeaders(),
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify({ status, rejection_reason: rejectionReason || null })
-      });
-    }
-
-    // 3. Update user profiles table kyc_status
+    // 1. Update user profiles table kyc_status FIRST (100% reliable)
     if (emailLower) {
       await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=ilike.${encodeURIComponent(emailLower)}`, {
         method: 'PATCH',
@@ -778,7 +782,57 @@ export async function updateKycStatusInDb(kycId: string, status: 'APPROVED' | 'R
       });
     }
 
-    // 4. Update local storage caches for full consistency
+    // 2. Update kyc_verifications table by user_email
+    if (emailLower) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=ilike.${encodeURIComponent(emailLower)}`, {
+        method: 'PATCH',
+        headers: {
+          ...getHeaders(),
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ status })
+      });
+
+      let updatedRows: any[] = [];
+      try {
+        if (res.ok) updatedRows = await res.json();
+      } catch (e) {}
+
+      // If no existing DB record matched the PATCH, insert/upsert it directly with valid UUID & schema
+      if (!Array.isArray(updatedRows) || updatedRows.length === 0) {
+        const validUuid = (kycId && kycId.includes('-') && kycId.length > 20)
+          ? kycId
+          : (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
+
+        await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications`, {
+          method: 'POST',
+          headers: {
+            ...getHeaders(),
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify({
+            id: validUuid,
+            user_email: emailLower,
+            status,
+            submitted_at: new Date().toISOString()
+          })
+        });
+      }
+    }
+
+    // 3. Update kyc_verifications table by ID if provided and is a valid UUID
+    if (kycId && kycId.includes('-') && kycId.length > 20) {
+      await fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?id=eq.${encodeURIComponent(kycId)}`, {
+        method: 'PATCH',
+        headers: {
+          ...getHeaders(),
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ status })
+      });
+    }
+
+    // 4. Update local storage caches for full instant consistency
     if (emailLower) {
       try {
         const singleKey = `nexa_kyc_${emailLower}`;
