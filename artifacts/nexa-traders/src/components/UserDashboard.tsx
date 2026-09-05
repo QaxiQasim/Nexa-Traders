@@ -626,8 +626,11 @@ export function UserDashboard() {
   useEffect(() => {
     try {
       const pendingPlan = localStorage.getItem('nexa_pending_buy_plan');
+      const pendingTab = localStorage.getItem('nexa_pending_buy_tab');
+
       if (pendingPlan) {
         localStorage.removeItem('nexa_pending_buy_plan');
+        localStorage.removeItem('nexa_pending_buy_tab');
         const matched = ARBITRAGE_PACKAGES.find(p => p.name.toLowerCase() === pendingPlan.toLowerCase());
         if (matched) {
           setSelectedPlanForBuy(matched);
@@ -636,6 +639,9 @@ export function UserDashboard() {
         } else {
           setActiveTab('buy');
         }
+      } else if (pendingTab) {
+        localStorage.removeItem('nexa_pending_buy_tab');
+        setActiveTab('buy');
       }
     } catch (e) {}
   }, []);

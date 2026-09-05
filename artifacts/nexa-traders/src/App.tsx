@@ -3065,6 +3065,17 @@ function TradesPage() {
   );
 }
 
+function RedirectToDashboardPackages() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    try {
+      localStorage.setItem('nexa_pending_buy_tab', 'true');
+    } catch (e) {}
+    setLocation('/dashboard');
+  }, [setLocation]);
+  return null;
+}
+
 function Router() {
   const [location] = useLocation();
   return (
@@ -3072,7 +3083,15 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/trades" component={TradesPage} />
-        <Route path="/packages" component={PackagesPage} />
+        <Route path="/packages">
+          {() => {
+            const email = localStorage.getItem('nexa_user_email');
+            if (email) {
+              return <RedirectToDashboardPackages />;
+            }
+            return <PackagesPage />;
+          }}
+        </Route>
         <Route path="/dashboard">
           {() => {
             const email = localStorage.getItem('nexa_user_email');
