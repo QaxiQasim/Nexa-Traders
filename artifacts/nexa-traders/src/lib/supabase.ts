@@ -978,7 +978,7 @@ export async function fetchUser360ProfileFromDb(email: string) {
       fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=ilike.${encodeURIComponent(cleanEmail)}&type=eq.WITHDRAWAL`, { headers }),
       fetch(`${SUPABASE_URL}/rest/v1/purchased_packages?user_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc`, { headers }),
       fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=ilike.${encodeURIComponent(cleanEmail)}&order=submitted_at.desc`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc&limit=100`, { headers })
+      fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc&limit=200`, { headers })
     ]);
 
     let profile: any = null;
@@ -1017,12 +1017,15 @@ export async function fetchUser360ProfileFromDb(email: string) {
       if (Array.isArray(tData)) recentTxs = tData;
     }
 
-    const totalDeposited = depTxs.filter(x => x.status === 'COMPLETED' || x.status === 'APPROVED' || !x.status).reduce((s, x) => s + Math.abs(Number(x.amount || 0)), 0);
+    const explicitDeposits = depTxs.filter(x => x.status === 'COMPLETED' || x.status === 'APPROVED' || !x.status).reduce((s, x) => s + Math.abs(Number(x.amount || 0)), 0);
     const totalWithdrawn = wTxs.filter(x => x.status === 'COMPLETED' || x.status === 'APPROVED').reduce((s, x) => s + Math.abs(Number(x.amount || 0)), 0);
     const pendingWithdrawal = wTxs.filter(x => x.status === 'PENDING').reduce((s, x) => s + Math.abs(Number(x.amount || 0)), 0);
     const packageVolume = pkgs.reduce((s, x) => s + Number(x.amount || 0), 0);
     const latestKyc = kycList[0] || null;
-    const kycStatus = (latestKyc && latestKyc.status) || (profile && profile.kyc_status) || 'UNVERIFIED';
+    const kycStatus = (latestKyc && latestKyc.status) || (profile && profile.kyc_status) || 'NOT_SUBMITTED';
+
+    // Total Deposited: Use explicit DEPOSIT transactions if present, OR packageVolume if packages were activated directly
+    const totalDeposited = Math.max(explicitDeposits, packageVolume);
 
     return {
       profile: profile || { email: cleanEmail, full_name: cleanEmail.split('@')[0], wallet_balance: 0 },

@@ -40,11 +40,6 @@ export function AdminUsers({
   // Live 360 Targeted User State
   const [live360Data, setLive360Data] = useState<any | null>(null);
   const [isLoading360, setIsLoading360] = useState<boolean>(false);
-  const [actionSuccessMsg, setActionSuccessMsg] = useState<string>('');
-
-  // Quick Balance Adjustment Form State inside 360 View
-  const [adjustAmount, setAdjustAmount] = useState<string>('');
-  const [adjustMode, setAdjustMode] = useState<'ADD' | 'DEDUCT'>('ADD');
 
   const handleUserSelect = (email: string | null) => {
     setInternalEmail(email);
@@ -67,43 +62,6 @@ export function AdminUsers({
       setIsLoading360(false);
     });
   }, [activeSelectedEmail]);
-
-  // Quick Admin KYC Status Change directly inside 360 View
-  const handleKycStatusChangeIn360 = async (status: 'APPROVED' | 'REJECTED') => {
-    if (!activeSelectedEmail) return;
-    const ok = await updateKycStatusInDb('', status, undefined, activeSelectedEmail);
-    if (ok) {
-      setActionSuccessMsg(`KYC Status successfully updated to ${status}`);
-      setTimeout(() => setActionSuccessMsg(''), 4000);
-      if (onRefreshData) onRefreshData();
-      // Re-fetch 360 data
-      const updated = await fetchUser360ProfileFromDb(activeSelectedEmail);
-      setLive360Data(updated);
-    }
-  };
-
-  // Quick Admin Balance Adjustment directly inside 360 View
-  const handleBalanceAdjustSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!activeSelectedEmail) return;
-    const num = parseFloat(adjustAmount);
-    if (isNaN(num) || num <= 0) return;
-
-    const currentBal = live360Data ? live360Data.walletBalance : Number(selectedUserObj?.wallet_balance || 0);
-    const newBal = adjustMode === 'ADD' ? currentBal + num : Math.max(0, currentBal - num);
-
-    const userName = (selectedUserObj && selectedUserObj.full_name) || activeSelectedEmail.split('@')[0];
-    await syncUserProfile(activeSelectedEmail, userName, newBal);
-
-    setActionSuccessMsg(`Wallet Balance updated from $${currentBal.toFixed(2)} to $${newBal.toFixed(2)} USDT`);
-    setTimeout(() => setActionSuccessMsg(''), 4000);
-    setAdjustAmount('');
-    if (onRefreshData) onRefreshData();
-
-    // Re-fetch 360 data
-    const updated = await fetchUser360ProfileFromDb(activeSelectedEmail);
-    setLive360Data(updated);
-  };
 
   // Filtered Users List
   const filteredUsers = users.filter(u => {
@@ -134,10 +92,11 @@ export function AdminUsers({
   const propTxs = activeSelectedEmail ? transactions.filter(t => (t.user_email || t.email || t.userEmail || '').toLowerCase().trim() === emailLower) : [];
   const propPkgs = activeSelectedEmail ? packages.filter(p => (p.user_email || p.email || p.userEmail || '').toLowerCase().trim() === emailLower) : [];
 
-  const propTotalDeposits = propTxs.filter(t => (t.type === 'DEPOSIT' || (t.type && t.type.toUpperCase().includes('DEPOSIT'))) && (t.status === 'COMPLETED' || t.status === 'APPROVED' || !t.status)).reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
+  const propTotalDepositsExplicit = propTxs.filter(t => (t.type === 'DEPOSIT' || (t.type && t.type.toUpperCase().includes('DEPOSIT'))) && (t.status === 'COMPLETED' || t.status === 'APPROVED' || !t.status)).reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
+  const propPackageInvested = propPkgs.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  const propTotalDeposits = Math.max(propTotalDepositsExplicit, propPackageInvested);
   const propTotalWithdrawals = propTxs.filter(t => (t.type === 'WITHDRAWAL' || (t.type && t.type.toUpperCase().includes('WITHDRAW'))) && (t.status === 'COMPLETED' || t.status === 'APPROVED')).reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
   const propPendingWithdrawals = propTxs.filter(t => (t.type === 'WITHDRAWAL' || (t.type && t.type.toUpperCase().includes('WITHDRAW'))) && t.status === 'PENDING').reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
-  const propPackageInvested = propPkgs.reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
   // Final display metrics prioritizing live targeted 360 data
   const displayBalance = live360Data ? live360Data.walletBalance : Number(selectedUserObj?.wallet_balance || 0);
@@ -145,7 +104,7 @@ export function AdminUsers({
   const displayWithdrawals = live360Data ? live360Data.totalWithdrawn : propTotalWithdrawals;
   const displayPendingW = live360Data ? live360Data.pendingWithdrawal : propPendingWithdrawals;
   const displayPkgVol = live360Data ? live360Data.packageVolume : propPackageInvested;
-  const displayKycStatus = live360Data ? live360Data.kycStatus : (selectedUserObj?.kyc_status || 'UNVERIFIED');
+  const displayKycStatus = live360Data ? live360Data.kycStatus : (selectedUserObj?.kyc_status || 'NOT_SUBMITTED');
 
   const displayPkgs = (live360Data && live360Data.packages && live360Data.packages.length > 0) ? live360Data.packages : propPkgs;
   const displayTxs = (live360Data && live360Data.recentTransactions && live360Data.recentTransactions.length > 0) ? live360Data.recentTransactions : propTxs;
@@ -295,12 +254,6 @@ export function AdminUsers({
               </button>
             </div>
 
-            {actionSuccessMsg && (
-              <div className="rounded-2xl border border-accent/40 bg-accent/15 p-4 text-xs text-accent flex items-center gap-2 shadow-md">
-                <CheckCircle2 size={16} /> {actionSuccessMsg}
-              </div>
-            )}
-
             {/* Financial Overview Cards (100% Calculated & Verified) */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-3.5">
@@ -333,63 +286,6 @@ export function AdminUsers({
                 }`}>
                   {displayKycStatus}
                 </span>
-              </div>
-            </div>
-
-            {/* Quick Admin Action Controls: KYC & Wallet Adjustment */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-4">
-              <h4 className="text-xs font-bold text-foreground font-sans uppercase tracking-wider flex items-center gap-2">
-                <UserCheck size={15} className="text-primary" /> Admin Quick Control Actions
-              </h4>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                {/* 1. Direct KYC Action */}
-                <div className="space-y-2">
-                  <span className="text-[11px] text-muted-foreground block">KYC Status Action:</span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleKycStatusChangeIn360('APPROVED')}
-                      className="flex-1 rounded-xl border border-accent/40 bg-accent/15 py-2 text-xs font-bold text-accent hover:bg-accent/25 transition-all flex items-center justify-center gap-1"
-                    >
-                      <Check size={14} /> Approve KYC
-                    </button>
-                    <button
-                      onClick={() => handleKycStatusChangeIn360('REJECTED')}
-                      className="flex-1 rounded-xl border border-rose-500/40 bg-rose-500/15 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/25 transition-all flex items-center justify-center gap-1"
-                    >
-                      <X size={14} /> Reject KYC
-                    </button>
-                  </div>
-                </div>
-
-                {/* 2. Wallet Balance Adjustment */}
-                <form onSubmit={handleBalanceAdjustSubmit} className="space-y-2">
-                  <span className="text-[11px] text-muted-foreground block">Adjust Wallet Balance:</span>
-                  <div className="flex gap-2">
-                    <select
-                      value={adjustMode}
-                      onChange={e => setAdjustMode(e.target.value as any)}
-                      className="rounded-xl border border-white/15 bg-[#121815] px-2 py-1.5 text-xs text-foreground outline-none"
-                    >
-                      <option value="ADD">+ Credit</option>
-                      <option value="DEDUCT">- Deduct</option>
-                    </select>
-                    <input
-                      type="number"
-                      step="0.01"
-                      placeholder="Amount ($)"
-                      value={adjustAmount}
-                      onChange={e => setAdjustAmount(e.target.value)}
-                      className="min-w-0 flex-1 rounded-xl border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs text-foreground outline-none focus:border-primary"
-                    />
-                    <button
-                      type="submit"
-                      className="rounded-xl bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all"
-                    >
-                      Update
-                    </button>
-                  </div>
-                </form>
               </div>
             </div>
 
