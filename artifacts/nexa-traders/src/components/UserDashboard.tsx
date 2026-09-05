@@ -673,54 +673,104 @@ export function UserDashboard() {
         if (targetPkgId && pkg.id !== targetPkgId) return pkg;
 
         const dailyAmt = getDailyRoiAmountForPackage(pkg);
-        const now = Date.now();
+        if (dailyAmt <= 0) return pkg;
+
+        const totalCap = Number(pkg.totalRoiCap) || (Number(pkg.amount) * 1.85) || 1;
+        const currentEarnedInPkg = Number(pkg.earnedRoi) || 0;
         
-        let lastPayoutTime = now;
-        if (pkg.lastRoiPayout) {
-          const parsed = new Date(pkg.lastRoiPayout).getTime();
-          if (!isNaN(parsed) && parsed > 0) lastPayoutTime = parsed;
-        } else if (pkg.purchaseDate) {
-          const parsed = new Date(pkg.purchaseDate).getTime();
-          if (!isNaN(parsed) && parsed > 0) lastPayoutTime = parsed;
+        // If package earned ROI cap reached, mark completed and stop
+        if (currentEarnedInPkg >= totalCap || Number(pkg.remainingRoi) <= 0) {
+          return { ...pkg, remainingRoi: 0, status: 'COMPLETED' };
         }
 
-        if (lastPayoutTime > now) lastPayoutTime = now;
+        const now = Date.now();
+        const userCleanEmail = userEmail.toLowerCase().trim();
+        const localKey = `nexa_last_payout_${userCleanEmail}_${pkg.id}`;
+        
+        let storedLastPayoutStr = '';
+        try {
+          storedLastPayoutStr = localStorage.getItem(localKey) || '';
+        } catch (e) {}
 
-        const elapsedMs = Math.max(0, now - lastPayoutTime);
+        let purchaseMs = now;
+        if (pkg.purchaseDate) {
+          const parsedP = new Date(pkg.purchaseDate).getTime();
+          if (!isNaN(parsedP) && parsedP > 0) purchaseMs = parsedP;
+        }
+
+        // Deducing minimum cycles already paid based on earned ROI
+        const cyclesAlreadyPaidFromEarned = dailyAmt > 0 ? Math.floor(currentEarnedInPkg / dailyAmt) : 0;
+        const baselineDerivedLastPayoutMs = purchaseMs + (cyclesAlreadyPaidFromEarned * 24 * 60 * 60 * 1000);
+
+        let storedLastPayoutMs = 0;
+        if (storedLastPayoutStr) {
+          const parsedS = new Date(storedLastPayoutStr).getTime();
+          if (!isNaN(parsedS) && parsedS > 0) storedLastPayoutMs = parsedS;
+        } else if (pkg.lastRoiPayout) {
+          const parsedL = new Date(pkg.lastRoiPayout).getTime();
+          if (!isNaN(parsedL) && parsedL > 0) storedLastPayoutMs = parsedL;
+        }
+
+        // Effective last payout timestamp cannot be earlier than baseline derived from earned ROI or purchase date
+        let effectiveLastPayoutMs = Math.max(purchaseMs, baselineDerivedLastPayoutMs, storedLastPayoutMs);
+        if (effectiveLastPayoutMs > now) effectiveLastPayoutMs = now;
+
+        const elapsedMs = Math.max(0, now - effectiveLastPayoutMs);
         const elapsed24hCycles = Math.floor(elapsedMs / (24 * 60 * 60 * 1000));
         const cyclesToProcess = forceManual ? Math.max(1, elapsed24hCycles) : elapsed24hCycles;
 
-        if (cyclesToProcess > 0 && pkg.remainingRoi > 0) {
-          const payoutAmount = Math.min(parseFloat((dailyAmt * cyclesToProcess).toFixed(2)), pkg.remainingRoi);
+        let remCap = Math.max(0, Number((totalCap - currentEarnedInPkg).toFixed(2)));
+        if (cyclesToProcess > 0 && remCap > 0) {
+          let runningEarned = currentEarnedInPkg;
+          let runningRemaining = remCap;
+          let runningLastPayoutMs = effectiveLastPayoutMs;
 
-          if (payoutAmount > 0) {
+          for (let cycle = 1; cycle <= cyclesToProcess; cycle++) {
+            if (runningRemaining <= 0) break;
+
+            const singleCyclePayout = Math.min(dailyAmt, runningRemaining);
+            if (singleCyclePayout <= 0) break;
+
+            runningLastPayoutMs += (24 * 60 * 60 * 1000);
+            if (runningLastPayoutMs > now) runningLastPayoutMs = now;
+
+            runningEarned = parseFloat((runningEarned + singleCyclePayout).toFixed(2));
+            runningRemaining = parseFloat(Math.max(0, runningRemaining - singleCyclePayout).toFixed(2));
+            balanceAdder += singleCyclePayout;
             isUpdated = true;
-            balanceAdder += payoutAmount;
-            const newEarned = parseFloat((pkg.earnedRoi + payoutAmount).toFixed(2));
-            const newRemaining = parseFloat(Math.max(0, pkg.remainingRoi - payoutAmount).toFixed(2));
-            const newStatus = newRemaining <= 0 ? 'COMPLETED' : 'ACTIVE';
-            const timeStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
-            const newLastPayoutStr = new Date(lastPayoutTime + cyclesToProcess * 24 * 60 * 60 * 1000).toISOString();
+
+            const cycleDateObj = new Date(runningLastPayoutMs);
+            const dateFormattedStr = cycleDateObj.toISOString().replace('T', ' ').substring(0, 16);
 
             const roiTx: Transaction = {
               id: `TX-ROI-${Math.floor(100000 + Math.random() * 900000)}`,
-              date: timeStr,
+              date: dateFormattedStr,
               type: 'DAILY_ROI',
               title: `Daily ROI Credit (${pkg.name} Plan)`,
-              amount: payoutAmount,
+              description: `Daily yield payout for ${dateFormattedStr.substring(0, 10)}`,
+              amount: singleCyclePayout,
               status: 'COMPLETED',
               txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
             };
 
             createdTxs.push(roiTx);
+          }
+
+          if (isUpdated) {
+            const finalLastPayoutISO = new Date(runningLastPayoutMs).toISOString();
+            try {
+              localStorage.setItem(localKey, finalLastPayoutISO);
+            } catch (e) {}
+
+            const finalStatus = runningRemaining <= 0 || runningEarned >= totalCap ? 'COMPLETED' : 'ACTIVE';
 
             return {
               ...pkg,
               dailyRoi: dailyAmt,
-              earnedRoi: newEarned,
-              remainingRoi: newRemaining,
-              status: newStatus,
-              lastRoiPayout: newLastPayoutStr
+              earnedRoi: runningEarned,
+              remainingRoi: runningRemaining,
+              status: finalStatus,
+              lastRoiPayout: finalLastPayoutISO
             };
           }
         }
