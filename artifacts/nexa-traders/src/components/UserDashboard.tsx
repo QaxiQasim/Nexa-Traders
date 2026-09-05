@@ -362,6 +362,14 @@ export function UserDashboard() {
   const [memberPackagesList, setMemberPackagesList] = useState<any[]>([]);
   const [loadingMemberPackages, setLoadingMemberPackages] = useState<boolean>(false);
 
+  // 4. Withdrawal Portal State
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('15');
+  const [withdrawWallet, setWithdrawWallet] = useState<string>('');
+  const [withdrawNetwork, setWithdrawNetwork] = useState<'USDT_BEP20'>('USDT_BEP20');
+  const [withdrawMessage, setWithdrawMessage] = useState<string | null>(null);
+  const [withdrawError, setWithdrawError] = useState<string | null>(null);
+  const [isSubmittingWithdraw, setIsSubmittingWithdraw] = useState<boolean>(false);
+
   const handleOpenMemberPackages = async (memberUser: any) => {
     setSelectedTeamMemberModal(memberUser);
     setLoadingMemberPackages(true);
@@ -439,6 +447,120 @@ export function UserDashboard() {
     const teamInterval = setInterval(loadReferralTeamData, 8000);
     return () => clearInterval(teamInterval);
   }, [userEmail, userName, walletBalance]);
+
+  // 6. Live User Transactions & Wallet Sync Effect
+  useEffect(() => {
+    if (!userEmail) return;
+    const syncUserTelemetry = async () => {
+      try {
+        const [profile, dbTxs] = await Promise.all([
+          fetchUserProfileFromDb(userEmail),
+          fetchTransactionsFromDb(userEmail)
+        ]);
+
+        if (profile) {
+          const bal = Number(profile.wallet_balance || 0);
+          setWalletBalance(bal);
+          try { localStorage.setItem(`nexa_balance_${userEmail}`, bal.toString()); } catch (e) {}
+        }
+
+        if (dbTxs && dbTxs.length > 0) {
+          const mapped: Transaction[] = dbTxs.map((t: any) => ({
+            id: t.id || `TX-${Math.floor(10000 + Math.random() * 90000)}`,
+            date: t.created_at ? new Date(t.created_at).toISOString().replace('T', ' ').substring(0, 16) : 'Recent',
+            type: (t.type || 'DEPOSIT') as any,
+            title: t.description || `${t.type} Transaction`,
+            amount: Number(t.amount || 0),
+            status: (t.status || 'COMPLETED') as any,
+            txHash: t.id
+          }));
+          setTransactions(mapped);
+          try { localStorage.setItem(`nexa_tx_${userEmail}`, JSON.stringify(mapped)); } catch (e) {}
+        }
+      } catch (err) {
+        console.error('Error syncing user transactions:', err);
+      }
+    };
+
+    syncUserTelemetry();
+    const syncInterval = setInterval(syncUserTelemetry, 8000);
+    return () => clearInterval(syncInterval);
+  }, [userEmail]);
+
+  // 7. Withdrawal Submission Handler
+  const handleWithdrawalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWithdrawMessage(null);
+    setWithdrawError(null);
+
+    const num = parseFloat(withdrawAmount);
+    if (isNaN(num) || num < 15) {
+      setWithdrawError('Minimum withdrawal amount is $15.00 USDT (BEP20).');
+      return;
+    }
+
+    if (num > walletBalance) {
+      setWithdrawError('Insufficient withdrawable wallet balance.');
+      return;
+    }
+
+    const cleanWallet = withdrawWallet.trim();
+    if (!cleanWallet || cleanWallet.length < 10) {
+      setWithdrawError('Please enter a valid BEP20 (BNB Smart Chain) wallet address.');
+      return;
+    }
+
+    setIsSubmittingWithdraw(true);
+
+    try {
+      // Deduct balance locally and in DB
+      const newBal = Math.max(0, walletBalance - num);
+
+      // Record transaction in Supabase DB
+      const txPayload = {
+        user_email: userEmail,
+        type: 'WITHDRAWAL',
+        amount: -num,
+        status: 'PENDING',
+        description: `Withdrawal request to BEP20 Address: ${cleanWallet}`,
+        created_at: new Date().toISOString()
+      };
+      await insertTransactionToDb(txPayload);
+
+      // Update Profile Balance in DB
+      await syncUserProfile(userEmail, userName || userEmail.split('@')[0], newBal);
+      setWalletBalance(newBal);
+      try {
+        localStorage.setItem(`nexa_balance_${userEmail}`, newBal.toString());
+      } catch (e) {}
+
+      // Update Local Transactions
+      const newTx: Transaction = {
+        id: `TX-W-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        type: 'WITHDRAWAL',
+        title: `USDT BEP20 Withdrawal Request (${cleanWallet.substring(0, 6)}...${cleanWallet.substring(cleanWallet.length - 4)})`,
+        amount: -num,
+        status: 'PENDING',
+        txHash: `BEP20 Address: ${cleanWallet}`
+      };
+
+      const updatedTxs = [newTx, ...transactions];
+      setTransactions(updatedTxs);
+      try {
+        localStorage.setItem(`nexa_tx_${userEmail}`, JSON.stringify(updatedTxs));
+      } catch (e) {}
+
+      setWithdrawMessage(`Withdrawal request of $${num.toFixed(2)} USDT submitted successfully! Status is PENDING admin verification & processing.`);
+      setWithdrawAmount('15');
+      setWithdrawWallet('');
+    } catch (err) {
+      console.error('Withdrawal error:', err);
+      setWithdrawError('Failed to submit withdrawal request. Please check network connection.');
+    } finally {
+      setIsSubmittingWithdraw(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('nexa_auth_user');
@@ -1170,41 +1292,7 @@ export function UserDashboard() {
     setKycFormError('');
   };
 
-  // Handle Withdrawal Request
-  const handleWithdrawalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const val = parseFloat(withdrawAmount);
-    if (isNaN(val) || val <= 0) {
-      alert('Please enter a valid withdrawal amount.');
-      return;
-    }
-    if (val > walletBalance) {
-      alert(`Cannot withdraw more than available balance ($${walletBalance.toFixed(2)}).`);
-      return;
-    }
-    if (!withdrawWallet) {
-      alert('Please enter your destination wallet address.');
-      return;
-    }
 
-    setWalletBalance(prev => prev - val);
-
-    const withdrawTx: Transaction = {
-      id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
-      date: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      type: 'WITHDRAWAL',
-      title: `Withdrawal to ${withdrawNetwork}`,
-      amount: -val,
-      status: 'COMPLETED',
-      txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
-    };
-
-    setTransactions([withdrawTx, ...transactions]);
-    insertTransactionToDb(userEmail, withdrawTx);
-    setWithdrawMessage(`Withdrawal request for $${val.toFixed(2)} USDT submitted! Transferred to ${withdrawWallet.substring(0, 8)}...`);
-    setWithdrawAmount('');
-    setWithdrawWallet('');
-  };
 
   const navMenuItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
@@ -2688,16 +2776,22 @@ export function UserDashboard() {
           <div className="mt-8 max-w-3xl mx-auto space-y-8 font-mono">
             <div>
               <h2 className="text-2xl font-black text-foreground tracking-tight">
-                Instant Withdrawal Portal
+                BNB Smart Chain (BEP20) Withdrawal Portal
               </h2>
               <p className="text-xs text-muted-foreground mt-1">
-                Transfer your earned trading profit and capital directly to your external crypto wallet.
+                Transfer your available trading profits and capital directly to your BEP20 crypto wallet. Minimum payout: $15.00 USDT.
               </p>
             </div>
 
             {withdrawMessage && (
-              <div className="rounded-2xl border border-accent/40 bg-accent/10 p-4 text-xs text-accent flex items-center gap-2">
+              <div className="rounded-2xl border border-accent/40 bg-accent/15 p-4 text-xs text-accent flex items-center gap-2 shadow-md">
                 <CheckCircle2 size={16} /> {withdrawMessage}
+              </div>
+            )}
+
+            {withdrawError && (
+              <div className="rounded-2xl border border-rose-500/40 bg-rose-500/15 p-4 text-xs text-rose-400 flex items-center gap-2 shadow-md">
+                <AlertCircle size={16} /> {withdrawError}
               </div>
             )}
 
@@ -2705,7 +2799,7 @@ export function UserDashboard() {
               {/* Balance Box */}
               <div className="rounded-2xl border border-primary/30 bg-primary/10 p-5 flex items-center justify-between">
                 <div>
-                  <span className="text-xs text-muted-foreground uppercase">Available Withdrawable Balance</span>
+                  <span className="text-xs text-muted-foreground uppercase font-bold">Available Withdrawable Balance</span>
                   <div className="text-3xl font-black text-primary tracking-tight mt-1">
                     ${walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT
                   </div>
@@ -2717,62 +2811,59 @@ export function UserDashboard() {
 
               <form onSubmit={handleWithdrawalSubmit} className="space-y-5 text-xs">
                 <div>
-                  <label className="block text-muted-foreground mb-2">Select Withdrawal Network</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { id: 'USDT_BEP20', label: 'USDT (BEP20)', fee: '$1.00 Fee' },
-                      { id: 'USDT_TRC20', label: 'USDT (TRC20)', fee: '$1.50 Fee' },
-                      { id: 'BTC', label: 'Bitcoin (BTC)', fee: '$3.00 Fee' }
-                    ].map(net => (
-                      <button
-                        key={net.id}
-                        type="button"
-                        onClick={() => setWithdrawNetwork(net.id as any)}
-                        className={`rounded-xl border p-3 text-left transition-all ${
-                          withdrawNetwork === net.id
-                            ? 'border-primary bg-primary/20 text-primary'
-                            : 'border-white/10 bg-white/[0.02] text-muted-foreground'
-                        }`}
-                      >
-                        <strong className="block text-foreground">{net.label}</strong>
-                        <span className="text-[10px] text-muted-foreground">{net.fee}</span>
-                      </button>
-                    ))}
+                  <label className="block text-muted-foreground mb-2 font-bold">Supported Network</label>
+                  <div className="rounded-2xl border border-primary/40 bg-primary/10 p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold">
+                        🟡
+                      </div>
+                      <div>
+                        <strong className="block text-foreground text-sm font-sans">USDT - BEP20</strong>
+                        <span className="text-[10px] text-accent font-mono">BNB Smart Chain (BSC) Only</span>
+                      </div>
+                    </div>
+                    <span className="rounded-full bg-accent/20 text-accent border border-accent/40 px-3 py-1 text-[10px] font-bold uppercase">
+                      Official Network
+                    </span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-muted-foreground mb-2">Withdrawal Amount ($ USD)</label>
+                  <label className="block text-muted-foreground mb-2 font-bold">Withdrawal Amount ($ USD)</label>
                   <div className="relative">
                     <input
                       type="number"
                       required
-                      min={50}
+                      min={15}
+                      step="0.01"
                       max={walletBalance}
                       value={withdrawAmount}
                       onChange={e => setWithdrawAmount(e.target.value)}
+                      placeholder="Minimum 15.00 USDT"
                       className="w-full rounded-xl border border-white/15 bg-white/[0.03] pl-4 pr-16 py-3.5 text-foreground text-sm font-bold outline-none focus:border-primary"
                     />
                     <button
                       type="button"
-                      onClick={() => setWithdrawAmount(walletBalance.toString())}
+                      onClick={() => setWithdrawAmount(walletBalance > 0 ? walletBalance.toString() : '15')}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-primary font-bold hover:underline"
                     >
                       MAX
                     </button>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-1 block">Minimum withdrawal: $50.00 USDT</span>
+                  <span className="text-[11px] text-accent mt-1.5 block font-mono">
+                    ✓ Minimum withdrawal amount: <strong>$15.00 USDT</strong>
+                  </span>
                 </div>
 
                 <div>
-                  <label className="block text-muted-foreground mb-2">Destination Wallet Address</label>
+                  <label className="block text-muted-foreground mb-2 font-bold">BEP20 Wallet Address (BNB Smart Chain)</label>
                   <input
                     type="text"
                     required
                     value={withdrawWallet}
                     onChange={e => setWithdrawWallet(e.target.value)}
-                    placeholder="Enter your USDT BEP20 wallet address..."
-                    className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3.5 text-foreground text-xs outline-none focus:border-primary"
+                    placeholder="Enter your USDT BEP20 wallet address (e.g. 0x...)..."
+                    className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3.5 text-foreground text-xs font-mono outline-none focus:border-primary"
                   />
                 </div>
 
@@ -2780,10 +2871,10 @@ export function UserDashboard() {
                 <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4 space-y-2 text-xs">
                   <div className="flex justify-between text-muted-foreground">
                     <span>Requested Amount:</span>
-                    <span className="text-foreground">${parseFloat(withdrawAmount || '0').toFixed(2)} USDT</span>
+                    <span className="text-foreground font-bold">${parseFloat(withdrawAmount || '0').toFixed(2)} USDT</span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Network Gas Fee:</span>
+                    <span>Network Gas Fee (BNB Chain):</span>
                     <span className="text-foreground">$1.00 USDT</span>
                   </div>
                   <div className="flex justify-between border-t border-white/10 pt-2 font-bold text-foreground">
@@ -2794,9 +2885,10 @@ export function UserDashboard() {
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 text-xs font-black uppercase text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-[1.01] transition-all"
+                  disabled={isSubmittingWithdraw}
+                  className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 text-xs font-black uppercase text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-[1.01] transition-all disabled:opacity-50"
                 >
-                  Submit Instant Withdrawal Request
+                  {isSubmittingWithdraw ? 'Submitting Request...' : 'Submit BEP20 Withdrawal Request'}
                 </button>
               </form>
             </div>
