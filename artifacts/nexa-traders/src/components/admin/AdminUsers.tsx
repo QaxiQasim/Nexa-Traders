@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, Search, Filter, ShieldCheck, Clock, AlertCircle, X, 
-  ArrowDownRight, ArrowUpRight, Package, DollarSign, ExternalLink, Calendar 
+  ArrowDownRight, ArrowUpRight, Package, DollarSign, ExternalLink, Calendar, CheckCircle2, RefreshCw, Eye, UserCheck, Check, AlertTriangle
 } from 'lucide-react';
+import { fetchUser360ProfileFromDb, updateKycStatusInDb, syncUserProfile } from '@/lib/supabase';
 
 interface AdminUsersProps {
   users: any[];
@@ -24,7 +25,8 @@ export function AdminUsers({
   selectedUserEmail: propSelectedUserEmail,
   selectedEmail,
   onSelectUser,
-  onClearSelectedEmail
+  onClearSelectedEmail,
+  onRefreshData
 }: AdminUsersProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -35,10 +37,72 @@ export function AdminUsers({
   // Active email preference: propSelectedUserEmail > selectedEmail > internalEmail
   const activeSelectedEmail = (propSelectedUserEmail !== undefined && propSelectedUserEmail !== null ? propSelectedUserEmail : undefined) ?? selectedEmail ?? internalEmail;
 
+  // Live 360 Targeted User State
+  const [live360Data, setLive360Data] = useState<any | null>(null);
+  const [isLoading360, setIsLoading360] = useState<boolean>(false);
+  const [actionSuccessMsg, setActionSuccessMsg] = useState<string>('');
+
+  // Quick Balance Adjustment Form State inside 360 View
+  const [adjustAmount, setAdjustAmount] = useState<string>('');
+  const [adjustMode, setAdjustMode] = useState<'ADD' | 'DEDUCT'>('ADD');
+
   const handleUserSelect = (email: string | null) => {
     setInternalEmail(email);
     if (onSelectUser) onSelectUser(email);
     if (email === null && onClearSelectedEmail) onClearSelectedEmail();
+  };
+
+  // Fetch Live Targeted 360 Profile Data whenever a user is selected
+  useEffect(() => {
+    if (!activeSelectedEmail) {
+      setLive360Data(null);
+      return;
+    }
+    setIsLoading360(true);
+    fetchUser360ProfileFromDb(activeSelectedEmail).then(data => {
+      setLive360Data(data);
+      setIsLoading360(false);
+    }).catch(err => {
+      console.error('360 profile error:', err);
+      setIsLoading360(false);
+    });
+  }, [activeSelectedEmail]);
+
+  // Quick Admin KYC Status Change directly inside 360 View
+  const handleKycStatusChangeIn360 = async (status: 'APPROVED' | 'REJECTED') => {
+    if (!activeSelectedEmail) return;
+    const ok = await updateKycStatusInDb('', status, undefined, activeSelectedEmail);
+    if (ok) {
+      setActionSuccessMsg(`KYC Status successfully updated to ${status}`);
+      setTimeout(() => setActionSuccessMsg(''), 4000);
+      if (onRefreshData) onRefreshData();
+      // Re-fetch 360 data
+      const updated = await fetchUser360ProfileFromDb(activeSelectedEmail);
+      setLive360Data(updated);
+    }
+  };
+
+  // Quick Admin Balance Adjustment directly inside 360 View
+  const handleBalanceAdjustSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeSelectedEmail) return;
+    const num = parseFloat(adjustAmount);
+    if (isNaN(num) || num <= 0) return;
+
+    const currentBal = live360Data ? live360Data.walletBalance : Number(selectedUserObj?.wallet_balance || 0);
+    const newBal = adjustMode === 'ADD' ? currentBal + num : Math.max(0, currentBal - num);
+
+    const userName = (selectedUserObj && selectedUserObj.full_name) || activeSelectedEmail.split('@')[0];
+    await syncUserProfile(activeSelectedEmail, userName, newBal);
+
+    setActionSuccessMsg(`Wallet Balance updated from $${currentBal.toFixed(2)} to $${newBal.toFixed(2)} USDT`);
+    setTimeout(() => setActionSuccessMsg(''), 4000);
+    setAdjustAmount('');
+    if (onRefreshData) onRefreshData();
+
+    // Re-fetch 360 data
+    const updated = await fetchUser360ProfileFromDb(activeSelectedEmail);
+    setLive360Data(updated);
   };
 
   // Filtered Users List
@@ -64,14 +128,28 @@ export function AdminUsers({
     ? users.find(u => (u.email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) || { email: activeSelectedEmail, full_name: activeSelectedEmail.split('@')[0], wallet_balance: 0 }
     : null;
 
-  const userTxs = activeSelectedEmail ? transactions.filter(t => (t.user_email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) : [];
-  const userPkgs = activeSelectedEmail ? packages.filter(p => (p.user_email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) : [];
-  const userKyc = activeSelectedEmail ? kycRequests.find(k => (k.user_email || '').toLowerCase() === activeSelectedEmail.toLowerCase()) : null;
+  const emailLower = (activeSelectedEmail || '').toLowerCase().trim();
 
-  const userTotalDeposits = userTxs.filter(t => t.type === 'DEPOSIT' && t.status === 'COMPLETED').reduce((sum, t) => sum + Number(t.amount || 0), 0);
-  const userTotalWithdrawals = userTxs.filter(t => t.type === 'WITHDRAWAL' && (t.status === 'COMPLETED' || t.status === 'APPROVED')).reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
-  const userPendingWithdrawals = userTxs.filter(t => t.type === 'WITHDRAWAL' && t.status === 'PENDING').reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
-  const userPackageInvested = userPkgs.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  // Fallbacks using passed props if live360Data is loading
+  const propTxs = activeSelectedEmail ? transactions.filter(t => (t.user_email || t.email || t.userEmail || '').toLowerCase().trim() === emailLower) : [];
+  const propPkgs = activeSelectedEmail ? packages.filter(p => (p.user_email || p.email || p.userEmail || '').toLowerCase().trim() === emailLower) : [];
+
+  const propTotalDeposits = propTxs.filter(t => (t.type === 'DEPOSIT' || (t.type && t.type.toUpperCase().includes('DEPOSIT'))) && (t.status === 'COMPLETED' || t.status === 'APPROVED' || !t.status)).reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
+  const propTotalWithdrawals = propTxs.filter(t => (t.type === 'WITHDRAWAL' || (t.type && t.type.toUpperCase().includes('WITHDRAW'))) && (t.status === 'COMPLETED' || t.status === 'APPROVED')).reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
+  const propPendingWithdrawals = propTxs.filter(t => (t.type === 'WITHDRAWAL' || (t.type && t.type.toUpperCase().includes('WITHDRAW'))) && t.status === 'PENDING').reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
+  const propPackageInvested = propPkgs.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+  // Final display metrics prioritizing live targeted 360 data
+  const displayBalance = live360Data ? live360Data.walletBalance : Number(selectedUserObj?.wallet_balance || 0);
+  const displayDeposits = live360Data ? live360Data.totalDeposited : propTotalDeposits;
+  const displayWithdrawals = live360Data ? live360Data.totalWithdrawn : propTotalWithdrawals;
+  const displayPendingW = live360Data ? live360Data.pendingWithdrawal : propPendingWithdrawals;
+  const displayPkgVol = live360Data ? live360Data.packageVolume : propPackageInvested;
+  const displayKycStatus = live360Data ? live360Data.kycStatus : (selectedUserObj?.kyc_status || 'UNVERIFIED');
+
+  const displayPkgs = (live360Data && live360Data.packages && live360Data.packages.length > 0) ? live360Data.packages : propPkgs;
+  const displayTxs = (live360Data && live360Data.recentTransactions && live360Data.recentTransactions.length > 0) ? live360Data.recentTransactions : propTxs;
+  const kycDetail = live360Data?.kycDetail;
 
   return (
     <div className="space-y-6 font-mono text-xs">
@@ -136,7 +214,8 @@ export function AdminUsers({
               </tr>
             ) : (
               filteredUsers.map(user => {
-                const pkgsCount = packages.filter(p => (p.user_email || '').toLowerCase() === user.email.toLowerCase()).length;
+                const uEmail = (user.email || '').toLowerCase();
+                const pkgsCount = packages.filter(p => (p.user_email || p.email || '').toLowerCase() === uEmail).length;
                 return (
                   <tr key={user.id || user.email} className="hover:bg-white/[0.02] transition-all">
                     <td className="py-4 px-4">
@@ -189,9 +268,24 @@ export function AdminUsers({
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
-                <span className="text-[10px] uppercase text-primary font-bold">USER 360° AUDIT PROFILE</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase text-primary font-bold">USER 360° AUDIT PROFILE</span>
+                  {isLoading360 && (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-accent animate-pulse">
+                      <RefreshCw size={11} className="animate-spin" /> Fetching Live Telemetry...
+                    </span>
+                  )}
+                </div>
                 <h3 className="text-xl font-black text-foreground font-sans">{selectedUserObj.full_name || selectedUserObj.email}</h3>
-                <span className="text-xs text-muted-foreground">{selectedUserObj.email}</span>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                  <span>{selectedUserObj.email}</span>
+                  {selectedUserObj.referral_code && (
+                    <span className="text-primary font-bold">Ref Code: {selectedUserObj.referral_code}</span>
+                  )}
+                  {selectedUserObj.sponsor_email && (
+                    <span className="text-accent">Sponsor: {selectedUserObj.sponsor_email}</span>
+                  )}
+                </div>
               </div>
               <button
                 onClick={() => handleUserSelect(null)}
@@ -201,52 +295,152 @@ export function AdminUsers({
               </button>
             </div>
 
-            {/* Financial Overview Cards */}
+            {actionSuccessMsg && (
+              <div className="rounded-2xl border border-accent/40 bg-accent/15 p-4 text-xs text-accent flex items-center gap-2 shadow-md">
+                <CheckCircle2 size={16} /> {actionSuccessMsg}
+              </div>
+            )}
+
+            {/* Financial Overview Cards (100% Calculated & Verified) */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-3.5">
-                <span className="text-[10px] uppercase text-muted-foreground block">Available Balance</span>
-                <strong className="text-lg font-black text-primary">${Number(selectedUserObj.wallet_balance || 0).toFixed(2)}</strong>
+                <span className="text-[10px] uppercase text-muted-foreground block font-bold">Available Balance</span>
+                <strong className="text-lg font-black text-primary">${displayBalance.toFixed(2)}</strong>
               </div>
               <div className="rounded-2xl border border-accent/30 bg-accent/5 p-3.5">
-                <span className="text-[10px] uppercase text-muted-foreground block">Total Deposited</span>
-                <strong className="text-lg font-black text-accent">${userTotalDeposits.toFixed(2)}</strong>
+                <span className="text-[10px] uppercase text-muted-foreground block font-bold">Total Deposited</span>
+                <strong className="text-lg font-black text-accent">${displayDeposits.toFixed(2)}</strong>
               </div>
               <div className="rounded-2xl border border-orange-500/30 bg-orange-500/5 p-3.5">
-                <span className="text-[10px] uppercase text-muted-foreground block">Total Withdrawn</span>
-                <strong className="text-lg font-black text-orange-400">${userTotalWithdrawals.toFixed(2)}</strong>
+                <span className="text-[10px] uppercase text-muted-foreground block font-bold">Total Withdrawn</span>
+                <strong className="text-lg font-black text-orange-400">${displayWithdrawals.toFixed(2)}</strong>
               </div>
               <div className="rounded-2xl border border-purple-500/30 bg-purple-500/5 p-3.5">
-                <span className="text-[10px] uppercase text-muted-foreground block">Package Volume</span>
-                <strong className="text-lg font-black text-purple-400">${userPackageInvested.toFixed(2)}</strong>
+                <span className="text-[10px] uppercase text-muted-foreground block font-bold">Package Volume</span>
+                <strong className="text-lg font-black text-purple-400">${displayPkgVol.toFixed(2)}</strong>
               </div>
               <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-3.5">
-                <span className="text-[10px] uppercase text-muted-foreground block">Pending Withdrawal</span>
-                <strong className="text-lg font-black text-rose-400">${userPendingWithdrawals.toFixed(2)}</strong>
+                <span className="text-[10px] uppercase text-muted-foreground block font-bold">Pending Withdrawal</span>
+                <strong className="text-lg font-black text-rose-400">${displayPendingW.toFixed(2)}</strong>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5">
-                <span className="text-[10px] uppercase text-muted-foreground block">KYC Status</span>
-                <strong className="text-xs font-black text-foreground">{selectedUserObj.kyc_status || 'UNVERIFIED'}</strong>
+                <span className="text-[10px] uppercase text-muted-foreground block font-bold">KYC Status</span>
+                <span className={`inline-block mt-0.5 rounded-full px-2 py-0.5 text-[10px] font-black uppercase border ${
+                  displayKycStatus === 'APPROVED' ? 'bg-accent/20 text-accent border-accent/40' :
+                  displayKycStatus === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' :
+                  displayKycStatus === 'REJECTED' ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' :
+                  'bg-white/10 text-muted-foreground border-white/20'
+                }`}>
+                  {displayKycStatus}
+                </span>
               </div>
             </div>
+
+            {/* Quick Admin Action Controls: KYC & Wallet Adjustment */}
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-4">
+              <h4 className="text-xs font-bold text-foreground font-sans uppercase tracking-wider flex items-center gap-2">
+                <UserCheck size={15} className="text-primary" /> Admin Quick Control Actions
+              </h4>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {/* 1. Direct KYC Action */}
+                <div className="space-y-2">
+                  <span className="text-[11px] text-muted-foreground block">KYC Status Action:</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleKycStatusChangeIn360('APPROVED')}
+                      className="flex-1 rounded-xl border border-accent/40 bg-accent/15 py-2 text-xs font-bold text-accent hover:bg-accent/25 transition-all flex items-center justify-center gap-1"
+                    >
+                      <Check size={14} /> Approve KYC
+                    </button>
+                    <button
+                      onClick={() => handleKycStatusChangeIn360('REJECTED')}
+                      className="flex-1 rounded-xl border border-rose-500/40 bg-rose-500/15 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/25 transition-all flex items-center justify-center gap-1"
+                    >
+                      <X size={14} /> Reject KYC
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Wallet Balance Adjustment */}
+                <form onSubmit={handleBalanceAdjustSubmit} className="space-y-2">
+                  <span className="text-[11px] text-muted-foreground block">Adjust Wallet Balance:</span>
+                  <div className="flex gap-2">
+                    <select
+                      value={adjustMode}
+                      onChange={e => setAdjustMode(e.target.value as any)}
+                      className="rounded-xl border border-white/15 bg-[#121815] px-2 py-1.5 text-xs text-foreground outline-none"
+                    >
+                      <option value="ADD">+ Credit</option>
+                      <option value="DEDUCT">- Deduct</option>
+                    </select>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="Amount ($)"
+                      value={adjustAmount}
+                      onChange={e => setAdjustAmount(e.target.value)}
+                      className="min-w-0 flex-1 rounded-xl border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs text-foreground outline-none focus:border-primary"
+                    />
+                    <button
+                      type="submit"
+                      className="rounded-xl bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            {/* KYC Submission Document Audit Details */}
+            {kycDetail && (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
+                <h4 className="text-xs font-bold text-foreground font-sans uppercase tracking-wider flex items-center gap-2">
+                  <ShieldCheck size={15} className="text-accent" /> Submitted KYC Document Audit
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[11px]">
+                  <div>
+                    <span className="text-muted-foreground block">Doc Type</span>
+                    <strong className="text-foreground">{kycDetail.document_type || 'PASSPORT'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block font-mono">ID / Serial Number</span>
+                    <strong className="text-primary font-mono">{kycDetail.document_number || 'N/A'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block">Submission Date</span>
+                    <span className="text-foreground">{kycDetail.submitted_at ? new Date(kycDetail.submitted_at).toLocaleDateString() : 'Recent'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Subscribed Packages History */}
             <div className="space-y-3 border-t border-white/10 pt-4">
               <h4 className="text-sm font-bold text-foreground font-sans flex items-center gap-2">
-                <Package size={16} className="text-purple-400" /> Active Package Subscriptions ({userPkgs.length})
+                <Package size={16} className="text-purple-400" /> Active Package Subscriptions ({displayPkgs.length})
               </h4>
-              {userPkgs.length === 0 ? (
+              {displayPkgs.length === 0 ? (
                 <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] text-muted-foreground text-center">
-                  No active package purchases found.
+                  No package purchases found for this user.
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {userPkgs.map(pkg => (
+                  {displayPkgs.map((pkg: any) => (
                     <div key={pkg.id} className="flex justify-between items-center p-3 rounded-xl border border-white/10 bg-white/[0.02]">
                       <div>
                         <strong className="text-foreground text-xs block">{pkg.package_name || pkg.name} Plan</strong>
-                        <span className="text-[10px] text-muted-foreground">Purchased: {pkg.purchase_date || 'Recent'}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          Purchased: {pkg.purchase_date || 'Recent'} | Earned: ${Number(pkg.earned_roi || pkg.earnedRoi || 0).toFixed(2)} / Cap: ${Number(pkg.total_roi_cap || pkg.totalRoiCap || 0).toFixed(2)}
+                        </span>
                       </div>
-                      <span className="font-bold text-primary text-xs">${Number(pkg.amount).toFixed(2)} USDT</span>
+                      <div className="text-right">
+                        <span className="font-bold text-primary text-xs block">${Number(pkg.amount).toFixed(2)} USDT</span>
+                        <span className={`text-[9px] font-bold uppercase ${pkg.status === 'COMPLETED' ? 'text-accent' : 'text-primary'}`}>
+                          {pkg.status || 'ACTIVE'}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -256,19 +450,19 @@ export function AdminUsers({
             {/* Financial Transactions Ledger */}
             <div className="space-y-3 border-t border-white/10 pt-4">
               <h4 className="text-sm font-bold text-foreground font-sans flex items-center gap-2">
-                <DollarSign size={16} className="text-accent" /> Transaction Audit History ({userTxs.length})
+                <DollarSign size={16} className="text-accent" /> Transaction Audit History ({displayTxs.length})
               </h4>
-              {userTxs.length === 0 ? (
+              {displayTxs.length === 0 ? (
                 <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] text-muted-foreground text-center">
-                  No transaction records.
+                  No transaction records found for this user.
                 </div>
               ) : (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {userTxs.map(tx => (
-                    <div key={tx.id} className="flex justify-between items-center p-3 rounded-xl border border-white/10 bg-white/[0.02]">
+                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                  {displayTxs.map((tx: any) => (
+                    <div key={tx.id} className="flex justify-between items-center p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/20 transition-all">
                       <div>
-                        <span className="text-foreground font-bold text-xs block">{tx.description || tx.type}</span>
-                        <span className="text-[10px] text-muted-foreground">{tx.created_at ? new Date(tx.created_at).toLocaleString() : 'Recent'}</span>
+                        <span className="text-foreground font-bold text-xs block">{tx.description || tx.title || tx.type}</span>
+                        <span className="text-[10px] text-muted-foreground">{tx.created_at ? new Date(tx.created_at).toLocaleString() : (tx.date || 'Recent')}</span>
                       </div>
                       <div className="text-right">
                         <strong className={`block text-xs font-bold ${Number(tx.amount) > 0 ? 'text-accent' : 'text-foreground'}`}>

@@ -964,3 +964,80 @@ export async function fetchAdminAuditLogs() {
     return [];
   }
 }
+
+export async function fetchUser360ProfileFromDb(email: string) {
+  try {
+    const cleanEmail = (email || '').toLowerCase().trim();
+    if (!cleanEmail) return null;
+
+    const headers = getHeaders();
+
+    const [pRes, depRes, wRes, pkgRes, kycRes, txsRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/profiles?email=ilike.${encodeURIComponent(cleanEmail)}`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=ilike.${encodeURIComponent(cleanEmail)}&type=eq.DEPOSIT`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=ilike.${encodeURIComponent(cleanEmail)}&type=eq.WITHDRAWAL`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/purchased_packages?user_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/kyc_verifications?user_email=ilike.${encodeURIComponent(cleanEmail)}&order=submitted_at.desc`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=ilike.${encodeURIComponent(cleanEmail)}&order=created_at.desc&limit=100`, { headers })
+    ]);
+
+    let profile: any = null;
+    if (pRes.ok) {
+      const pData = await pRes.json();
+      if (Array.isArray(pData) && pData.length > 0) profile = pData[0];
+    }
+
+    let depTxs: any[] = [];
+    if (depRes.ok) {
+      const dData = await depRes.json();
+      if (Array.isArray(dData)) depTxs = dData;
+    }
+
+    let wTxs: any[] = [];
+    if (wRes.ok) {
+      const wData = await wRes.json();
+      if (Array.isArray(wData)) wTxs = wData;
+    }
+
+    let pkgs: any[] = [];
+    if (pkgRes.ok) {
+      const pkData = await pkgRes.json();
+      if (Array.isArray(pkData)) pkgs = pkData;
+    }
+
+    let kycList: any[] = [];
+    if (kycRes.ok) {
+      const kData = await kycRes.json();
+      if (Array.isArray(kData)) kycList = kData;
+    }
+
+    let recentTxs: any[] = [];
+    if (txsRes.ok) {
+      const tData = await txsRes.json();
+      if (Array.isArray(tData)) recentTxs = tData;
+    }
+
+    const totalDeposited = depTxs.filter(x => x.status === 'COMPLETED' || x.status === 'APPROVED' || !x.status).reduce((s, x) => s + Math.abs(Number(x.amount || 0)), 0);
+    const totalWithdrawn = wTxs.filter(x => x.status === 'COMPLETED' || x.status === 'APPROVED').reduce((s, x) => s + Math.abs(Number(x.amount || 0)), 0);
+    const pendingWithdrawal = wTxs.filter(x => x.status === 'PENDING').reduce((s, x) => s + Math.abs(Number(x.amount || 0)), 0);
+    const packageVolume = pkgs.reduce((s, x) => s + Number(x.amount || 0), 0);
+    const latestKyc = kycList[0] || null;
+    const kycStatus = (latestKyc && latestKyc.status) || (profile && profile.kyc_status) || 'UNVERIFIED';
+
+    return {
+      profile: profile || { email: cleanEmail, full_name: cleanEmail.split('@')[0], wallet_balance: 0 },
+      walletBalance: Number(profile?.wallet_balance || 0),
+      totalDeposited,
+      totalWithdrawn,
+      pendingWithdrawal,
+      packageVolume,
+      kycStatus,
+      kycDetail: latestKyc,
+      packages: pkgs,
+      recentTransactions: recentTxs
+    };
+  } catch (err) {
+    console.error('Error fetching user 360 profile:', err);
+    return null;
+  }
+}
