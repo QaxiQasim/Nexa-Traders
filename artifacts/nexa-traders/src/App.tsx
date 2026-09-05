@@ -2148,7 +2148,15 @@ function PackagesPage() {
                 <button
                   onClick={() => {
                     setModalOpen(false);
-                    setLocation('/register');
+                    const loggedInEmail = localStorage.getItem('nexa_user_email');
+                    if (loggedInEmail) {
+                      try {
+                        localStorage.setItem('nexa_pending_buy_plan', modalTierData.name);
+                      } catch (e) {}
+                      setLocation('/dashboard');
+                    } else {
+                      setLocation('/login');
+                    }
                   }}
                   className="flex-1 rounded-xl bg-primary py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:bg-[#f5c542]"
                   data-testid="button-modal-proceed"

@@ -622,6 +622,24 @@ export function UserDashboard() {
     } catch (e) {}
   }, [kycData, userEmail]);
 
+  // Check for pending package buy request when redirected from landing page / packages page
+  useEffect(() => {
+    try {
+      const pendingPlan = localStorage.getItem('nexa_pending_buy_plan');
+      if (pendingPlan) {
+        localStorage.removeItem('nexa_pending_buy_plan');
+        const matched = ARBITRAGE_PACKAGES.find(p => p.name.toLowerCase() === pendingPlan.toLowerCase());
+        if (matched) {
+          setSelectedPlanForBuy(matched);
+          setCustomInvestAmount(matched.min);
+          setActiveTab('buy');
+        } else {
+          setActiveTab('buy');
+        }
+      }
+    } catch (e) {}
+  }, []);
+
   const getDailyRoiAmountForPackage = (pkg: any): number => {
   if (!pkg) return 0;
   const nameLower = (pkg.name || '').toLowerCase();
