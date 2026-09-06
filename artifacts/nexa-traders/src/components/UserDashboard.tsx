@@ -2147,10 +2147,6 @@ export function UserDashboard() {
               {/* Header Section */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5 relative z-10">
                 <div className="space-y-1">
-                  <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 text-[11px] text-emerald-400 font-bold">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    DIRECT REWARDS
-                  </div>
                   <h3 className="text-xl sm:text-2xl font-black text-foreground font-sans tracking-tight flex items-center gap-2.5">
                     <Users className="text-emerald-400" size={26} />
                     Referral Program — <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-accent">10% Direct Cash</span>
@@ -2181,45 +2177,6 @@ export function UserDashboard() {
                   >
                     Team Hub <ArrowUpRight size={14} />
                   </button>
-                </div>
-              </div>
-
-              {/* Interactive Live 10% Cash Calculator Widget */}
-              <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-black/40 to-emerald-500/10 p-4 sm:p-5 relative z-10 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                    <Zap size={14} className="text-emerald-400" /> Interactive Referral Calculator
-                  </span>
-                  <span className="text-[10px] text-emerald-400 font-bold font-mono">10% Instant Credit</span>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 bg-black/60 border border-white/10 rounded-xl p-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">Select Investment:</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {[100, 500, 1000, 5000, 10000].map(amt => (
-                        <button
-                          key={amt}
-                          type="button"
-                          onClick={() => setRefCalcAmount(amt)}
-                          className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
-                            refCalcAmount === amt
-                              ? 'border-emerald-400 bg-emerald-500/20 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.3)]'
-                              : 'border-white/10 bg-white/5 text-muted-foreground hover:text-foreground'
-                          }`}
-                        >
-                          ${amt.toLocaleString()}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="text-[10px] text-muted-foreground uppercase block font-semibold">Your 10% Direct Bonus:</span>
-                    <span className="text-lg font-black text-emerald-400 font-mono">
-                      +${(refCalcAmount * 0.10).toFixed(2)} USDT
-                    </span>
-                  </div>
                 </div>
               </div>
 
