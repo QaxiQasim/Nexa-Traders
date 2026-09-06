@@ -1698,41 +1698,17 @@ function PackagesPage() {
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
               {/* Header Row */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
-                <div className="flex items-start sm:items-center gap-3.5">
-                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
-                    <Users size={22} />
-                  </div>
-                  <div>
-                    <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight font-sans">
-                      Direct Referral Program — <span className="text-emerald-400 font-black">10% Direct Cash Income</span>
-                    </h2>
-                    <p className="mt-1 text-xs text-muted-foreground font-sans leading-relaxed max-w-xl">
-                      Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
-                    </p>
-                  </div>
+              <div className="flex items-start sm:items-center gap-3.5 pb-6 border-b border-white/10">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+                  <Users size={22} />
                 </div>
-
-                <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
-                  <button
-                    onClick={() => {
-                      const url = `${window.location.origin}/register`;
-                      navigator.clipboard.writeText(url);
-                      setCopiedReferralLink(true);
-                      setTimeout(() => setCopiedReferralLink(false), 2500);
-                    }}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs px-4 py-2.5 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95 shrink-0"
-                  >
-                    {copiedReferralLink ? <Check size={15} /> : <Copy size={15} />}
-                    {copiedReferralLink ? 'Link Copied!' : 'Copy Referral Link'}
-                  </button>
-
-                  <button
-                    onClick={() => setLocation('/register')}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.05] hover:bg-white/10 text-foreground font-bold text-xs px-4 py-2.5 transition-all shrink-0"
-                  >
-                    View Referral Team Hub →
-                  </button>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight font-sans">
+                    Direct Referral Program — <span className="text-emerald-400 font-black">10% Direct Cash Income</span>
+                  </h2>
+                  <p className="mt-1 text-xs text-muted-foreground font-sans leading-relaxed max-w-2xl">
+                    Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
+                  </p>
                 </div>
               </div>
 
