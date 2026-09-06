@@ -963,7 +963,7 @@ export function UserDashboard() {
   // Package Store & Modal State
   const [selectedPlanForBuy, setSelectedPlanForBuy] = useState<any | null>(null);
   const [customInvestAmount, setCustomInvestAmount] = useState<number>(1000);
-  const [paymentMethod, setPaymentMethod] = useState<'WALLET' | 'BEP20_USDT'>('BEP20_USDT');
+  const [paymentMethod, setPaymentMethod] = useState<'WALLET' | 'USDT_BEP20'>('WALLET');
   const [buySuccessMessage, setBuySuccessMessage] = useState<string>('');
 
   // KYC Form State
@@ -1121,7 +1121,16 @@ export function UserDashboard() {
   // Handle Buy Package Confirmation
   const handleConfirmPurchase = async () => {
     if (!selectedPlanForBuy) return;
-    const amount = Number(selectedPlanForBuy.min || selectedPlanForBuy.price || 100);
+
+    // Parse package price amount cleanly to handle numbers or strings (e.g. '$100')
+    const rawPrice = selectedPlanForBuy.min ?? selectedPlanForBuy.price ?? 100;
+    let amount = 100;
+    if (typeof rawPrice === 'number' && rawPrice > 0) {
+      amount = rawPrice;
+    } else if (typeof rawPrice === 'string') {
+      const parsed = parseFloat(rawPrice.replace(/[^0-9.]/g, ''));
+      if (!isNaN(parsed) && parsed > 0) amount = parsed;
+    }
 
     if (paymentMethod === 'WALLET' && walletBalance < amount) {
       alert(`Insufficient account balance. You have $${walletBalance.toFixed(2)} USDT available, but package requires $${amount.toFixed(2)} USDT. Please deposit funds first.`);
@@ -1131,9 +1140,9 @@ export function UserDashboard() {
     const totalCap = amount * ((selectedPlanForBuy.totalCapPct || 200) / 100);
     const newPkg: PurchasedPackage = {
       id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: selectedPlanForBuy.name,
+      name: selectedPlanForBuy.name || 'Arbitrage Plan',
       amount: amount,
-      dailyRoi: selectedPlanForBuy.dailyRoiNum,
+      dailyRoi: selectedPlanForBuy.dailyRoiNum || 1.5,
       totalRoiCap: totalCap,
       earnedRoi: 0,
       remainingRoi: totalCap,
@@ -1147,7 +1156,7 @@ export function UserDashboard() {
     await insertPackageToDb(userEmail, newPkg);
 
     // Trigger 10% Direct Referral Commission to Sponsor
-    await processDirectReferralCommission(userEmail, amount, selectedPlanForBuy.name);
+    await processDirectReferralCommission(userEmail, amount, selectedPlanForBuy.name || 'Arbitrage Plan');
 
     let newBal = walletBalance;
     if (paymentMethod === 'WALLET') {
@@ -1164,7 +1173,7 @@ export function UserDashboard() {
       id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
       date: new Date().toISOString().replace('T', ' ').substring(0, 16),
       type: 'PACKAGE_PURCHASE',
-      title: `Subscribed ${selectedPlanForBuy.name} Plan`,
+      title: `Subscribed ${selectedPlanForBuy.name || 'Package'} Plan`,
       amount: -amount,
       status: 'COMPLETED',
       txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
@@ -1172,7 +1181,7 @@ export function UserDashboard() {
 
     setTransactions(prev => [newTx, ...prev]);
     await insertTransactionToDb(userEmail, newTx);
-    setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name} Plan for $${amount.toLocaleString()}! Remaining Balance: $${newBal.toFixed(2)} USDT.`);
+    setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name || 'Package'} Plan for $${amount.toLocaleString()}! Remaining Balance: $${newBal.toFixed(2)} USDT.`);
 
     setTimeout(() => {
       setSelectedPlanForBuy(null);
@@ -2066,6 +2075,7 @@ export function UserDashboard() {
                     onClick={() => {
                       setSelectedPlanForBuy(plan);
                       setCustomInvestAmount(plan.min);
+                      setPaymentMethod('WALLET');
                     }}
                     className={`mt-4 w-full rounded-xl py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                       plan.supreme || plan.popular
