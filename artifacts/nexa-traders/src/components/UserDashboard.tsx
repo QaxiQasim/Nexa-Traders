@@ -2227,38 +2227,6 @@ export function UserDashboard() {
                   </div>
                 </div>
               </div>
-
-              {/* Live Referral Earnings Calculation Preview Banner */}
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 relative z-10 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
-                  <span className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                    <Zap size={16} className="text-emerald-400" /> Direct 10% Referral Earnings Breakdown
-                  </span>
-                  <span className="text-[11px] text-emerald-400 font-bold">10% Instant Cash Bonus on All Plans</span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                  <div className="rounded-xl border border-white/5 bg-black/40 p-4">
-                    <span className="text-[10px] text-muted-foreground block uppercase font-semibold">Rise Package ($100)</span>
-                    <span className="text-lg font-black text-emerald-400 mt-1 block font-mono">+$10.00 USDT</span>
-                  </div>
-
-                  <div className="rounded-xl border border-white/5 bg-black/40 p-4">
-                    <span className="text-[10px] text-muted-foreground block uppercase font-semibold">Apex Package ($1,000)</span>
-                    <span className="text-lg font-black text-emerald-400 mt-1 block font-mono">+$100.00 USDT</span>
-                  </div>
-
-                  <div className="rounded-xl border border-white/5 bg-black/40 p-4">
-                    <span className="text-[10px] text-muted-foreground block uppercase font-semibold">Quantum Package ($5,000)</span>
-                    <span className="text-lg font-black text-emerald-400 mt-1 block font-mono">+$500.00 USDT</span>
-                  </div>
-
-                  <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/15 p-4 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                    <span className="text-[10px] text-emerald-400 font-bold block uppercase">Vortex Package ($10,000)</span>
-                    <span className="text-xl font-black text-emerald-300 mt-1 block font-mono">+$1,000.00 USDT</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         )}
