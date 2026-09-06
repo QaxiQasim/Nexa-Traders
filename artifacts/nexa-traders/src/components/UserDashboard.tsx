@@ -2143,13 +2143,9 @@ export function UserDashboard() {
               <div className="absolute top-0 right-0 h-64 w-64 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-full" />
               <div className="absolute bottom-0 left-0 h-64 w-64 bg-primary/10 blur-[100px] pointer-events-none rounded-full" />
 
-              {/* Header Title with Badges */}
+              {/* Header Title */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-6 relative z-10">
                 <div className="space-y-2">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3.5 py-1 text-xs text-emerald-400 font-bold">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                    AFFILIATE & REFERRAL PROGRAM
-                  </div>
                   <h3 className="text-2xl sm:text-3xl font-black text-foreground font-sans tracking-tight flex items-center gap-3">
                     <Users className="text-emerald-400" size={32} />
                     Direct Referral Program — <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-accent">10% Direct Cash Income</span>
@@ -2183,8 +2179,8 @@ export function UserDashboard() {
                 </div>
               </div>
 
-              {/* 3 Core Highlight Feature Cards */}
-              <div className="grid gap-6 md:grid-cols-3 relative z-10">
+              {/* Core Highlight Feature Cards (2 Cards) */}
+              <div className="grid gap-6 md:grid-cols-2 relative z-10">
                 {/* Card 1: 10% Instant Cash */}
                 <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-b from-[#111c17] to-[#0c1410] p-6 space-y-3 hover:border-emerald-500/50 transition-all shadow-lg group">
                   <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 group-hover:scale-110 transition-transform">
@@ -2210,20 +2206,6 @@ export function UserDashboard() {
                   </p>
                   <div className="pt-2 text-[11px] text-primary font-bold flex items-center gap-1.5">
                     <Lock size={14} /> Active Package & Available Cap Required
-                  </div>
-                </div>
-
-                {/* Card 3: Automatic Attribution */}
-                <div className="rounded-2xl border border-accent/25 bg-gradient-to-b from-[#161a15] to-[#0e110e] p-6 space-y-3 hover:border-accent/50 transition-all shadow-lg group">
-                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-accent/20 text-accent border border-accent/40 group-hover:scale-110 transition-transform">
-                    <Gift size={24} />
-                  </div>
-                  <h4 className="text-base font-bold text-foreground font-sans">Permanent Partner Binding</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Your unique referral link automatically connects new users to your account permanently. Every future top-up earns you 10%!
-                  </p>
-                  <div className="pt-2 text-[11px] text-accent font-bold flex items-center gap-1.5">
-                    <ShieldCheck size={14} /> Permanent Attribution
                   </div>
                 </div>
               </div>
