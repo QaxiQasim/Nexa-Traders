@@ -270,6 +270,7 @@ export function UserDashboard() {
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || '');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || '');
   const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
+  const [refCalcAmount, setRefCalcAmount] = useState<number>(1000);
 
   // 2. Financial & Data States
   const [walletBalance, setWalletBalance] = useState<number>(() => {
@@ -2137,26 +2138,30 @@ export function UserDashboard() {
               ))}
             </div>
 
-            {/* 🚀 REFERRAL / AFFILIATE PROGRAM 10% DIRECT INCOME SECTION */}
-            <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-[#0c1612] via-[#09100d] to-[#060a08] p-6 sm:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(16,185,129,0.15)] relative overflow-hidden space-y-8 font-mono">
-              {/* Ambient Decorative Background Effects */}
-              <div className="absolute top-0 right-0 h-64 w-64 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-full" />
-              <div className="absolute bottom-0 left-0 h-64 w-64 bg-primary/10 blur-[100px] pointer-events-none rounded-full" />
+            {/* 🚀 REFERRAL / AFFILIATE PROGRAM 10% DIRECT INCOME SECTION (Compact Width & Interactive) */}
+            <div className="max-w-4xl mx-auto rounded-3xl border border-emerald-500/40 bg-gradient-to-b from-[#0c1612] via-[#09100d] to-[#050907] p-6 sm:p-8 backdrop-blur-3xl shadow-[0_0_50px_rgba(16,185,129,0.18)] relative overflow-hidden space-y-6 font-mono">
+              {/* Ambient Glowing Orbs */}
+              <div className="absolute -top-20 -right-20 h-56 w-56 bg-emerald-500/20 blur-[90px] pointer-events-none rounded-full" />
+              <div className="absolute -bottom-20 -left-20 h-56 w-56 bg-primary/15 blur-[90px] pointer-events-none rounded-full" />
 
-              {/* Header Title */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-6 relative z-10">
-                <div className="space-y-2">
-                  <h3 className="text-2xl sm:text-3xl font-black text-foreground font-sans tracking-tight flex items-center gap-3">
-                    <Users className="text-emerald-400" size={32} />
-                    Direct Referral Program — <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-accent">10% Direct Cash Income</span>
+              {/* Header Section */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5 relative z-10">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 text-[11px] text-emerald-400 font-bold">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    DIRECT REWARDS
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground font-sans tracking-tight flex items-center gap-2.5">
+                    <Users className="text-emerald-400" size={26} />
+                    Referral Program — <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-accent">10% Direct Cash</span>
                   </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground font-mono max-w-2xl">
-                    Invite partners to Nexa Traders and earn an instant <strong>10% direct cash bonus</strong> on every package investment made by your direct referrals!
+                  <p className="text-xs text-muted-foreground font-mono">
+                    Earn instant <strong>10% cash bonus</strong> into your wallet on every package purchase by direct referrals.
                   </p>
                 </div>
 
-                {/* Quick Action Buttons */}
-                <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+                {/* Quick CTAs */}
+                <div className="flex items-center gap-2.5 flex-shrink-0">
                   <button
                     onClick={() => {
                       const link = `${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`;
@@ -2164,48 +2169,97 @@ export function UserDashboard() {
                       setCopiedLink(true);
                       setTimeout(() => setCopiedLink(false), 2500);
                     }}
-                    className="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 px-5 py-3 text-xs font-black font-mono text-black hover:scale-105 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2"
+                    className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 px-4 py-2.5 text-xs font-black font-mono text-black hover:scale-105 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-1.5"
                   >
-                    {copiedLink ? <Check size={16} /> : <Copy size={16} />}
+                    {copiedLink ? <Check size={14} /> : <Copy size={14} />}
                     {copiedLink ? 'Copied Link!' : 'Copy Referral Link'}
                   </button>
 
                   <button
                     onClick={() => setActiveTab('team')}
-                    className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-bold text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5"
+                    className="rounded-xl border border-white/15 bg-white/5 px-3.5 py-2.5 text-xs font-bold text-foreground hover:bg-white/10 transition-all flex items-center gap-1"
                   >
-                    View Referral Team Hub <ArrowUpRight size={14} />
+                    Team Hub <ArrowUpRight size={14} />
                   </button>
                 </div>
               </div>
 
-              {/* Core Highlight Feature Cards (2 Cards) */}
-              <div className="grid gap-6 md:grid-cols-2 relative z-10">
-                {/* Card 1: 10% Instant Cash */}
-                <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-b from-[#111c17] to-[#0c1410] p-6 space-y-3 hover:border-emerald-500/50 transition-all shadow-lg group">
-                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 group-hover:scale-110 transition-transform">
-                    <DollarSign size={24} />
+              {/* Interactive Live 10% Cash Calculator Widget */}
+              <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-black/40 to-emerald-500/10 p-4 sm:p-5 relative z-10 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Zap size={14} className="text-emerald-400" /> Interactive Referral Calculator
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-bold font-mono">10% Instant Credit</span>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 bg-black/60 border border-white/10 rounded-xl p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Select Investment:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[100, 500, 1000, 5000, 10000].map(amt => (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => setRefCalcAmount(amt)}
+                          className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
+                            refCalcAmount === amt
+                              ? 'border-emerald-400 bg-emerald-500/20 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+                              : 'border-white/10 bg-white/5 text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          ${amt.toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <h4 className="text-base font-bold text-foreground font-sans">Instant 10% Direct Cash</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
+
+                  <div className="text-right">
+                    <span className="text-[10px] text-muted-foreground uppercase block font-semibold">Your 10% Direct Bonus:</span>
+                    <span className="text-lg font-black text-emerald-400 font-mono">
+                      +${(refCalcAmount * 0.10).toFixed(2)} USDT
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2 Core Feature Cards */}
+              <div className="grid gap-4 sm:grid-cols-2 relative z-10">
+                {/* Card 1: Instant 10% Direct Cash */}
+                <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-[#101b16] to-[#0b120f] p-5 space-y-2.5 hover:border-emerald-500/60 hover:-translate-y-0.5 transition-all shadow-md group">
+                  <div className="flex items-center justify-between">
+                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 group-hover:scale-105 transition-transform">
+                      <DollarSign size={20} />
+                    </div>
+                    <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 text-[9px] font-bold text-emerald-400">
+                      AUTOMATED
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-bold text-foreground font-sans">Instant 10% Direct Cash Payout</h4>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed font-mono">
+                    Every time your direct referral purchases or upgrades any package, 10% cash bonus is instantly credited to your wallet.
                   </p>
-                  <div className="pt-2 text-[11px] text-emerald-400 font-bold flex items-center gap-1.5">
-                    <CheckCircle2 size={14} /> Instant Automated Wallet Payout
+                  <div className="pt-1 text-[10px] text-emerald-400 font-bold flex items-center gap-1 font-mono">
+                    <CheckCircle2 size={13} /> Instant Wallet Settlement
                   </div>
                 </div>
 
                 {/* Card 2: Active Package & ROI Cap Rule */}
-                <div className="rounded-2xl border border-primary/35 bg-gradient-to-b from-[#1c1912] to-[#12100a] p-6 space-y-3 hover:border-primary/60 transition-all shadow-lg group">
-                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/20 text-primary border border-primary/40 group-hover:scale-110 transition-transform">
-                    <ShieldCheck size={24} />
+                <div className="rounded-2xl border border-primary/35 bg-gradient-to-b from-[#1a1710] to-[#110e0a] p-5 space-y-2.5 hover:border-primary/60 hover:-translate-y-0.5 transition-all shadow-md group">
+                  <div className="flex items-center justify-between">
+                    <div className="grid h-10 w-10 place-items-center rounded-2xl bg-primary/20 text-primary border border-primary/40 group-hover:scale-105 transition-transform">
+                      <ShieldCheck size={20} />
+                    </div>
+                    <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-0.5 text-[9px] font-bold text-primary">
+                      REQUIREMENT
+                    </span>
                   </div>
-                  <h4 className="text-base font-bold text-foreground font-sans">Active Package & Cap Requirement</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    To qualify for 10% direct referral income, your account MUST have an active package. Additionally, your account's available Total ROI Cap must equal or exceed the referral bonus amount.
+                  <h4 className="text-sm font-bold text-foreground font-sans">Active Package & Cap Rule</h4>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed font-mono">
+                    To qualify for 10% referral income, your account MUST have an active package and sufficient available Total ROI Cap to cover the bonus.
                   </p>
-                  <div className="pt-2 text-[11px] text-primary font-bold flex items-center gap-1.5">
-                    <Lock size={14} /> Active Package & Available Cap Required
+                  <div className="pt-1 text-[10px] text-primary font-bold flex items-center gap-1 font-mono">
+                    <Lock size={13} /> Active Plan & ROI Cap Mandatory
                   </div>
                 </div>
               </div>
