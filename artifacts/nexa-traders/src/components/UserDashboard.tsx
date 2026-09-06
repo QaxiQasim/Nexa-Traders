@@ -77,6 +77,7 @@ export interface PurchasedPackage {
   expiryDate: string;
   status: 'ACTIVE' | 'COMPLETED';
   lastRoiPayout?: string;
+  promoCodeUsed?: string;
 }
 
 export interface Transaction {
@@ -973,6 +974,32 @@ export function UserDashboard() {
   const [paymentMethod, setPaymentMethod] = useState<'WALLET' | 'USDT_BEP20'>('WALLET');
   const [buySuccessMessage, setBuySuccessMessage] = useState<string>('');
 
+  // Promo Code State
+  const [promoCodeInput, setPromoCodeInput] = useState<string>('');
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
+  const [promoError, setPromoError] = useState<string>('');
+  const [promoSuccessMsg, setPromoSuccessMsg] = useState<string>('');
+
+  const handleApplyPromoCode = () => {
+    setPromoError('');
+    setPromoSuccessMsg('');
+    const cleanCode = promoCodeInput.trim().toUpperCase();
+    if (!cleanCode) {
+      setPromoError('Please enter a promo code.');
+      return;
+    }
+    if (cleanCode === 'CRYPTOEXPODUBAI') {
+      setAppliedPromo('CRYPTOEXPODUBAI');
+      setPromoSuccessMsg('🎉 Code CRYPTOEXPODUBAI Applied! +5% Extra Total ROI unlocked!');
+      try {
+        localStorage.setItem('nexa_promo_code', 'CRYPTOEXPODUBAI');
+      } catch (e) {}
+    } else {
+      setAppliedPromo(null);
+      setPromoError('Invalid promo code. Use CRYPTOEXPODUBAI for +5% extra ROI bonus.');
+    }
+  };
+
   // KYC Form State
   const [kycForm, setKycForm] = useState({
     fullName: '',
@@ -1128,7 +1155,10 @@ export function UserDashboard() {
     setBep20VerifySuccess(res.message);
 
     const amount = verifiedAmount;
-    const totalCap = amount * ((selectedPlanForBuy?.totalCapPct || 200) / 100);
+    const isPromoActive = appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI';
+    const baseCapPct = selectedPlanForBuy?.totalCapPct || 190;
+    const effectiveCapPct = isPromoActive ? baseCapPct + 5 : baseCapPct;
+    const totalCap = amount * (effectiveCapPct / 100);
 
     const newPkg: PurchasedPackage = {
       id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -1141,7 +1171,8 @@ export function UserDashboard() {
       purchaseDate: new Date().toISOString().split('T')[0],
       expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: 'ACTIVE',
-      lastRoiPayout: new Date().toISOString()
+      lastRoiPayout: new Date().toISOString(),
+      promoCodeUsed: isPromoActive ? 'CRYPTOEXPODUBAI' : undefined
     };
 
     setPurchasedPackages(prev => [newPkg, ...prev]);
@@ -1154,7 +1185,7 @@ export function UserDashboard() {
       id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
       date: new Date().toISOString().replace('T', ' ').substring(0, 16),
       type: 'DEPOSIT',
-      title: `BEP20 Auto-Deposit (${selectedPlanForBuy?.name || 'Package'})`,
+      title: `BEP20 Auto-Deposit (${selectedPlanForBuy?.name || 'Package'})${isPromoActive ? ' [Promo Applied]' : ''}`,
       amount: amount,
       status: 'COMPLETED',
       txHash: cleanHash
@@ -1162,7 +1193,7 @@ export function UserDashboard() {
     setTransactions(prev => [newTx, ...prev]);
     insertTransactionToDb(userEmail, newTx);
 
-    setBuySuccessMessage(`Verified Live on BNB Smart Chain! Activated ${selectedPlanForBuy?.name} plan with $${amount.toFixed(2)} USDT.`);
+    setBuySuccessMessage(`Verified Live on BNB Smart Chain! Activated ${selectedPlanForBuy?.name} plan with $${amount.toFixed(2)} USDT${isPromoActive ? ' (+5% Promo Bonus 🎉)' : ''}.`);
     setTimeout(() => {
       setSelectedPlanForBuy(null);
       setBuySuccessMessage('');
@@ -1190,7 +1221,11 @@ export function UserDashboard() {
       return;
     }
 
-    const totalCap = amount * ((selectedPlanForBuy.totalCapPct || 200) / 100);
+    const isPromoActive = appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI';
+    const baseCapPct = selectedPlanForBuy.totalCapPct || 190;
+    const effectiveCapPct = isPromoActive ? baseCapPct + 5 : baseCapPct;
+    const totalCap = amount * (effectiveCapPct / 100);
+
     const newPkg: PurchasedPackage = {
       id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
       name: selectedPlanForBuy.name || 'Arbitrage Plan',
@@ -1202,7 +1237,8 @@ export function UserDashboard() {
       purchaseDate: new Date().toISOString().split('T')[0],
       expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: 'ACTIVE',
-      lastRoiPayout: new Date().toISOString()
+      lastRoiPayout: new Date().toISOString(),
+      promoCodeUsed: isPromoActive ? 'CRYPTOEXPODUBAI' : undefined
     };
 
     setPurchasedPackages(prev => [newPkg, ...prev]);
@@ -1234,7 +1270,8 @@ export function UserDashboard() {
 
     setTransactions(prev => [newTx, ...prev]);
     await insertTransactionToDb(userEmail, newTx);
-    setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name || 'Package'} Plan for $${amount.toLocaleString()}! Remaining Balance: $${newBal.toFixed(2)} USDT.`);
+    const promoText = isPromoActive ? ' (+5% Promo Bonus Applied! 🎉)' : '';
+    setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name || 'Package'} Plan for $${amount.toLocaleString()}${promoText}! Remaining Balance: $${newBal.toFixed(2)} USDT.`);
 
     setTimeout(() => {
       setSelectedPlanForBuy(null);
@@ -1991,6 +2028,11 @@ export function UserDashboard() {
                         <div>
                           <span className="text-[10px] font-mono uppercase tracking-widest text-primary font-bold">{pkg.id}</span>
                           <h3 className="text-2xl font-black text-foreground font-mono">{pkg.name} Plan</h3>
+                          {pkg.promoCodeUsed && (
+                            <span className="inline-flex items-center gap-1.5 mt-1.5 rounded-full border border-accent/50 bg-accent/15 px-2.5 py-0.5 font-mono text-[9px] font-black uppercase text-accent tracking-wider shadow-sm">
+                              🎁 {pkg.promoCodeUsed} (+5% EXTRA ROI)
+                            </span>
+                          )}
                         </div>
                         <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-[10px] font-bold text-accent uppercase">
                           ● {pkg.status}
@@ -2066,6 +2108,41 @@ export function UserDashboard() {
               <p className="mt-2 text-sm text-muted-foreground font-mono">
                 Activate high-yield quantitative AI trading strategies with automated daily ROI payouts directly to your wallet.
               </p>
+            </div>
+
+            {/* EXCLUSIVE PROMO CODE BANNER */}
+            <div className="max-w-4xl mx-auto rounded-3xl border border-primary/40 bg-gradient-to-r from-[#17201b] via-[#221c0e] to-[#17201b] p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+              <div className="flex items-center gap-3 text-left">
+                <div className="rounded-2xl bg-primary/20 p-3 text-primary border border-primary/30 flex-shrink-0">
+                  <Gift size={24} className="animate-bounce" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase text-accent bg-accent/20 px-2 py-0.5 rounded-full border border-accent/40">
+                      SPECIAL EVENT PROMO
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-bold">LIMITED TIME</span>
+                  </div>
+                  <h3 className="text-base font-black text-foreground mt-1">
+                    Use Code <span className="text-primary tracking-wider underline">CRYPTOEXPODUBAI</span> for +5% Extra Total ROI!
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Get 5% higher profit cap on all packages (e.g. 85% ➔ 90%, 95% ➔ 100%, 120% ➔ 125%). Enter code in checkout box.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setPromoCodeInput('CRYPTOEXPODUBAI');
+                  setAppliedPromo('CRYPTOEXPODUBAI');
+                  setPromoSuccessMsg('🎉 Code CRYPTOEXPODUBAI Applied! +5% Extra Total ROI unlocked!');
+                  try { localStorage.setItem('nexa_promo_code', 'CRYPTOEXPODUBAI'); } catch(e){}
+                }}
+                className="rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-5 py-3 font-mono text-xs font-black uppercase text-primary-foreground shadow-lg hover:scale-105 transition-all flex-shrink-0"
+              >
+                Apply Code Now 🎁
+              </button>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 items-stretch">
@@ -3133,8 +3210,71 @@ export function UserDashboard() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Total Return Cap</span>
-                    <strong className="text-primary font-bold">{selectedPlanForBuy.totalReturn || selectedPlanForBuy.returnCap || `$${(selectedPlanForBuy.min * (selectedPlanForBuy.totalCapPct / 100)).toFixed(2)}`} ({selectedPlanForBuy.totalCapPct || 190}%)</strong>
+                    <div className="text-right">
+                      <strong className="text-primary font-bold text-sm">
+                        ${(
+                          (typeof selectedPlanForBuy.min === 'number' ? selectedPlanForBuy.min : parseFloat(String(selectedPlanForBuy.price || 100).replace(/[^0-9.]/g, '')) || 100) *
+                          (((selectedPlanForBuy.totalCapPct || 190) + ((appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI') ? 5 : 0)) / 100)
+                        ).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{' '}
+                        ({(selectedPlanForBuy.totalCapPct || 190) + ((appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI') ? 5 : 0)}%)
+                      </strong>
+                      {(appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI') && (
+                        <span className="block text-[10px] text-accent font-black uppercase mt-0.5">
+                          ⚡ +5% Promo Code Bonus Included
+                        </span>
+                      )}
+                    </div>
                   </div>
+                </div>
+
+                {/* PROMO CODE INPUT BOX */}
+                <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10 p-4 space-y-2.5 shadow-md">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                      <Gift size={15} className="text-primary animate-pulse" /> Add Promo Code
+                    </label>
+                    {(appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI') && (
+                      <span className="text-[9px] font-black text-accent bg-accent/20 border border-accent/40 rounded-full px-2.5 py-0.5 uppercase tracking-wider font-mono">
+                        +5% EXTRA ROI ACTIVE
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCodeInput}
+                      onChange={e => {
+                        setPromoCodeInput(e.target.value);
+                        if (promoError) setPromoError('');
+                        if (e.target.value.trim().toUpperCase() === 'CRYPTOEXPODUBAI') {
+                          setAppliedPromo('CRYPTOEXPODUBAI');
+                          setPromoSuccessMsg('🎉 Code CRYPTOEXPODUBAI Applied! +5% Extra Total ROI Unlocked!');
+                        } else if (appliedPromo) {
+                          setAppliedPromo(null);
+                          setPromoSuccessMsg('');
+                        }
+                      }}
+                      placeholder="ENTER PROMO CODE (e.g. CRYPTOEXPODUBAI)"
+                      className="flex-1 rounded-xl border border-white/20 bg-black/60 px-3.5 py-2.5 text-xs text-foreground font-mono uppercase tracking-wider outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyPromoCode}
+                      className="rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-4 py-2.5 text-xs font-black text-primary-foreground uppercase font-mono shadow-md hover:scale-[1.03] transition-all"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {promoError && (
+                    <p className="text-[11px] text-rose-400 font-mono flex items-center gap-1 mt-1">
+                      <AlertCircle size={13} className="flex-shrink-0" /> {promoError}
+                    </p>
+                  )}
+                  {(promoSuccessMsg || appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI') && (
+                    <p className="text-[11px] text-accent font-mono flex items-center gap-1.5 mt-1 font-bold">
+                      <CheckCircle2 size={13} className="flex-shrink-0 text-accent" /> Code CRYPTOEXPODUBAI Applied! You get +5% Extra Total ROI Bonus!
+                    </p>
+                  )}
                 </div>
 
                 <div>
