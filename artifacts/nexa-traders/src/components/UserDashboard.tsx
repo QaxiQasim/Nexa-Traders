@@ -35,9 +35,9 @@ import {
   Users,
   Share2,
   UserPlus,
-  Search,
   Network,
-  Calendar
+  Calendar,
+  Gift
 } from 'lucide-react';
 import {
   AreaChart,
@@ -2135,6 +2135,130 @@ export function UserDashboard() {
                   </button>
                 </div>
               ))}
+            </div>
+
+            {/* 🚀 REFERRAL / AFFILIATE PROGRAM 10% DIRECT INCOME SECTION */}
+            <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-[#0c1612] via-[#09100d] to-[#060a08] p-6 sm:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(16,185,129,0.15)] relative overflow-hidden space-y-8 font-mono">
+              {/* Ambient Decorative Background Effects */}
+              <div className="absolute top-0 right-0 h-64 w-64 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-full" />
+              <div className="absolute bottom-0 left-0 h-64 w-64 bg-primary/10 blur-[100px] pointer-events-none rounded-full" />
+
+              {/* Header Title with Badges */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-6 relative z-10">
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3.5 py-1 text-xs text-emerald-400 font-bold">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                    AFFILIATE & REFERRAL PROGRAM
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-foreground font-sans tracking-tight flex items-center gap-3">
+                    <Users className="text-emerald-400" size={32} />
+                    Direct Referral Program — <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-accent">10% Direct Cash Income</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-mono max-w-2xl">
+                    Invite partners to Nexa Traders and earn an instant <strong>10% direct cash bonus</strong> on every package investment made by your direct referrals!
+                  </p>
+                </div>
+
+                {/* Quick Action Buttons */}
+                <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+                  <button
+                    onClick={() => {
+                      const link = `${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`;
+                      navigator.clipboard.writeText(link);
+                      setCopiedLink(true);
+                      setTimeout(() => setCopiedLink(false), 2500);
+                    }}
+                    className="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 px-5 py-3 text-xs font-black font-mono text-black hover:scale-105 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2"
+                  >
+                    {copiedLink ? <Check size={16} /> : <Copy size={16} />}
+                    {copiedLink ? 'Copied Link!' : 'Copy Referral Link'}
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('team')}
+                    className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-bold text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5"
+                  >
+                    View Referral Team Hub <ArrowUpRight size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* 3 Core Highlight Feature Cards */}
+              <div className="grid gap-6 md:grid-cols-3 relative z-10">
+                {/* Card 1: 10% Instant Cash */}
+                <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-b from-[#111c17] to-[#0c1410] p-6 space-y-3 hover:border-emerald-500/50 transition-all shadow-lg group">
+                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 group-hover:scale-110 transition-transform">
+                    <DollarSign size={24} />
+                  </div>
+                  <h4 className="text-base font-bold text-foreground font-sans">Instant 10% Direct Cash</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
+                  </p>
+                  <div className="pt-2 text-[11px] text-emerald-400 font-bold flex items-center gap-1.5">
+                    <CheckCircle2 size={14} /> Instant Automated Wallet Payout
+                  </div>
+                </div>
+
+                {/* Card 2: Unlimited Referrals */}
+                <div className="rounded-2xl border border-primary/25 bg-gradient-to-b from-[#1c1912] to-[#12100a] p-6 space-y-3 hover:border-primary/50 transition-all shadow-lg group">
+                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/20 text-primary border border-primary/40 group-hover:scale-110 transition-transform">
+                    <TrendingUp size={24} />
+                  </div>
+                  <h4 className="text-base font-bold text-foreground font-sans">Unlimited Earning Potential</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    There is no cap on how many partners you can sponsor. Build an active investor network and generate continuous passive income.
+                  </p>
+                  <div className="pt-2 text-[11px] text-primary font-bold flex items-center gap-1.5">
+                    <Sparkles size={14} /> 100% Uncapped Referral Income
+                  </div>
+                </div>
+
+                {/* Card 3: Automatic Attribution */}
+                <div className="rounded-2xl border border-accent/25 bg-gradient-to-b from-[#161a15] to-[#0e110e] p-6 space-y-3 hover:border-accent/50 transition-all shadow-lg group">
+                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-accent/20 text-accent border border-accent/40 group-hover:scale-110 transition-transform">
+                    <Gift size={24} />
+                  </div>
+                  <h4 className="text-base font-bold text-foreground font-sans">Permanent Partner Binding</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Your unique referral link automatically connects new users to your account permanently. Every future top-up earns you 10%!
+                  </p>
+                  <div className="pt-2 text-[11px] text-accent font-bold flex items-center gap-1.5">
+                    <ShieldCheck size={14} /> Permanent Attribution
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Referral Earnings Calculation Preview Banner */}
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 relative z-10 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                  <span className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                    <Zap size={16} className="text-emerald-400" /> Direct 10% Referral Earnings Breakdown
+                  </span>
+                  <span className="text-[11px] text-emerald-400 font-bold">10% Instant Cash Bonus on All Plans</span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div className="rounded-xl border border-white/5 bg-black/40 p-4">
+                    <span className="text-[10px] text-muted-foreground block uppercase font-semibold">Rise Package ($100)</span>
+                    <span className="text-lg font-black text-emerald-400 mt-1 block font-mono">+$10.00 USDT</span>
+                  </div>
+
+                  <div className="rounded-xl border border-white/5 bg-black/40 p-4">
+                    <span className="text-[10px] text-muted-foreground block uppercase font-semibold">Apex Package ($1,000)</span>
+                    <span className="text-lg font-black text-emerald-400 mt-1 block font-mono">+$100.00 USDT</span>
+                  </div>
+
+                  <div className="rounded-xl border border-white/5 bg-black/40 p-4">
+                    <span className="text-[10px] text-muted-foreground block uppercase font-semibold">Quantum Package ($5,000)</span>
+                    <span className="text-lg font-black text-emerald-400 mt-1 block font-mono">+$500.00 USDT</span>
+                  </div>
+
+                  <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/15 p-4 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                    <span className="text-[10px] text-emerald-400 font-bold block uppercase">Vortex Package ($10,000)</span>
+                    <span className="text-xl font-black text-emerald-300 mt-1 block font-mono">+$1,000.00 USDT</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
