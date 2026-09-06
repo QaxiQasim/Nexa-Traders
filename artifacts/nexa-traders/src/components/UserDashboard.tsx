@@ -38,8 +38,7 @@ import {
   Network,
   Calendar,
   Gift,
-  Coins,
-  Link2
+  Coins
 } from 'lucide-react';
 import {
   AreaChart,
@@ -272,7 +271,9 @@ export function UserDashboard() {
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('nexa_user_name') || '');
   const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('nexa_user_email') || '');
   const isDemo = userEmail.toLowerCase() === 'alex.vance@nexatraders.com';
-  const [refCalcAmount, setRefCalcAmount] = useState<number>(1000);
+  const [storeDepositToken, setStoreDepositToken] = useState<'BEP20' | 'TRC20' | 'ERC20'>('BEP20');
+  const [storeWithdrawNetwork, setStoreWithdrawNetwork] = useState<'BSC' | 'ETH' | 'TRC'>('BSC');
+  const [storeCopiedAddr, setStoreCopiedAddr] = useState<boolean>(false);
 
   // 2. Financial & Data States
   const [walletBalance, setWalletBalance] = useState<number>(() => {
@@ -2138,188 +2139,182 @@ export function UserDashboard() {
                   </button>
                 </div>
               ))}
-                     {/* 🏦 FINANCIAL GATEWAY SECTION (Deposit & Withdrawal) */}
-            <div className="mt-14 space-y-8 font-mono max-w-6xl mx-auto">
-              {/* Header Title */}
-              <div className="text-center max-w-2xl mx-auto space-y-2">
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3.5 py-1 text-[11px] font-bold text-amber-400">
-                  <Link2 size={12} className="text-amber-400" /> FINANCIAL GATEWAY
+            </div>
+
+            {/* 🚀 DEPOSIT & WITHDRAWAL FINANCIAL GATEWAY SECTION */}
+            <div className="mt-12 space-y-8 font-sans">
+              <div className="text-center max-w-3xl mx-auto">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+                  <Coins size={14} className="text-primary animate-pulse" />
+                  FINANCIAL GATEWAY
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-black text-foreground font-sans tracking-tight">
+                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground font-mono">
                   Deposit & Withdrawal
                 </h2>
-                <p className="text-xs sm:text-sm text-muted-foreground font-mono leading-relaxed">
+                <p className="mt-3 text-xs sm:text-sm text-muted-foreground font-mono leading-relaxed max-w-xl mx-auto">
                   Automated multi-chain liquidity gateways with instant execution and 24/7 wallet credit.
                 </p>
               </div>
 
-              {/* 2-Card Grid (Deposit Gateway & Withdrawal Details) */}
-              <div className="grid gap-8 lg:grid-cols-2 items-stretch">
-                
-                {/* LEFT CARD: Deposit Gateway Box */}
-                <div className="rounded-3xl border-2 border-amber-500/60 bg-gradient-to-b from-[#131b17] via-[#0e1411] to-[#080d0b] p-6 sm:p-8 shadow-[0_0_40px_rgba(245,158,11,0.22)] relative overflow-hidden flex flex-col justify-between space-y-6">
-                  <div className="space-y-6">
-                    {/* Top Badges */}
+              <div className="grid gap-8 lg:grid-cols-2 items-stretch max-w-5xl mx-auto">
+                {/* Left Card: Supported Coins & Deposit Interactive Widget */}
+                <div className="group relative h-full rounded-3xl border border-primary/50 bg-gradient-to-b from-[#151d1a]/95 via-[#0e1311]/90 to-[#080b0a]/95 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_50px_rgba(232,185,73,0.2)] flex flex-col justify-between overflow-hidden">
+                  {/* Specular Top Edge */}
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
+
+                  <div>
                     <div className="flex items-center justify-between">
-                      <span className="rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-0.5 text-[10px] font-black uppercase text-amber-400 tracking-wider">
-                        SUPPORTED ASSET
+                      <span className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3.5 py-1.5 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.4)]">
+                        Supported Asset
                       </span>
-                      <span className="text-[10px] font-bold text-emerald-400 tracking-wider font-mono">
-                        INSTANT AUTO-CREDIT
+                      <span className="flex items-center gap-1 font-mono text-[10px] text-accent font-bold uppercase tracking-wider">
+                        <span className="h-2 w-2 rounded-full bg-accent animate-ping" /> Instant Auto-Credit
                       </span>
                     </div>
 
-                    {/* Selected Asset Info Box */}
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="grid h-12 w-12 place-items-center rounded-2xl border border-amber-500/40 bg-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
-                          <Coins size={24} />
+                    {/* Coin Header */}
+                    <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-5 shadow-inner">
+                      <div className="flex items-center gap-4">
+                        <div className="grid h-12 w-12 place-items-center rounded-2xl border-2 border-primary bg-gradient-to-br from-primary/30 via-[#26a17b]/30 to-primary/10 text-primary shadow-[0_0_25px_rgba(232,185,73,0.4)] group-hover:scale-105 transition-transform">
+                          <Coins size={26} />
                         </div>
                         <div>
-                          <h4 className="text-base font-black text-foreground font-sans">USDT Tether</h4>
-                          <span className="text-[10px] text-muted-foreground block font-mono">Multichain Stablecoin</span>
+                          <h3 className="text-xl font-extrabold text-foreground tracking-tight font-sans">USDT Tether</h3>
+                          <p className="text-xs text-muted-foreground font-mono">Multichain Stablecoin</p>
                         </div>
                       </div>
 
-                      <div className="text-right">
-                        <span className="text-[9px] text-muted-foreground uppercase block font-mono">SELECTED PROTOCOL</span>
-                        <span className="text-xs font-black text-amber-400 font-mono">BEP20</span>
+                      <div className="text-right font-mono">
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Selected Protocol</span>
+                        <div className="text-sm font-black text-primary">{storeDepositToken}</div>
                       </div>
                     </div>
 
-                    {/* Network Selector Tabs */}
-                    <div className="grid grid-cols-3 gap-2 text-center text-xs font-bold">
-                      <button
-                        type="button"
-                        className="rounded-xl border-2 border-amber-500 bg-amber-500/20 py-2.5 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)] font-mono transition-all"
-                      >
-                        USDT (BEP20)
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-xl border border-white/10 bg-white/5 py-2.5 text-muted-foreground opacity-60 font-mono"
-                      >
-                        USDT (TRC20)
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-xl border border-white/10 bg-white/5 py-2.5 text-muted-foreground opacity-60 font-mono"
-                      >
-                        USDT (ERC20)
-                      </button>
+                    {/* Interactive Token Protocol Tabs */}
+                    <div className="mt-5 grid grid-cols-3 gap-2 font-mono text-xs">
+                      {(['BEP20', 'TRC20', 'ERC20'] as const).map((token) => (
+                        <button
+                          key={token}
+                          onClick={() => setStoreDepositToken(token)}
+                          className={`rounded-xl border py-2.5 px-3 text-center transition-all ${
+                            storeDepositToken === token
+                              ? 'border-primary bg-primary/20 text-primary font-bold shadow-[0_0_15px_rgba(232,185,73,0.3)]'
+                              : 'border-white/10 bg-white/[0.03] text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                          }`}
+                        >
+                          USDT ({token})
+                        </button>
+                      ))}
                     </div>
 
-                    {/* Deposit Destination Address Display Box */}
-                    <div className="space-y-2">
-                      <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider block">
-                        DEPOSIT DESTINATION ADDRESS
-                      </span>
-                      <div className="flex items-center justify-between gap-2 bg-black/60 border border-white/15 rounded-xl p-3">
-                        <span className="text-xs font-mono font-bold text-amber-400 truncate">
-                          {DEFAULT_DEPOSIT_WALLET.substring(0, 12)}...{DEFAULT_DEPOSIT_WALLET.substring(DEFAULT_DEPOSIT_WALLET.length - 6)}
+                    {/* Interactive Deposit Address & Copy Box */}
+                    <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] p-4 font-mono text-xs">
+                      <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider block mb-2">Deposit Destination Address</span>
+                      <div className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-foreground">
+                        <span className="truncate font-bold text-primary">
+                          {storeDepositToken === 'BEP20' ? DEFAULT_DEPOSIT_WALLET : storeDepositToken === 'TRC20' ? 'TX9aK28M4pL...TRC77' : '0x992B14e8c1...ETH01'}
                         </span>
                         <button
-                          type="button"
                           onClick={() => {
-                            navigator.clipboard.writeText(DEFAULT_DEPOSIT_WALLET);
-                            setCopiedDepositAddr(true);
-                            setTimeout(() => setCopiedDepositAddr(false), 2500);
+                            const addr = storeDepositToken === 'BEP20' ? DEFAULT_DEPOSIT_WALLET : storeDepositToken === 'TRC20' ? 'TX9aK28M4pL...TRC77' : '0x992B14e8c1...ETH01';
+                            navigator.clipboard.writeText(addr);
+                            setStoreCopiedAddr(true);
+                            setTimeout(() => setStoreCopiedAddr(false), 2500);
                           }}
-                          className="rounded-lg border border-amber-500/50 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition-all flex items-center gap-1.5 flex-shrink-0"
+                          className="shrink-0 rounded-lg bg-primary/20 border border-primary/50 px-3 py-1 text-[11px] font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all flex items-center gap-1"
                         >
-                          {copiedDepositAddr ? <Check size={14} /> : <Copy size={14} />}
-                          {copiedDepositAddr ? 'Copied' : 'Copy'}
+                          {storeCopiedAddr ? <Check size={13} /> : <Copy size={13} />}
+                          {storeCopiedAddr ? 'Copied!' : 'Copy'}
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  {/* CTA Button */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('deposit')}
-                    className="w-full rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-4 text-xs font-black uppercase text-black shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
-                  >
-                    DEPOSIT USDT (BEP20) NOW →
-                  </button>
+                  <div className="mt-6">
+                    <button
+                      onClick={() => setActiveTab('deposit')}
+                      className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-3.5 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_45px_rgba(232,185,73,0.6)] transition-all flex items-center justify-center gap-2"
+                    >
+                      Deposit USDT ({storeDepositToken}) Now →
+                    </button>
+                  </div>
                 </div>
 
-                {/* RIGHT CARD: Withdrawal Details Box */}
-                <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#0e1411] via-[#090d0b] to-[#060807] p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col justify-between space-y-6">
-                  <div className="space-y-6">
-                    {/* Top Badges */}
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full border border-white/20 bg-white/10 px-3 py-0.5 text-[10px] font-black uppercase text-foreground tracking-wider">
-                        WITHDRAWAL DETAILS
-                      </span>
-                      <span className="text-[10px] font-bold text-emerald-400 tracking-wider font-mono">
+                {/* Right Card: Interactive Withdrawal Details & Networks */}
+                <div className="group relative h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131916]/95 via-[#0d1210]/90 to-[#080b0a]/95 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl flex flex-col justify-between overflow-hidden">
+                  {/* Specular Top Edge */}
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+
+                  <div>
+                    <div className="flex items-center justify-between font-mono">
+                      <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-3.5 py-1.5 text-xs font-bold uppercase text-foreground">
+                        Withdrawal Details
+                      </div>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                         24/7 AUTO PAYOUT
                       </span>
                     </div>
 
-                    {/* Chain Selector Tabs */}
-                    <div className="grid grid-cols-3 gap-3 text-center text-xs font-bold">
-                      <div className="rounded-2xl border-2 border-amber-500/80 bg-amber-500/15 p-3.5 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-                        <span className="text-sm font-black block">BSC</span>
-                        <span className="text-[9px] text-amber-300/70 block font-normal mt-0.5">Binance Smart</span>
-                      </div>
-
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5 text-muted-foreground opacity-50">
-                        <span className="text-sm font-bold block">ETH</span>
-                        <span className="text-[9px] text-muted-foreground block font-normal mt-0.5">Ethereum</span>
-                      </div>
-
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5 text-muted-foreground opacity-50">
-                        <span className="text-sm font-bold block">TRC</span>
-                        <span className="text-[9px] text-muted-foreground block font-normal mt-0.5">Tron Chain</span>
-                      </div>
+                    {/* 3 Interactive Network Selector Buttons */}
+                    <div className="mt-6 grid grid-cols-3 gap-3 text-center font-mono text-xs">
+                      {(['BSC', 'ETH', 'TRC'] as const).map((net) => {
+                        const isActive = storeWithdrawNetwork === net;
+                        return (
+                          <button
+                            key={net}
+                            onClick={() => setStoreWithdrawNetwork(net)}
+                            className={`rounded-2xl border p-3.5 transition-all duration-300 ${
+                              isActive
+                                ? net === 'BSC'
+                                  ? 'border-2 border-primary bg-primary/20 text-primary shadow-[0_0_25px_rgba(232,185,73,0.4)] scale-105'
+                                  : net === 'ETH'
+                                  ? 'border-2 border-sky-400 bg-sky-500/20 text-sky-300 shadow-[0_0_25px_rgba(56,189,248,0.4)] scale-105'
+                                  : 'border-2 border-red-500 bg-red-500/20 text-red-400 shadow-[0_0_25px_rgba(239,68,68,0.4)] scale-105'
+                                : 'border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/30 hover:bg-white/[0.06]'
+                            }`}
+                          >
+                            <strong className="text-sm font-black block tracking-wider">
+                              {net}
+                            </strong>
+                            <span className="text-[9px] font-mono mt-0.5 block opacity-80">
+                              {net === 'BSC' ? 'Binance Smart' : net === 'ETH' ? 'Ethereum' : 'Tron Chain'}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
 
-                    {/* 2 Info Boxes Side by Side */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Box 1: Processing Time */}
-                      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-1">
-                        <span className="text-[9px] text-amber-400 font-bold uppercase block tracking-wider">
-                          PROCESSING TIME (BSC)
-                        </span>
-                        <span className="text-base font-black text-amber-300 block font-sans">
-                          Up to 15 Minutes
-                        </span>
-                        <span className="text-[10px] text-emerald-400 font-bold block pt-1">
-                          ● Live Automation Active
-                        </span>
+                    {/* Live Dynamic Network Details Box */}
+                    <div className="mt-5 grid grid-cols-2 gap-3 font-mono text-xs">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-center">
+                        <span className="text-[10px] text-muted-foreground uppercase block mb-1">Processing Time ({storeWithdrawNetwork})</span>
+                        <strong className="text-sm font-black text-primary block">
+                          {storeWithdrawNetwork === 'BSC' ? 'Up to 15 Minutes' : storeWithdrawNetwork === 'ETH' ? '5 - 30 Minutes' : 'Instant (1-3 Mins)'}
+                        </strong>
+                        <span className="text-[9px] text-accent font-bold mt-1 block">● Live Automation Active</span>
                       </div>
 
-                      {/* Box 2: Minimum Withdrawal */}
-                      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1">
-                        <span className="text-[9px] text-emerald-400 font-bold uppercase block tracking-wider">
-                          MINIMUM WITHDRAWAL
-                        </span>
-                        <span className="text-base font-black text-emerald-300 block font-sans">
-                          $15 USD
-                        </span>
-                        <span className="text-[10px] text-muted-foreground block pt-1">
-                          Estimated Fee: ~$0.20
-                        </span>
+                      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
+                        <span className="text-[10px] text-emerald-400 uppercase block mb-1 font-bold">Minimum Withdrawal</span>
+                        <strong className="text-base font-black text-emerald-300 block">$15 USD</strong>
+                        <span className="text-[9px] text-emerald-400/80 block mt-0.5">Estimated Fee: ~$0.20</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* CTA Button */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('withdraw')}
-                    className="w-full rounded-2xl border border-white/20 bg-white/5 py-4 text-xs font-black uppercase text-foreground hover:bg-white/10 hover:border-white/30 transition-all flex items-center justify-center gap-2"
-                  >
-                    INITIATE BSC PAYOUT REQUEST →
-                  </button>
+                  <div className="mt-6 font-mono">
+                    <button
+                      onClick={() => setActiveTab('withdraw')}
+                      className="w-full rounded-2xl border border-white/20 bg-white/10 py-3.5 text-xs font-black uppercase tracking-wider text-foreground hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                    >
+                      Initiate {storeWithdrawNetwork} Payout Request →
+                    </button>
+                  </div>
                 </div>
-
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
         {/* TAB 3.5: MY TEAM & REFERRAL HUB */}
         {activeTab === 'team' && (
