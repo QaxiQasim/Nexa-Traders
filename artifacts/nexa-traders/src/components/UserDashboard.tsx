@@ -76,6 +76,7 @@ export interface PurchasedPackage {
   purchaseDate: string;
   expiryDate: string;
   status: 'ACTIVE' | 'COMPLETED';
+  lastRoiPayout?: string;
 }
 
 export interface Transaction {
@@ -86,6 +87,7 @@ export interface Transaction {
   amount: number;
   status: 'COMPLETED' | 'PENDING' | 'FAILED';
   txHash?: string;
+  description?: string;
 }
 
 export interface KycData {
@@ -758,7 +760,7 @@ export function UserDashboard() {
       if (pendingPlan) {
         localStorage.removeItem('nexa_pending_buy_plan');
         localStorage.removeItem('nexa_pending_buy_tab');
-        const matched = ARBITRAGE_PACKAGES.find(p => p.name.toLowerCase() === pendingPlan.toLowerCase());
+        const matched = AVAILABLE_PLANS.find(p => p.name.toLowerCase() === pendingPlan.toLowerCase());
         if (matched) {
           setSelectedPlanForBuy(matched);
           setCustomInvestAmount(matched.min);
@@ -831,7 +833,7 @@ export function UserDashboard() {
         
         // If package earned ROI cap reached, mark completed and stop
         if (currentEarnedInPkg >= totalCap || Number(pkg.remainingRoi) <= 0) {
-          return { ...pkg, remainingRoi: 0, status: 'COMPLETED' };
+          return { ...pkg, remainingRoi: 0, status: 'COMPLETED' as const };
         }
 
         const now = Date.now();
@@ -913,7 +915,7 @@ export function UserDashboard() {
               localStorage.setItem(localKey, finalLastPayoutISO);
             } catch (e) {}
 
-            const finalStatus = runningRemaining <= 0 || runningEarned >= totalCap ? 'COMPLETED' : 'ACTIVE';
+            const finalStatus: 'ACTIVE' | 'COMPLETED' = runningRemaining <= 0 || runningEarned >= totalCap ? 'COMPLETED' : 'ACTIVE';
 
             return {
               ...pkg,
