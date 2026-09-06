@@ -1245,7 +1245,7 @@ function Home() {
               <ButtonLink href="/packages">
                 Explore packages <ArrowRight size={15} />
               </ButtonLink>
-              <ButtonLink href="/about" variant="outline">
+              <ButtonLink href="/trades" variant="outline">
                 <Play size={14} /> See live engine in action
               </ButtonLink>
             </motion.div>
