@@ -1235,7 +1235,7 @@ function Home() {
                 <Zap size={11} /> Sub-14ms Execution Speed
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 text-accent">
-                <Globe2 size={11} /> 30+ Venues Connected
+                <Globe2 size={11} /> 18 Venues Connected
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card/80 px-2.5 py-1 text-muted-foreground">
                 <ShieldCheck size={11} /> Bounded Risk Gate
@@ -1249,20 +1249,6 @@ function Home() {
                 <Play size={14} /> See live engine in action
               </ButtonLink>
             </motion.div>
-            <motion.div variants={reveal} className="mt-10 flex items-center gap-3 text-xs text-muted-foreground">
-              <div className="flex -space-x-2">
-                {['MC', 'EV', 'JB'].map((initials) => (
-                  <span key={initials} className="grid h-7 w-7 place-items-center rounded-full border-2 border-background bg-secondary font-mono text-[9px] text-primary">
-                    {initials}
-                  </span>
-                ))}
-              </div>
-              <span>
-                <strong className="text-foreground">2,400+</strong> institutional arbitrage accounts
-              </span>
-              <span className="h-3 w-px bg-border" />
-              <span className="positive-text">● 99.98% uptime</span>
-            </motion.div>
           </motion.div>
           <motion.div initial={{ opacity: 0, scale: 0.96, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="lg:pt-3">
             <ScanPanel activePair={activePair} setActivePair={setActivePair} />
@@ -1272,7 +1258,7 @@ function Home() {
       </section>
 
       <main>
-        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28"><div className="grid gap-10 border-b border-border pb-16 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"><Reveal className="sm:px-8 sm:first:pl-0"><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Capital routed</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">$5.8M</p><p className="mt-2 text-sm text-accent">↑ 18.6% this quarter</p></Reveal><Reveal className="sm:px-8" delay={.08}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Decision latency</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">42<span className="text-xl text-primary">ms</span></p><p className="mt-2 text-sm text-muted-foreground">from tick to signal</p></Reveal><Reveal className="sm:px-8 sm:pr-0" delay={.16}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Markets mapped</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">18</p><p className="mt-2 text-sm text-muted-foreground">venues / 24 hours a day</p></Reveal></div></section>
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28"><div className="grid gap-10 border-b border-border pb-16 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"><Reveal className="sm:px-8 sm:first:pl-0"><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Capital routed</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">$1.5M</p><p className="mt-2 text-sm text-accent">↑ 18.6% this quarter</p></Reveal><Reveal className="sm:px-8" delay={.08}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Decision latency</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">42<span className="text-xl text-primary">ms</span></p><p className="mt-2 text-sm text-muted-foreground">from tick to signal</p></Reveal><Reveal className="sm:px-8 sm:pr-0" delay={.16}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Markets mapped</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">18</p><p className="mt-2 text-sm text-muted-foreground">venues / 24 hours a day</p></Reveal></div></section>
 
         <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8 lg:pb-32"><div className="grid gap-14 lg:grid-cols-[.8fr_1.2fr]"><Reveal><SectionHeading eyebrow="The loop" title="Turn Market Price Differences Into Automated Opportunities." copy="Our automated crypto arbitrage technology continuously monitors market differences across supported exchanges and identifies potential arbitrage opportunities." /><div className="mt-8"><ButtonLink href="/about" variant="outline">Our operating principles <ArrowRight size={15} /></ButtonLink></div></Reveal><motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={stagger} className="grid gap-3">{processSteps.map(({ number, title, copy, icon: Icon }) => <motion.div key={number} variants={reveal} className="group flex gap-5 rounded-xl border border-border bg-card/60 p-5 hover-lift"><span className="font-mono text-xs text-primary">{number}</span><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon size={19} /></span><div><h3 className="text-lg font-semibold tracking-[-.03em]">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p></div><ArrowUpRight size={15} className="ml-auto shrink-0 text-muted-foreground/40 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary" /></motion.div>)}</motion.div></div></section>
 
