@@ -638,6 +638,47 @@ export async function upsertKycToDb(email: string, kyc: any) {
   }
 }
 
+export async function isTxHashAlreadyUsed(txHash: string): Promise<{ used: boolean; userEmail?: string }> {
+  try {
+    const cleanHash = txHash.trim().toLowerCase();
+    if (!cleanHash || cleanHash.length < 10) return { used: false };
+
+    // 1. Check Supabase DB globally across ALL users
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,description,tx_hash&or=(tx_hash.ilike.${encodeURIComponent(cleanHash)},description.ilike.*${encodeURIComponent(cleanHash)}*)`,
+      {
+        method: 'GET',
+        headers: getHeaders()
+      }
+    );
+
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return { used: true, userEmail: data[0].user_email };
+      }
+    }
+
+    // 2. Check local storage fallback across stored transactions
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.includes('transactions') || key.includes('txs') || key.includes('nexa_'))) {
+        try {
+          const val = localStorage.getItem(key);
+          if (val && val.toLowerCase().includes(cleanHash)) {
+            return { used: true, userEmail: 'Local Storage' };
+          }
+        } catch (e) {}
+      }
+    }
+
+    return { used: false };
+  } catch (err) {
+    console.error('Error in isTxHashAlreadyUsed:', err);
+    return { used: false };
+  }
+}
+
 export async function fetchTransactionsFromDb(email: string) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=eq.${encodeURIComponent(email)}&order=created_at.desc`, {
@@ -647,14 +688,22 @@ export async function fetchTransactionsFromDb(email: string) {
     if (!res.ok) return null;
     const data = await res.json();
     if (!Array.isArray(data)) return [];
-    return data.map((tx: any) => ({
-      id: tx.id || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-      date: (typeof tx.created_at === 'string') ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16),
-      type: tx.type || 'DEPOSIT',
-      title: tx.description || tx.type || 'Transaction',
-      amount: isNaN(Number(tx.amount)) ? 0 : Number(tx.amount),
-      status: tx.status || 'COMPLETED'
-    }));
+    return data.map((tx: any) => {
+      let extractedHash = tx.tx_hash || tx.txHash;
+      if (!extractedHash && tx.description && tx.description.includes('0x')) {
+        const match = tx.description.match(/0x[a-fA-F0-9]{64}/);
+        if (match) extractedHash = match[0];
+      }
+      return {
+        id: tx.id || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
+        date: (typeof tx.created_at === 'string') ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16),
+        type: tx.type || 'DEPOSIT',
+        title: tx.description || tx.type || 'Transaction',
+        amount: isNaN(Number(tx.amount)) ? 0 : Number(tx.amount),
+        status: tx.status || 'COMPLETED',
+        txHash: extractedHash
+      };
+    });
   } catch (err) {
     return null;
   }
@@ -675,6 +724,12 @@ export async function insertTransactionToDb(emailOrTx: string | any, txPayload?:
 
     if (!email) return;
 
+    const hashVal = txObj.txHash || txObj.tx_hash || '';
+    let desc = txObj.description || txObj.title || 'Transaction';
+    if (hashVal && !desc.toLowerCase().includes(hashVal.toLowerCase())) {
+      desc += ` [TxHash: ${hashVal}]`;
+    }
+
     await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
       method: 'POST',
       headers: getHeaders(),
@@ -683,7 +738,8 @@ export async function insertTransactionToDb(emailOrTx: string | any, txPayload?:
         type: txObj.type || 'PACKAGE_PURCHASE',
         amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
         status: txObj.status || 'COMPLETED',
-        description: txObj.description || txObj.title || 'Transaction'
+        description: desc,
+        tx_hash: hashVal || null
       })
     });
   } catch (err) {

@@ -59,7 +59,8 @@ import {
   fetchUserProfileFromDb,
   fetchDirectReferralsFromDb,
   fetchFullTeamHierarchyFromDb,
-  processDirectReferralCommission
+  processDirectReferralCommission,
+  isTxHashAlreadyUsed
 } from '@/lib/supabase';
 import { verifyBep20Transaction, DEFAULT_DEPOSIT_WALLET } from '@/lib/bep20';
 
@@ -984,13 +985,13 @@ export function UserDashboard() {
   const [depositErrorMsg, setDepositErrorMsg] = useState<string>('');
   const [copiedDepositAddr, setCopiedDepositAddr] = useState<boolean>(false);
 
-  // Dedicated Deposit Handler with Strict BscScan On-Chain Validation
+  // Dedicated Deposit Handler with Strict BscScan On-Chain Validation & Global Anti-Duplicate
   const handleProcessDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
     setDepositErrorMsg('');
     setDepositSuccessMsg('');
 
-    const cleanTxHash = depositTxHash.trim();
+    const cleanTxHash = depositTxHash.trim().toLowerCase();
     if (!cleanTxHash) {
       setDepositErrorMsg('BEP20 Transaction Hash (TxHash) is REQUIRED. Please paste your 66-character transaction hash (0x...) from your wallet.');
       return;
@@ -1001,15 +1002,25 @@ export function UserDashboard() {
       return;
     }
 
-    // Check duplicate TxHash reuse
-    const alreadyProcessed = (transactions || []).some(t => t.txHash && t.txHash.toLowerCase() === cleanTxHash.toLowerCase());
-    if (alreadyProcessed) {
-      setDepositErrorMsg('This TxHash has ALREADY been claimed and credited to an account. Duplicate claims are prohibited.');
+    setIsVerifyingDeposit(true);
+
+    // 1. Check local state transactions across current user
+    const alreadyInLocal = (transactions || []).some(t => t.txHash && t.txHash.toLowerCase() === cleanTxHash);
+    if (alreadyInLocal) {
+      setIsVerifyingDeposit(false);
+      setDepositErrorMsg('This TxHash has ALREADY been claimed and credited to an account. Duplicate claims are strictly prohibited.');
       return;
     }
 
-    setIsVerifyingDeposit(true);
+    // 2. Check Supabase DB globally across ALL registered users
+    const dbCheck = await isTxHashAlreadyUsed(cleanTxHash);
+    if (dbCheck.used) {
+      setIsVerifyingDeposit(false);
+      setDepositErrorMsg(`This TxHash has ALREADY been claimed and used in the system (${dbCheck.userEmail || 'registered user'}). Duplicate TxHash usage is strictly blocked.`);
+      return;
+    }
 
+    // 3. Perform Live On-Chain Verification
     const verRes = await verifyBep20Transaction(cleanTxHash, DEFAULT_DEPOSIT_WALLET);
     setIsVerifyingDeposit(false);
 
@@ -1018,11 +1029,8 @@ export function UserDashboard() {
       return;
     }
 
-    // Use actual on-chain verified amount sent via BEP20
-    const verifiedAmount = verRes.amountUsdt && verRes.amountUsdt > 0 
-      ? verRes.amountUsdt 
-      : parseFloat(depositAmountInput) || 0;
-
+    // 4. Strictly use actual on-chain verified amount sent via BEP20 (No manual input fallbacks)
+    const verifiedAmount = verRes.amountUsdt || 0;
     if (verifiedAmount <= 0) {
       setDepositErrorMsg('Could not verify on-chain USDT transfer value. Transaction amount is 0 USDT.');
       return;
@@ -1049,15 +1057,21 @@ export function UserDashboard() {
     setDepositTxHash('');
   };
 
-  // BEP20 Auto-Verification State
+  // BEP20 Auto-Verification State & Direct Package Purchase Handler
   const [bep20TxHash, setBep20TxHash] = useState<string>('');
   const [isVerifyingBep20, setIsVerifyingBep20] = useState<boolean>(false);
   const [bep20VerifyError, setBep20VerifyError] = useState<string>('');
   const [bep20VerifySuccess, setBep20VerifySuccess] = useState<string>('');
 
   const handleVerifyBep20Payment = async () => {
-    if (!bep20TxHash.trim()) {
+    const cleanHash = bep20TxHash.trim().toLowerCase();
+    if (!cleanHash) {
       setBep20VerifyError('Please enter your 66-character BEP20 TxHash (0x...) from your wallet app.');
+      return;
+    }
+
+    if (!cleanHash.startsWith('0x') || cleanHash.length !== 66) {
+      setBep20VerifyError('Invalid BEP20 TxHash format. Must start with 0x and be exactly 66 characters long.');
       return;
     }
 
@@ -1065,57 +1079,90 @@ export function UserDashboard() {
     setBep20VerifyError('');
     setBep20VerifySuccess('');
 
-    const res = await verifyBep20Transaction(bep20TxHash, DEFAULT_DEPOSIT_WALLET);
+    // 1. Check local state transactions across current user
+    const alreadyInLocal = (transactions || []).some(t => t.txHash && t.txHash.toLowerCase() === cleanHash);
+    if (alreadyInLocal) {
+      setIsVerifyingBep20(false);
+      setBep20VerifyError('This TxHash has ALREADY been claimed and used. Duplicate claims are strictly prohibited.');
+      return;
+    }
+
+    // 2. Check Supabase DB globally across ALL registered users
+    const dbCheck = await isTxHashAlreadyUsed(cleanHash);
+    if (dbCheck.used) {
+      setIsVerifyingBep20(false);
+      setBep20VerifyError(`This TxHash has ALREADY been claimed by another account (${dbCheck.userEmail || 'registered user'}). Duplicate TxHash usage is strictly blocked.`);
+      return;
+    }
+
+    // 3. Perform Live On-Chain Verification
+    const res = await verifyBep20Transaction(cleanHash, DEFAULT_DEPOSIT_WALLET);
     setIsVerifyingBep20(false);
 
-    if (res.success) {
-      setBep20VerifySuccess(res.message);
-      
-      const amount = res.amountUsdt && res.amountUsdt > 0 ? res.amountUsdt : Number(customInvestAmount);
-      const totalCap = amount * ((selectedPlanForBuy?.totalCapPct || 200) / 100);
-
-      const newPkg: PurchasedPackage = {
-        id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
-        name: selectedPlanForBuy?.name || 'Rise',
-        amount: amount,
-        dailyRoi: selectedPlanForBuy?.dailyRoiNum || 1.3,
-        totalRoiCap: totalCap,
-        earnedRoi: 0,
-        remainingRoi: totalCap,
-        purchaseDate: new Date().toISOString().split('T')[0],
-        expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        status: 'ACTIVE',
-        lastRoiPayout: new Date().toISOString()
-      };
-
-      setPurchasedPackages(prev => [newPkg, ...prev]);
-      insertPackageToDb(userEmail, newPkg);
-
-      // Trigger 10% Direct Referral Commission to Sponsor
-      processDirectReferralCommission(userEmail, amount, selectedPlanForBuy?.name || 'Rise');
-
-      const newTx: Transaction = {
-        id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
-        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
-        type: 'DEPOSIT',
-        title: `BEP20 Auto-Deposit (${selectedPlanForBuy?.name || 'Package'})`,
-        amount: amount,
-        status: 'COMPLETED',
-        txHash: bep20TxHash
-      };
-      setTransactions(prev => [newTx, ...prev]);
-      insertTransactionToDb(userEmail, newTx);
-
-      setBuySuccessMessage(`Verified Live on BNB Smart Chain! Activated ${selectedPlanForBuy?.name} plan with ${amount} USDT.`);
-      setTimeout(() => {
-        setSelectedPlanForBuy(null);
-        setBuySuccessMessage('');
-        setBep20TxHash('');
-        setBep20VerifySuccess('');
-      }, 3000);
-    } else {
+    if (!res.success) {
       setBep20VerifyError(res.message);
+      return;
     }
+
+    const verifiedAmount = res.amountUsdt || 0;
+    if (verifiedAmount <= 0) {
+      setBep20VerifyError('On-chain verified USDT amount is 0. Cannot activate package.');
+      return;
+    }
+
+    // Check if on-chain sent USDT covers required package amount
+    const rawPrice = selectedPlanForBuy?.min ?? selectedPlanForBuy?.price ?? 100;
+    const reqAmount = typeof rawPrice === 'number' && rawPrice > 0 ? rawPrice : Number(customInvestAmount) || 100;
+
+    if (verifiedAmount < reqAmount) {
+      setBep20VerifyError(`On-chain verified USDT sent ($${verifiedAmount.toFixed(2)}) is less than the required package investment ($${reqAmount.toFixed(2)}).`);
+      return;
+    }
+
+    setBep20VerifySuccess(res.message);
+
+    const amount = verifiedAmount;
+    const totalCap = amount * ((selectedPlanForBuy?.totalCapPct || 200) / 100);
+
+    const newPkg: PurchasedPackage = {
+      id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: selectedPlanForBuy?.name || 'Rise',
+      amount: amount,
+      dailyRoi: selectedPlanForBuy?.dailyRoiNum || 1.3,
+      totalRoiCap: totalCap,
+      earnedRoi: 0,
+      remainingRoi: totalCap,
+      purchaseDate: new Date().toISOString().split('T')[0],
+      expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      status: 'ACTIVE',
+      lastRoiPayout: new Date().toISOString()
+    };
+
+    setPurchasedPackages(prev => [newPkg, ...prev]);
+    insertPackageToDb(userEmail, newPkg);
+
+    // Trigger 10% Direct Referral Commission to Sponsor
+    processDirectReferralCommission(userEmail, amount, selectedPlanForBuy?.name || 'Rise');
+
+    const newTx: Transaction = {
+      id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
+      date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      type: 'DEPOSIT',
+      title: `BEP20 Auto-Deposit (${selectedPlanForBuy?.name || 'Package'})`,
+      amount: amount,
+      status: 'COMPLETED',
+      txHash: cleanHash
+    };
+    setTransactions(prev => [newTx, ...prev]);
+    insertTransactionToDb(userEmail, newTx);
+
+    setBuySuccessMessage(`Verified Live on BNB Smart Chain! Activated ${selectedPlanForBuy?.name} plan with $${amount.toFixed(2)} USDT.`);
+    setTimeout(() => {
+      setSelectedPlanForBuy(null);
+      setBuySuccessMessage('');
+      setBep20TxHash('');
+      setBep20VerifySuccess('');
+    }, 3000);
   };
 
   // Handle Buy Package Confirmation
@@ -1847,17 +1894,18 @@ export function UserDashboard() {
 
                   <div>
                     <label className="block text-muted-foreground mb-2 font-bold">
-                      BEP20 Transaction Hash / TxHash <span className="text-muted-foreground font-normal">(Optional for Instant Credit)</span>
+                      BEP20 Transaction Hash / TxHash <span className="text-rose-400 font-bold">* Required for On-Chain Verification</span>
                     </label>
                     <input
                       type="text"
+                      required
                       value={depositTxHash}
                       onChange={e => setDepositTxHash(e.target.value)}
-                      placeholder="e.g. 0x8f2b41e... (66 characters)"
+                      placeholder="Paste 66-character TxHash from your wallet (0x...)"
                       className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3.5 text-foreground text-xs font-mono outline-none focus:border-accent"
                     />
                     <span className="text-[10px] text-muted-foreground mt-1.5 block">
-                      Found in your wallet app after sending payment on BNB Smart Chain.
+                      Found in your wallet app (TrustWallet, Metamask, Binance) after sending payment on BNB Smart Chain.
                     </span>
                   </div>
 
