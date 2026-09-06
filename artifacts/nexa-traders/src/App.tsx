@@ -854,11 +854,11 @@ function ExchangesIntegratedSection() {
               </div>
             </div>
 
-            {/* Right Side Stat Counters (Exact 1,200+ | 1,700+ | 30+ as in Reference Image 1) */}
+            {/* Right Side Stat Counters */}
             <div className="flex shrink-0 items-center justify-between gap-8 border-t border-border/70 pt-6 lg:border-t-0 lg:pt-0">
               <div className="text-center sm:text-left">
                 <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
-                  1,200<span className="text-primary">+</span>
+                  1,500<span className="text-primary">+</span>
                 </p>
                 <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Market Pairs</p>
               </div>
@@ -867,7 +867,7 @@ function ExchangesIntegratedSection() {
 
               <div className="text-center sm:text-left">
                 <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
-                  1,700<span className="text-accent">+</span>
+                  1,100<span className="text-accent">+</span>
                 </p>
                 <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Cryptocurrencies</p>
               </div>
@@ -876,7 +876,7 @@ function ExchangesIntegratedSection() {
 
               <div className="text-center sm:text-left">
                 <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
-                  30<span className="text-primary">+</span>
+                  18<span className="text-primary">+</span>
                 </p>
                 <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Exchanges</p>
               </div>
