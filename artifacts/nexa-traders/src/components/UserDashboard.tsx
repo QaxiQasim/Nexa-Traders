@@ -2141,174 +2141,93 @@ export function UserDashboard() {
               ))}
             </div>
 
-            {/* 🚀 DEPOSIT & WITHDRAWAL FINANCIAL GATEWAY SECTION */}
-            <div className="mt-12 space-y-8 font-sans">
-              <div className="text-center max-w-3xl mx-auto">
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
-                  <Coins size={14} className="text-primary animate-pulse" />
-                  FINANCIAL GATEWAY
-                </div>
-                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground font-mono">
-                  Deposit & Withdrawal
-                </h2>
-                <p className="mt-3 text-xs sm:text-sm text-muted-foreground font-mono leading-relaxed max-w-xl mx-auto">
-                  Automated multi-chain liquidity gateways with instant execution and 24/7 wallet credit.
-                </p>
-              </div>
+            {/* 🚀 DIRECT REFERRAL PROGRAM — 10% DIRECT CASH INCOME SECTION */}
+            <div className="mt-12 max-w-5xl mx-auto font-sans">
+              <div className="relative rounded-3xl border border-emerald-500/25 bg-gradient-to-b from-[#0e1713]/95 via-[#0a110e]/95 to-[#070b09]/95 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_40px_rgba(16,185,129,0.12)] overflow-hidden">
+                {/* Specular Top Edge */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
-              <div className="grid gap-8 lg:grid-cols-2 items-stretch max-w-5xl mx-auto">
-                {/* Left Card: Supported Coins & Deposit Interactive Widget */}
-                <div className="group relative h-full rounded-3xl border border-primary/50 bg-gradient-to-b from-[#151d1a]/95 via-[#0e1311]/90 to-[#080b0a]/95 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_50px_rgba(232,185,73,0.2)] flex flex-col justify-between overflow-hidden">
-                  {/* Specular Top Edge */}
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
-
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3.5 py-1.5 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.4)]">
-                        Supported Asset
-                      </span>
-                      <span className="flex items-center gap-1 font-mono text-[10px] text-accent font-bold uppercase tracking-wider">
-                        <span className="h-2 w-2 rounded-full bg-accent animate-ping" /> Instant Auto-Credit
-                      </span>
+                {/* Header Row */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                  <div className="flex items-start sm:items-center gap-3.5">
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+                      <Users size={22} />
                     </div>
-
-                    {/* Coin Header */}
-                    <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-5 shadow-inner">
-                      <div className="flex items-center gap-4">
-                        <div className="grid h-12 w-12 place-items-center rounded-2xl border-2 border-primary bg-gradient-to-br from-primary/30 via-[#26a17b]/30 to-primary/10 text-primary shadow-[0_0_25px_rgba(232,185,73,0.4)] group-hover:scale-105 transition-transform">
-                          <Coins size={26} />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-extrabold text-foreground tracking-tight font-sans">USDT Tether</h3>
-                          <p className="text-xs text-muted-foreground font-mono">Multichain Stablecoin</p>
-                        </div>
-                      </div>
-
-                      <div className="text-right font-mono">
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Selected Protocol</span>
-                        <div className="text-sm font-black text-primary">{storeDepositToken}</div>
-                      </div>
-                    </div>
-
-                    {/* Interactive Token Protocol Tabs */}
-                    <div className="mt-5 grid grid-cols-3 gap-2 font-mono text-xs">
-                      {(['BEP20', 'TRC20', 'ERC20'] as const).map((token) => (
-                        <button
-                          key={token}
-                          onClick={() => setStoreDepositToken(token)}
-                          className={`rounded-xl border py-2.5 px-3 text-center transition-all ${
-                            storeDepositToken === token
-                              ? 'border-primary bg-primary/20 text-primary font-bold shadow-[0_0_15px_rgba(232,185,73,0.3)]'
-                              : 'border-white/10 bg-white/[0.03] text-muted-foreground hover:border-primary/40 hover:text-foreground'
-                          }`}
-                        >
-                          USDT ({token})
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Interactive Deposit Address & Copy Box */}
-                    <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] p-4 font-mono text-xs">
-                      <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider block mb-2">Deposit Destination Address</span>
-                      <div className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-foreground">
-                        <span className="truncate font-bold text-primary">
-                          {storeDepositToken === 'BEP20' ? DEFAULT_DEPOSIT_WALLET : storeDepositToken === 'TRC20' ? 'TX9aK28M4pL...TRC77' : '0x992B14e8c1...ETH01'}
-                        </span>
-                        <button
-                          onClick={() => {
-                            const addr = storeDepositToken === 'BEP20' ? DEFAULT_DEPOSIT_WALLET : storeDepositToken === 'TRC20' ? 'TX9aK28M4pL...TRC77' : '0x992B14e8c1...ETH01';
-                            navigator.clipboard.writeText(addr);
-                            setStoreCopiedAddr(true);
-                            setTimeout(() => setStoreCopiedAddr(false), 2500);
-                          }}
-                          className="shrink-0 rounded-lg bg-primary/20 border border-primary/50 px-3 py-1 text-[11px] font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all flex items-center gap-1"
-                        >
-                          {storeCopiedAddr ? <Check size={13} /> : <Copy size={13} />}
-                          {storeCopiedAddr ? 'Copied!' : 'Copy'}
-                        </button>
-                      </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight font-sans">
+                        Direct Referral Program — <span className="text-emerald-400 font-black">10% Direct Cash Income</span>
+                      </h2>
+                      <p className="mt-1 text-xs text-muted-foreground font-sans leading-relaxed max-w-xl">
+                        Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
+                      </p>
                     </div>
                   </div>
 
-                  <div className="mt-6">
+                  <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
                     <button
-                      onClick={() => setActiveTab('deposit')}
-                      className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-3.5 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_45px_rgba(232,185,73,0.6)] transition-all flex items-center justify-center gap-2"
+                      onClick={() => {
+                        const url = `${window.location.origin}/register?ref=${userRefCode || 'NEXA-77892'}`;
+                        navigator.clipboard.writeText(url);
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2500);
+                      }}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs px-4 py-2.5 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95 shrink-0"
                     >
-                      Deposit USDT ({storeDepositToken}) Now →
+                      {copiedLink ? <Check size={15} /> : <Copy size={15} />}
+                      {copiedLink ? 'Link Copied!' : 'Copy Referral Link'}
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('team')}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.05] hover:bg-white/10 text-foreground font-bold text-xs px-4 py-2.5 transition-all shrink-0"
+                    >
+                      View Referral Team Hub →
                     </button>
                   </div>
                 </div>
 
-                {/* Right Card: Interactive Withdrawal Details & Networks */}
-                <div className="group relative h-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#131916]/95 via-[#0d1210]/90 to-[#080b0a]/95 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl flex flex-col justify-between overflow-hidden">
-                  {/* Specular Top Edge */}
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-
-                  <div>
-                    <div className="flex items-center justify-between font-mono">
-                      <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-3.5 py-1.5 text-xs font-bold uppercase text-foreground">
-                        Withdrawal Details
+                {/* 2-Card Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  {/* Left Card: Instant 10% Direct Cash */}
+                  <div className="group relative rounded-2xl border border-emerald-500/30 bg-[#0d1b15]/90 p-5 sm:p-6 flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+                    <div>
+                      <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 group-hover:scale-105 transition-transform">
+                        <DollarSign size={20} />
                       </div>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                        24/7 AUTO PAYOUT
-                      </span>
+
+                      <h3 className="mt-4 text-base sm:text-lg font-bold text-foreground tracking-tight font-sans">
+                        Instant 10% Direct Cash
+                      </h3>
+                      <p className="mt-2 text-xs text-muted-foreground leading-relaxed font-sans">
+                        Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
+                      </p>
                     </div>
 
-                    {/* 3 Interactive Network Selector Buttons */}
-                    <div className="mt-6 grid grid-cols-3 gap-3 text-center font-mono text-xs">
-                      {(['BSC', 'ETH', 'TRC'] as const).map((net) => {
-                        const isActive = storeWithdrawNetwork === net;
-                        return (
-                          <button
-                            key={net}
-                            onClick={() => setStoreWithdrawNetwork(net)}
-                            className={`rounded-2xl border p-3.5 transition-all duration-300 ${
-                              isActive
-                                ? net === 'BSC'
-                                  ? 'border-2 border-primary bg-primary/20 text-primary shadow-[0_0_25px_rgba(232,185,73,0.4)] scale-105'
-                                  : net === 'ETH'
-                                  ? 'border-2 border-sky-400 bg-sky-500/20 text-sky-300 shadow-[0_0_25px_rgba(56,189,248,0.4)] scale-105'
-                                  : 'border-2 border-red-500 bg-red-500/20 text-red-400 shadow-[0_0_25px_rgba(239,68,68,0.4)] scale-105'
-                                : 'border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/30 hover:bg-white/[0.06]'
-                            }`}
-                          >
-                            <strong className="text-sm font-black block tracking-wider">
-                              {net}
-                            </strong>
-                            <span className="text-[9px] font-mono mt-0.5 block opacity-80">
-                              {net === 'BSC' ? 'Binance Smart' : net === 'ETH' ? 'Ethereum' : 'Tron Chain'}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Live Dynamic Network Details Box */}
-                    <div className="mt-5 grid grid-cols-2 gap-3 font-mono text-xs">
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-center">
-                        <span className="text-[10px] text-muted-foreground uppercase block mb-1">Processing Time ({storeWithdrawNetwork})</span>
-                        <strong className="text-sm font-black text-primary block">
-                          {storeWithdrawNetwork === 'BSC' ? 'Up to 15 Minutes' : storeWithdrawNetwork === 'ETH' ? '5 - 30 Minutes' : 'Instant (1-3 Mins)'}
-                        </strong>
-                        <span className="text-[9px] text-accent font-bold mt-1 block">● Live Automation Active</span>
-                      </div>
-
-                      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
-                        <span className="text-[10px] text-emerald-400 uppercase block mb-1 font-bold">Minimum Withdrawal</span>
-                        <strong className="text-base font-black text-emerald-300 block">$15 USD</strong>
-                        <span className="text-[9px] text-emerald-400/80 block mt-0.5">Estimated Fee: ~$0.20</span>
-                      </div>
+                    <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400">
+                      <Check size={14} className="text-emerald-400" />
+                      Instant automated Wallet Payout
                     </div>
                   </div>
 
-                  <div className="mt-6 font-mono">
-                    <button
-                      onClick={() => setActiveTab('withdraw')}
-                      className="w-full rounded-2xl border border-white/20 bg-white/10 py-3.5 text-xs font-black uppercase tracking-wider text-foreground hover:bg-white/20 transition-all flex items-center justify-center gap-2"
-                    >
-                      Initiate {storeWithdrawNetwork} Payout Request →
-                    </button>
+                  {/* Right Card: Active Package & Cap Requirement */}
+                  <div className="group relative rounded-2xl border border-amber-500/30 bg-[#19160d]/90 p-5 sm:p-6 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                    <div>
+                      <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 group-hover:scale-105 transition-transform">
+                        <Lock size={20} />
+                      </div>
+
+                      <h3 className="mt-4 text-base sm:text-lg font-bold text-foreground tracking-tight font-sans">
+                        Active Package & Cap Requirement
+                      </h3>
+                      <p className="mt-2 text-xs text-muted-foreground leading-relaxed font-sans">
+                        To qualify for 10% direct referral income, your account MUST have an active package. Additionally, your account's available Total ROI Cap must equal or exceed the referral bonus amount.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400">
+                      <AlertCircle size={14} className="text-amber-400" />
+                      Active Package & Available Cap Required
+                    </div>
                   </div>
                 </div>
               </div>
