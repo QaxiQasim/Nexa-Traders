@@ -1119,16 +1119,16 @@ export function UserDashboard() {
   };
 
   // Handle Buy Package Confirmation
-  const handleConfirmPurchase = () => {
+  const handleConfirmPurchase = async () => {
     if (!selectedPlanForBuy) return;
     const amount = Number(selectedPlanForBuy.min || selectedPlanForBuy.price || 100);
 
-    if (walletBalance < amount) {
+    if (paymentMethod === 'WALLET' && walletBalance < amount) {
       alert(`Insufficient account balance. You have $${walletBalance.toFixed(2)} USDT available, but package requires $${amount.toFixed(2)} USDT. Please deposit funds first.`);
       return;
     }
 
-    const totalCap = amount * (selectedPlanForBuy.totalCapPct / 100);
+    const totalCap = amount * ((selectedPlanForBuy.totalCapPct || 200) / 100);
     const newPkg: PurchasedPackage = {
       id: `PKG-${Math.floor(1000 + Math.random() * 9000)}`,
       name: selectedPlanForBuy.name,
@@ -1143,16 +1143,22 @@ export function UserDashboard() {
       lastRoiPayout: new Date().toISOString()
     };
 
-    setPurchasedPackages([newPkg, ...purchasedPackages]);
-    insertPackageToDb(userEmail, newPkg);
+    setPurchasedPackages(prev => [newPkg, ...prev]);
+    await insertPackageToDb(userEmail, newPkg);
 
     // Trigger 10% Direct Referral Commission to Sponsor
-    processDirectReferralCommission(userEmail, amount, selectedPlanForBuy.name);
+    await processDirectReferralCommission(userEmail, amount, selectedPlanForBuy.name);
 
-    // Deduct package cost directly from available wallet balance
-    const newBal = Math.max(0, walletBalance - amount);
-    setWalletBalance(newBal);
-    syncUserProfile(userEmail, userName, newBal);
+    let newBal = walletBalance;
+    if (paymentMethod === 'WALLET') {
+      // Deduct package cost directly from available wallet balance
+      newBal = Math.max(0, walletBalance - amount);
+      setWalletBalance(newBal);
+      try {
+        localStorage.setItem(`nexa_balance_${userEmail}`, newBal.toString());
+      } catch (e) {}
+      await syncUserProfile(userEmail, userName || userEmail.split('@')[0], newBal);
+    }
 
     const newTx: Transaction = {
       id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
@@ -1164,10 +1170,10 @@ export function UserDashboard() {
       txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
     };
 
-    setTransactions([newTx, ...transactions]);
-    insertTransactionToDb(userEmail, newTx);
+    setTransactions(prev => [newTx, ...prev]);
+    await insertTransactionToDb(userEmail, newTx);
     setBuySuccessMessage(`Successfully purchased ${selectedPlanForBuy.name} Plan for $${amount.toLocaleString()}! Remaining Balance: $${newBal.toFixed(2)} USDT.`);
-    
+
     setTimeout(() => {
       setSelectedPlanForBuy(null);
       setBuySuccessMessage('');

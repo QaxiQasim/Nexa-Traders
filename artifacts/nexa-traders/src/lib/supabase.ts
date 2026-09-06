@@ -660,21 +660,34 @@ export async function fetchTransactionsFromDb(email: string) {
   }
 }
 
-export async function insertTransactionToDb(email: string, tx: any) {
+export async function insertTransactionToDb(emailOrTx: string | any, txPayload?: any) {
   try {
+    let email = '';
+    let txObj: any = {};
+
+    if (typeof emailOrTx === 'string') {
+      email = emailOrTx;
+      txObj = txPayload || {};
+    } else if (emailOrTx && typeof emailOrTx === 'object') {
+      txObj = emailOrTx;
+      email = txObj.user_email || txObj.email || '';
+    }
+
+    if (!email) return;
+
     await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
         user_email: email,
-        type: tx.type,
-        amount: tx.amount,
-        status: tx.status,
-        description: tx.title
+        type: txObj.type || 'PACKAGE_PURCHASE',
+        amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
+        status: txObj.status || 'COMPLETED',
+        description: txObj.description || txObj.title || 'Transaction'
       })
     });
   } catch (err) {
-    console.warn('Supabase transaction notice: saved locally.');
+    console.warn('Supabase transaction notice: saved locally.', err);
   }
 }
 
