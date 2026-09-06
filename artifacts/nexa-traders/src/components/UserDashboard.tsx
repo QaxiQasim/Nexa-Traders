@@ -2199,17 +2199,17 @@ export function UserDashboard() {
                   </div>
                 </div>
 
-                {/* Card 2: Unlimited Referrals */}
-                <div className="rounded-2xl border border-primary/25 bg-gradient-to-b from-[#1c1912] to-[#12100a] p-6 space-y-3 hover:border-primary/50 transition-all shadow-lg group">
+                {/* Card 2: Active Package & ROI Cap Rule */}
+                <div className="rounded-2xl border border-primary/35 bg-gradient-to-b from-[#1c1912] to-[#12100a] p-6 space-y-3 hover:border-primary/60 transition-all shadow-lg group">
                   <div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/20 text-primary border border-primary/40 group-hover:scale-110 transition-transform">
-                    <TrendingUp size={24} />
+                    <ShieldCheck size={24} />
                   </div>
-                  <h4 className="text-base font-bold text-foreground font-sans">Unlimited Earning Potential</h4>
+                  <h4 className="text-base font-bold text-foreground font-sans">Active Package & Cap Requirement</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    There is no cap on how many partners you can sponsor. Build an active investor network and generate continuous passive income.
+                    To qualify for 10% direct referral income, your account MUST have an active package. Additionally, your account's available Total ROI Cap must equal or exceed the referral bonus amount.
                   </p>
                   <div className="pt-2 text-[11px] text-primary font-bold flex items-center gap-1.5">
-                    <Sparkles size={14} /> 100% Uncapped Referral Income
+                    <Lock size={14} /> Active Package & Available Cap Required
                   </div>
                 </div>
 
