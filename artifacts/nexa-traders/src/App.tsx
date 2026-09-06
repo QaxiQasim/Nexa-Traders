@@ -24,6 +24,7 @@ import {
   Cpu,
   Crown,
   Database,
+  DollarSign,
   ExternalLink,
   Eye,
   Facebook,
@@ -33,6 +34,7 @@ import {
   Instagram,
   Layers,
   Linkedin,
+  Lock,
   LockKeyhole,
   Mail,
   Menu,
@@ -1428,6 +1430,7 @@ function PackagesPage() {
   const [withdrawNetwork, setWithdrawNetwork] = useState<'BSC' | 'ETH' | 'TRC'>('BSC');
   const [depositToken, setDepositToken] = useState<'BEP20' | 'TRC20' | 'ERC20'>('BEP20');
   const [copiedAddress, setCopiedAddress] = useState<boolean>(false);
+  const [copiedReferralLink, setCopiedReferralLink] = useState<boolean>(false);
 
   const handleCopyAddress = () => {
     setCopiedAddress(true);
@@ -1681,6 +1684,104 @@ function PackagesPage() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* 🚀 DIRECT REFERRAL PROGRAM — 10% DIRECT CASH INCOME SECTION */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#08090a] via-[#0c120e] to-[#08090a] py-20 lg:py-24 font-sans">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[400px] bg-emerald-500/10 blur-[160px] pointer-events-none rounded-full" />
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-5 lg:px-8">
+          <Reveal>
+            <div className="relative rounded-3xl border border-emerald-500/25 bg-gradient-to-b from-[#0e1713]/95 via-[#0a110e]/95 to-[#070b09]/95 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_40px_rgba(16,185,129,0.12)] overflow-hidden">
+              {/* Specular Top Edge */}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+
+              {/* Header Row */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                <div className="flex items-start sm:items-center gap-3.5">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+                    <Users size={22} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight font-sans">
+                      Direct Referral Program — <span className="text-emerald-400 font-black">10% Direct Cash Income</span>
+                    </h2>
+                    <p className="mt-1 text-xs text-muted-foreground font-sans leading-relaxed max-w-xl">
+                      Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}/register`;
+                      navigator.clipboard.writeText(url);
+                      setCopiedReferralLink(true);
+                      setTimeout(() => setCopiedReferralLink(false), 2500);
+                    }}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs px-4 py-2.5 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95 shrink-0"
+                  >
+                    {copiedReferralLink ? <Check size={15} /> : <Copy size={15} />}
+                    {copiedReferralLink ? 'Link Copied!' : 'Copy Referral Link'}
+                  </button>
+
+                  <button
+                    onClick={() => setLocation('/register')}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.05] hover:bg-white/10 text-foreground font-bold text-xs px-4 py-2.5 transition-all shrink-0"
+                  >
+                    View Referral Team Hub →
+                  </button>
+                </div>
+              </div>
+
+              {/* 2-Card Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                {/* Left Card: Instant 10% Direct Cash */}
+                <div className="group relative rounded-2xl border border-emerald-500/30 bg-[#0d1b15]/90 p-5 sm:p-6 flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+                  <div>
+                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 group-hover:scale-105 transition-transform">
+                      <DollarSign size={20} />
+                    </div>
+
+                    <h3 className="mt-4 text-base sm:text-lg font-bold text-foreground tracking-tight font-sans">
+                      Instant 10% Direct Cash
+                    </h3>
+                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed font-sans">
+                      Whenever your direct referral purchases or upgrades any package, 10% of their investment is credited straight to your wallet.
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400">
+                    <Check size={14} className="text-emerald-400" />
+                    Instant automated Wallet Payout
+                  </div>
+                </div>
+
+                {/* Right Card: Active Package & Cap Requirement */}
+                <div className="group relative rounded-2xl border border-amber-500/30 bg-[#19160d]/90 p-5 sm:p-6 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                  <div>
+                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 group-hover:scale-105 transition-transform">
+                      <Lock size={20} />
+                    </div>
+
+                    <h3 className="mt-4 text-base sm:text-lg font-bold text-foreground tracking-tight font-sans">
+                      Active Package & Cap Requirement
+                    </h3>
+                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed font-sans">
+                      To qualify for 10% direct referral income, your account MUST have an active package. Additionally, your account's available Total ROI Cap must equal or exceed the referral bonus amount.
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400">
+                    <AlertCircle size={14} className="text-amber-400" />
+                    Active Package & Available Cap Required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
