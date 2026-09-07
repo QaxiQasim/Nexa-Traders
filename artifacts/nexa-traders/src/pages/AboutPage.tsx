@@ -313,45 +313,6 @@ function CompanyMilestonesRoadmap() {
             })}
           </div>
 
-          {/* Interactive Inspection Detail Box */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeStep}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="mt-8 rounded-2xl border border-primary/30 bg-primary/5 p-5 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-            >
-              <div className="flex items-center gap-3">
-                <div className="rounded-xl border border-primary/40 bg-primary/10 p-2.5 text-primary shrink-0">
-                  <Activity size={18} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-primary">
-                      STAGE {milestones[activeStep].step} • {milestones[activeStep].date}
-                    </span>
-                    <span className="text-white/20">|</span>
-                    <span className="text-xs font-bold text-foreground">
-                      {milestones[activeStep].title}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {milestones[activeStep].desc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="shrink-0 flex items-center gap-2">
-                <span className="font-mono text-[10px] text-muted-foreground uppercase font-semibold">STATUS:</span>
-                <span className={`font-mono text-xs px-3 py-1 rounded-full border font-bold ${milestones[activeStep].badgeStyle}`}>
-                  ● {milestones[activeStep].status}
-                </span>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
         </div>
       </div>
     </section>
