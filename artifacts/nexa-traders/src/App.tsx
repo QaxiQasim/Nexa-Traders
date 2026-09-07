@@ -66,6 +66,7 @@ import NotFound from '@/pages/not-found';
 import AboutPage from '@/pages/AboutPage';
 import { UserDashboard } from '@/components/UserDashboard';
 import { fetchUserProfileFromDb, syncUserProfile, fetchProfileByReferralCode } from '@/lib/supabase';
+import { generateOtpCode, sendOtpEmail } from '@/lib/otpService';
 import { AdminLoginPage } from '@/components/admin/AdminLoginPage';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 
@@ -2286,6 +2287,27 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [refCodeNotice, setRefCodeNotice] = useState<string>('');
   const isRegister = mode === 'register';
 
+  // 🔒 Resend OTP State Management
+  const [otpStep, setOtpStep] = useState(false);
+  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
+  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [otpExpiresAt, setOtpExpiresAt] = useState<number>(0);
+  const [resendCooldown, setResendCooldown] = useState(60);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [otpSuccessNotice, setOtpSuccessNotice] = useState<string>('');
+  const [pendingUserData, setPendingUserData] = useState<any>(null);
+
+  // 60-Second Cooldown Timer for Resend OTP
+  useEffect(() => {
+    let timer: any;
+    if (otpStep && resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [otpStep, resendCooldown]);
+
   const lookupSponsorCode = (code: string) => {
     const clean = code.trim().toUpperCase();
     if (!clean) {
@@ -2344,7 +2366,6 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       const dbProfile = await fetchUserProfileFromDb(finalEmail);
 
       // UNREGISTERED USER LOGIN CHECK:
-      // If user tries to SIGN IN directly without an account, block them and show Invalid Login notification!
       if (!isRegister && !dbProfile) {
         setLoading(false);
         setAuthError(`Invalid Login: No account exists with email "${finalEmail}". Please Sign Up first to create your account.`);
@@ -2361,10 +2382,6 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         balanceToKeep = Number(dbProfile.wallet_balance) || 0;
       }
 
-      localStorage.setItem('nexa_user_name', formattedName);
-      localStorage.setItem('nexa_user_email', finalEmail);
-      localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
-
       let activeSponsorEmail = sponsorInfo?.email;
       let activeSponsorCode = sponsorInfo?.code;
       const refCodeToUse = (refCodeInput.trim() || localStorage.getItem('nexa_pending_ref_code') || '').toUpperCase();
@@ -2379,6 +2396,120 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         }
       }
 
+      // Generate 6-Digit Security OTP Code
+      const newOtpCode = generateOtpCode();
+      const expiresAt = Date.now() + 5 * 60 * 1000; // 5 Minutes Validity
+
+      setPendingUserData({
+        finalEmail,
+        formattedName,
+        balanceToKeep,
+        activeSponsorEmail,
+        activeSponsorCode
+      });
+      setGeneratedOtp(newOtpCode);
+      setOtpExpiresAt(expiresAt);
+
+      // Send OTP via Resend API
+      const sent = await sendOtpEmail(finalEmail, newOtpCode, formattedName);
+      setLoading(false);
+
+      if (sent) {
+        setOtpStep(true);
+        setResendCooldown(60);
+        setOtpSuccessNotice(`Verification code sent to ${finalEmail}`);
+      } else {
+        setAuthError('Failed to send OTP verification email. Please check your email address.');
+      }
+
+    } catch (err: any) {
+      setLoading(false);
+      setAuthError(err?.message || 'Authentication failed. Please try again.');
+    }
+  };
+
+  // Handle Resend OTP Request
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || sendingOtp || !pendingUserData) return;
+    setSendingOtp(true);
+    setAuthError('');
+    setOtpSuccessNotice('');
+
+    const newOtpCode = generateOtpCode();
+    setGeneratedOtp(newOtpCode);
+    setOtpExpiresAt(Date.now() + 5 * 60 * 1000);
+
+    const sent = await sendOtpEmail(pendingUserData.finalEmail, newOtpCode, pendingUserData.formattedName);
+    setSendingOtp(false);
+
+    if (sent) {
+      setResendCooldown(60);
+      setOtpSuccessNotice('A new 6-digit OTP code has been sent to your email.');
+    } else {
+      setAuthError('Failed to resend OTP email. Please try again.');
+    }
+  };
+
+  // OTP Digit Box Change Handler with Auto-Focus & Paste Support
+  const handleDigitChange = (index: number, val: string) => {
+    const cleanDigits = val.replace(/[^0-9]/g, '');
+
+    // Handle full 6-digit paste
+    if (cleanDigits.length === 6) {
+      const arr = cleanDigits.split('');
+      setOtpDigits(arr);
+      const lastInput = document.getElementById('otp-box-5');
+      if (lastInput) lastInput.focus();
+      return;
+    }
+
+    const updated = [...otpDigits];
+    updated[index] = cleanDigits.slice(-1);
+    setOtpDigits(updated);
+
+    if (cleanDigits && index < 5) {
+      const nextInput = document.getElementById(`otp-box-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleDigitKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-box-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  // Verify OTP and Grant Access
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+
+    const enteredOtp = otpDigits.join('');
+    if (enteredOtp.length < 6) {
+      setAuthError('Please enter all 6 digits of the OTP code.');
+      return;
+    }
+
+    if (Date.now() > otpExpiresAt) {
+      setAuthError('OTP Code has expired. Click "Resend OTP" to receive a new code.');
+      return;
+    }
+
+    if (enteredOtp !== generatedOtp) {
+      setAuthError('Invalid OTP Code. Please check your email and try again.');
+      return;
+    }
+
+    // OTP Successfully Verified! Proceed to Login/Register Completion
+    setLoading(true);
+    try {
+      const { finalEmail, formattedName, balanceToKeep, activeSponsorEmail, activeSponsorCode } = pendingUserData;
+
+      localStorage.setItem('nexa_user_name', formattedName);
+      localStorage.setItem('nexa_user_email', finalEmail);
+      localStorage.setItem('nexa_auth_user', JSON.stringify({ name: formattedName, email: finalEmail }));
+
       if (activeSponsorEmail) {
         try { localStorage.setItem(`nexa_sponsor_email_${finalEmail}`, activeSponsorEmail); } catch (e) {}
       }
@@ -2386,7 +2517,6 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         try { localStorage.setItem(`nexa_sponsor_code_${finalEmail}`, activeSponsorCode); } catch (e) {}
       }
 
-      // Sync/Create profile in Supabase DB with permanent referral & sponsor attribution
       const userProfile = await syncUserProfile(
         finalEmail,
         formattedName,
@@ -2400,7 +2530,6 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         localStorage.setItem(`nexa_ref_code_${finalEmail}`, userProfile.referral_code);
       }
 
-      // Clear pending referral code once registered
       localStorage.removeItem('nexa_pending_ref_code');
 
       setLoading(false);
@@ -2418,135 +2547,237 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         <div className="mb-8 text-center">
           <Logo compact />
           <h1 className="mt-8 text-3xl font-semibold tracking-[-.05em]">
-            {isRegister ? 'Make room for better decisions.' : 'Welcome back to the signal.'}
+            {otpStep
+              ? 'Security Verification'
+              : isRegister
+              ? 'Make room for better decisions.'
+              : 'Welcome back to the signal.'}
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            {isRegister ? 'Create your NexaTraders account in under a minute.' : 'Sign in to access your NexaTraders User Dashboard.'}
+            {otpStep
+              ? `Enter the 6-digit OTP sent to ${pendingUserData?.finalEmail || 'your email'}`
+              : isRegister
+              ? 'Create your NexaTraders account in under a minute.'
+              : 'Sign in to access your NexaTraders User Dashboard.'}
           </p>
         </div>
+
         <div className="rounded-xl border border-border bg-card/85 p-6 shadow-2xl backdrop-blur sm:p-8 space-y-4">
-          {/* Sponsor Identification Banner */}
-          {isRegister && sponsorInfo && (
-            <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 font-mono text-xs text-primary flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-2">
-                <Users size={16} className="text-primary animate-pulse" />
-                <span>Referred By: <strong className="text-foreground">{sponsorInfo.name}</strong> ({sponsorInfo.code})</span>
+          
+          {/* OTP STEP UI */}
+          {otpStep ? (
+            <div className="space-y-5">
+              <div className="rounded-xl border border-primary/40 bg-primary/10 p-3.5 font-mono text-xs text-primary flex items-center gap-2.5">
+                <LockKeyhole size={18} className="text-primary shrink-0 animate-pulse" />
+                <div>
+                  <span className="font-bold block text-foreground">2-Factor Security Auth</span>
+                  <span className="text-[11px] text-muted-foreground">Check your inbox for a 6-digit code.</span>
+                </div>
               </div>
-              <span className="rounded bg-accent/20 text-accent px-2 py-0.5 text-[10px] font-bold uppercase">Verified Sponsor</span>
-            </div>
-          )}
 
-          {isRegister && refCodeNotice && (
-            <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 p-3 font-mono text-xs text-yellow-400 flex items-center gap-2">
-              <AlertCircle size={16} /> {refCodeNotice}
-            </div>
-          )}
+              {otpSuccessNotice && (
+                <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs font-mono text-emerald-400 flex items-center gap-2">
+                  <CheckCircle2 size={16} /> {otpSuccessNotice}
+                </div>
+              )}
 
-          {authError && (
-            <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 space-y-2">
-              <div className="flex items-center gap-2 font-bold">
-                <AlertCircle size={16} /> {authError}
-              </div>
-              {!isRegister && (
+              {authError && (
+                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs font-mono text-rose-400 flex items-center gap-2">
+                  <AlertCircle size={16} /> {authError}
+                </div>
+              )}
+
+              <form onSubmit={handleVerifyOtp} className="space-y-6">
+                <div>
+                  <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-3 text-center">
+                    Enter 6-Digit OTP Code
+                  </label>
+                  
+                  {/* 6 Individual Digit Input Boxes */}
+                  <div className="flex items-center justify-between gap-2">
+                    {otpDigits.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        id={`otp-box-${idx}`}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={digit}
+                        onChange={e => handleDigitChange(idx, e.target.value)}
+                        onKeyDown={e => handleDigitKeyDown(idx, e)}
+                        className="w-11 h-13 text-center text-xl font-mono font-bold rounded-lg border border-border bg-secondary text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading || otpDigits.join('').length < 6}
+                  className="w-full rounded-lg bg-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-[0_0_20px_rgba(232,185,73,0.3)]"
+                >
+                  {loading ? (
+                    <span>Verifying OTP Code...</span>
+                  ) : (
+                    <>
+                      Verify OTP & Launch Dashboard <ArrowRight size={16} />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
                 <button
                   type="button"
                   onClick={() => {
+                    setOtpStep(false);
                     setAuthError('');
-                    setLocation('/register');
                   }}
-                  className="w-full rounded-lg bg-primary py-2 text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all mt-1"
+                  className="text-muted-foreground hover:text-foreground transition-colors font-mono"
                 >
-                  Click Here to Sign Up (Create Account)
+                  ← Back to Email
                 </button>
-              )}
+
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={resendCooldown > 0 || sendingOtp}
+                  className="font-mono text-primary font-bold hover:underline disabled:opacity-50 disabled:no-underline"
+                >
+                  {sendingOtp
+                    ? 'Sending...'
+                    : resendCooldown > 0
+                    ? `Resend OTP in ${resendCooldown}s`
+                    : 'Resend OTP Code'}
+                </button>
+              </div>
             </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isRegister && (
-              <label className="block text-sm">
-                <span className="mb-2 block text-muted-foreground">Full name</span>
-                <input
-                  required
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="e.g. Alex Vance"
-                  className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary"
-                  data-testid="input-auth-name"
-                />
-              </label>
-            )}
-
-            {isRegister && (
-              <label className="block text-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-muted-foreground">Referral Code</span>
-                  <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-wider">(Optional)</span>
+          ) : (
+            <>
+              {/* Sponsor Identification Banner */}
+              {isRegister && sponsorInfo && (
+                <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 font-mono text-xs text-primary flex items-center justify-between shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <Users size={16} className="text-primary animate-pulse" />
+                    <span>Referred By: <strong className="text-foreground">{sponsorInfo.name}</strong> ({sponsorInfo.code})</span>
+                  </div>
+                  <span className="rounded bg-accent/20 text-accent px-2 py-0.5 text-[10px] font-bold uppercase">Verified Sponsor</span>
                 </div>
-                <input
-                  type="text"
-                  value={refCodeInput}
-                  onChange={e => handleRefCodeInputChange(e.target.value)}
-                  placeholder="e.g. NEXA7K42"
-                  className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm uppercase tracking-wider"
-                  data-testid="input-auth-refcode"
-                />
-              </label>
-            )}
-
-            <label className="block text-sm">
-              <span className="mb-2 block text-muted-foreground">Email address</span>
-              <input
-                required
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="you@domain.com"
-                className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
-                data-testid="input-auth-email"
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="mb-2 block text-muted-foreground">Password</span>
-              <input
-                required
-                type="password"
-                minLength={6}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
-                data-testid="input-auth-password"
-              />
-            </label>
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-2 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              data-testid={`button-auth-${mode}`}
-            >
-              {loading ? (
-                <span>Checking account credentials...</span>
-              ) : (
-                <>
-                  {isRegister ? 'Create Account & Launch Dashboard' : 'Sign In to Dashboard'} <ArrowRight size={15} />
-                </>
               )}
-            </button>
-          </form>
-          <div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">
-            {isRegister ? 'Already have access? ' : 'New to NexaTraders? '}
-            <button
-              onClick={() => {
-                setAuthError('');
-                setLocation(isRegister ? '/login' : '/register');
-              }}
-              className="text-primary hover:underline font-bold"
-              data-testid="button-auth-switch"
-            >
-              {isRegister ? 'Sign in' : 'Create an account'}
-            </button>
-          </div>
+
+              {isRegister && refCodeNotice && (
+                <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 p-3 font-mono text-xs text-yellow-400 flex items-center gap-2">
+                  <AlertCircle size={16} /> {refCodeNotice}
+                </div>
+              )}
+
+              {authError && (
+                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 space-y-2">
+                  <div className="flex items-center gap-2 font-bold">
+                    <AlertCircle size={16} /> {authError}
+                  </div>
+                  {!isRegister && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthError('');
+                        setLocation('/register');
+                      }}
+                      className="w-full rounded-lg bg-primary py-2 text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all mt-1"
+                    >
+                      Click Here to Sign Up (Create Account)
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {isRegister && (
+                  <label className="block text-sm">
+                    <span className="mb-2 block text-muted-foreground">Full name</span>
+                    <input
+                      required
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      placeholder="e.g. Alex Vance"
+                      className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary"
+                      data-testid="input-auth-name"
+                    />
+                  </label>
+                )}
+
+                {isRegister && (
+                  <label className="block text-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-muted-foreground">Referral Code</span>
+                      <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-wider">(Optional)</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={refCodeInput}
+                      onChange={e => handleRefCodeInputChange(e.target.value)}
+                      placeholder="e.g. NEXA7K42"
+                      className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm uppercase tracking-wider"
+                      data-testid="input-auth-refcode"
+                    />
+                  </label>
+                )}
+
+                <label className="block text-sm">
+                  <span className="mb-2 block text-muted-foreground">Email address</span>
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="you@domain.com"
+                    className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
+                    data-testid="input-auth-email"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-2 block text-muted-foreground">Password</span>
+                  <input
+                    required
+                    type="password"
+                    minLength={6}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
+                    data-testid="input-auth-password"
+                  />
+                </label>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="mt-2 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  data-testid={`button-auth-${mode}`}
+                >
+                  {loading ? (
+                    <span>Sending 2FA OTP Code...</span>
+                  ) : (
+                    <>
+                      {isRegister ? 'Create Account & Get OTP' : 'Sign In with Email OTP'} <ArrowRight size={15} />
+                    </>
+                  )}
+                </button>
+              </form>
+              <div className="mt-6 border-t border-border pt-5 text-center text-xs text-muted-foreground">
+                {isRegister ? 'Already have access? ' : 'New to NexaTraders? '}
+                <button
+                  onClick={() => {
+                    setAuthError('');
+                    setLocation(isRegister ? '/login' : '/register');
+                  }}
+                  className="text-primary hover:underline font-bold"
+                  data-testid="button-auth-switch"
+                >
+                  {isRegister ? 'Sign in' : 'Create an account'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
         <p className="mt-6 text-center text-[11px] text-muted-foreground">
           By continuing, you acknowledge our{' '}
