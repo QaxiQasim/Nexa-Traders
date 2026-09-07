@@ -72,234 +72,175 @@ function AnimatedNumber({ value, prefix = '', suffix = '' }: { value: string; pr
   );
 }
 
-// Interactive Hero AI Network SVG Visualization
+// Interactive Hero AI Network Clean Control Dashboard
 function HeroNetworkVisual() {
-  const [selectedNodeId, setSelectedNodeId] = useState<number>(4);
-  const [activeStrategy, setActiveStrategy] = useState<'hft' | 'smart' | 'delta'>('smart');
-  const [simulating, setSimulating] = useState(false);
-  const [liveTrades, setLiveTrades] = useState([
-    { pair: 'BTC/USDT', from: 'Binance', to: 'OKX', spread: '+2.14%', profit: '$42.80', latency: '11ms' },
-    { pair: 'ETH/USDT', from: 'Bybit', to: 'Coinbase', spread: '+1.98%', profit: '$28.40', latency: '9ms' },
-    { pair: 'SOL/USDT', from: 'Kraken', to: 'Binance', spread: '+2.45%', profit: '$64.10', latency: '14ms' },
-  ]);
+  const [selectedPair, setSelectedPair] = useState<string>('BTC/USDT');
+  const [executing, setExecuting] = useState(false);
+  const [execStep, setExecStep] = useState(0);
+  const [lastProfit, setLastProfit] = useState<string>('$184.20');
 
-  const nodes = [
-    { id: 1, name: 'Binance API', type: 'CEX', x: 170, y: 130, ping: '8ms', volume: '$4.2B', spread: '+1.92%', status: 'ACTIVE' },
-    { id: 2, name: 'OKX Liquidity', type: 'CEX', x: 480, y: 85, ping: '11ms', volume: '$2.8B', spread: '+2.14%', status: 'ACTIVE' },
-    { id: 3, name: 'Bybit Stream', type: 'CEX', x: 790, y: 130, ping: '9ms', volume: '$3.1B', spread: '+1.85%', status: 'ACTIVE' },
-    { id: 4, name: 'NEXA QUANT AI CORE', type: 'ENGINE', x: 480, y: 280, ping: '0.2ms', volume: '$15.4B', spread: 'OPTIMAL', status: 'QUANT ENGINE LIVE' },
-    { id: 5, name: 'Kraken Feed', type: 'CEX', x: 190, y: 410, ping: '14ms', volume: '$1.4B', spread: '+1.78%', status: 'ACTIVE' },
-    { id: 6, name: 'Coinbase Desk', type: 'CEX', x: 770, y: 410, ping: '12ms', volume: '$1.9B', spread: '+1.65%', status: 'ACTIVE' }
-  ];
+  const pairData: Record<string, { buyEx: string; buyPrice: string; sellEx: string; sellPrice: string; spread: string; profit: string; volume: string; latency: string }> = {
+    'BTC/USDT': { buyEx: 'Binance API', buyPrice: '$94,180.50', sellEx: 'OKX Liquidity', sellPrice: '$94,364.70', spread: '+1.96%', profit: '$184.20', volume: '$4.2B', latency: '8.4ms' },
+    'ETH/USDT': { buyEx: 'Bybit Stream', buyPrice: '$3,420.10', sellEx: 'Coinbase Desk', sellPrice: '$3,488.50', spread: '+2.00%', profit: '$68.40', volume: '$2.8B', latency: '9.1ms' },
+    'SOL/USDT': { buyEx: 'Kraken Feed', buyPrice: '$188.40', sellEx: 'Binance API', sellPrice: '$193.10', spread: '+2.49%', profit: '$4.70', volume: '$1.9B', latency: '11.2ms' },
+    'BNB/USDT': { buyEx: 'Gate.io Feed', buyPrice: '$612.30', sellEx: 'OKX Liquidity', sellPrice: '$625.80', spread: '+2.20%', profit: '$13.50', volume: '$1.1B', latency: '10.5ms' }
+  };
 
-  const selectedNode = nodes.find(n => n.id === selectedNodeId) || nodes[3];
+  const current = pairData[selectedPair] || pairData['BTC/USDT'];
 
-  const handleSimulate = () => {
-    setSimulating(true);
+  const handleRunSimulation = () => {
+    if (executing) return;
+    setExecuting(true);
+    setExecStep(1);
+
     setTimeout(() => {
-      const pairs = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'AVAX/USDT'];
-      const ex = ['Binance', 'OKX', 'Bybit', 'Coinbase', 'Kraken'];
-      const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
-      const fromEx = ex[Math.floor(Math.random() * ex.length)];
-      let toEx = ex[Math.floor(Math.random() * ex.length)];
-      while (toEx === fromEx) toEx = ex[Math.floor(Math.random() * ex.length)];
-      const spreadVal = (1.5 + Math.random() * 1.5).toFixed(2);
-      const profitVal = (15 + Math.random() * 70).toFixed(2);
-      const lat = Math.floor(8 + Math.random() * 8);
-
-      setLiveTrades(prev => [
-        { pair: randomPair, from: fromEx, to: toEx, spread: `+${spreadVal}%`, profit: `$${profitVal}`, latency: `${lat}ms` },
-        ...prev.slice(0, 2)
-      ]);
-      setSimulating(false);
-    }, 600);
+      setExecStep(2);
+      setTimeout(() => {
+        setExecStep(3);
+        const randomBonus = (10 + Math.random() * 40).toFixed(2);
+        setLastProfit(`$${(parseFloat(current.profit.replace('$', '')) + parseFloat(randomBonus)).toFixed(2)}`);
+        setTimeout(() => {
+          setExecuting(false);
+          setExecStep(0);
+        }, 1200);
+      }, 700);
+    }, 700);
   };
 
   return (
-    <div className="relative w-full rounded-3xl border border-primary/40 bg-gradient-to-b from-[#0f1714]/95 via-[#0b100e]/95 to-[#060908]/98 p-5 sm:p-7 backdrop-blur-2xl shadow-[0_0_80px_rgba(232,185,73,0.2)] overflow-hidden font-mono select-none">
-      {/* Specular Glow Bar */}
+    <div className="relative w-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#111815] via-[#0d1310] to-[#080c0a] p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_60px_rgba(232,185,73,0.18)] font-mono select-none overflow-hidden">
+      {/* Specular Top Line Accent */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
+      
+      {/* Soft Ambient Radial Glow */}
+      <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 blur-[80px] rounded-full pointer-events-none" />
 
-      {/* Cyber Grid Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b9490d_1px,transparent_1px),linear-gradient(to_bottom,#e8b9490d_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-60 pointer-events-none" />
-
-      {/* Radial Ambient Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/15 blur-[100px] rounded-full pointer-events-none" />
-
-      {/* TOP INTERACTIVE HUD BAR */}
-      <div className="relative z-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+      {/* HEADER BAR */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-3 w-3 items-center justify-center">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-sm">
+            <Activity size={18} className="animate-pulse" />
           </div>
           <div>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block font-bold">NEXA QUANT MATRIX</span>
-            <span className="text-xs font-black text-foreground tracking-wider flex items-center gap-1.5">
-              18 Venues Connected <span className="text-accent">● Live Stream</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Strategy Selector Pills */}
-        <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/50 p-1 text-[10px]">
-          <button
-            type="button"
-            onClick={() => setActiveStrategy('hft')}
-            className={`rounded-full px-3 py-1 font-bold transition-all ${activeStrategy === 'hft' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            ⚡ HFT Loans
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveStrategy('smart')}
-            className={`rounded-full px-3 py-1 font-bold transition-all ${activeStrategy === 'smart' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            🤖 AI Arbitrage
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveStrategy('delta')}
-            className={`rounded-full px-3 py-1 font-bold transition-all ${activeStrategy === 'delta' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            🛡️ Low-Risk
-          </button>
-        </div>
-      </div>
-
-      {/* INTERACTIVE SVG MATRIX CANVAS */}
-      <div className="relative h-[360px] sm:h-[400px] w-full mt-2">
-        <svg className="w-full h-full relative z-10" viewBox="0 0 960 520" fill="none">
-          <defs>
-            <linearGradient id="laserBeam" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#e8b949" stopOpacity="0.9" />
-              <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#f3cc68" stopOpacity="0.9" />
-            </linearGradient>
-            <filter id="matrixGlow">
-              <feGaussianBlur stdDeviation="4" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* Connected Beams */}
-          <g stroke="url(#laserBeam)" strokeWidth="2.5" filter="url(#matrixGlow)">
-            <path d="M 170 130 L 480 280" strokeDasharray="8 4" className="animate-pulse" />
-            <path d="M 480 85 L 480 280" strokeDasharray="6 3" />
-            <path d="M 790 130 L 480 280" strokeDasharray="10 5" className="animate-pulse" />
-            <path d="M 190 410 L 480 280" strokeDasharray="8 4" opacity="0.85" />
-            <path d="M 770 410 L 480 280" strokeDasharray="10 4" opacity="0.85" />
-          </g>
-
-          {/* Flowing Laser Data Pulses */}
-          <circle r="4" fill="#10b981" filter="url(#matrixGlow)">
-            <animateMotion path="M 170 130 L 480 280" dur="2s" repeatCount="indefinite" />
-          </circle>
-          <circle r="4" fill="#e8b949" filter="url(#matrixGlow)">
-            <animateMotion path="M 790 130 L 480 280" dur="2.5s" repeatCount="indefinite" />
-          </circle>
-          <circle r="4" fill="#10b981" filter="url(#matrixGlow)">
-            <animateMotion path="M 190 410 L 480 280" dur="1.8s" repeatCount="indefinite" />
-          </circle>
-          <circle r="4" fill="#f3cc68" filter="url(#matrixGlow)">
-            <animateMotion path="M 770 410 L 480 280" dur="2.2s" repeatCount="indefinite" />
-          </circle>
-
-          {/* Interactive Node Markers */}
-          {nodes.map((node) => {
-            const isEngine = node.type === 'ENGINE';
-            const isSelected = selectedNodeId === node.id;
-
-            return (
-              <g
-                key={node.id}
-                transform={`translate(${node.x}, ${node.y})`}
-                className="cursor-pointer transition-transform duration-300 hover:scale-110"
-                onClick={() => setSelectedNodeId(node.id)}
-              >
-                {isEngine ? (
-                  <>
-                    <circle r="52" fill="rgba(232,185,73,0.1)" stroke="#e8b949" strokeWidth="1.5" strokeDasharray="8 4" className="animate-spin-slow" />
-                    <circle r="36" fill="#0d1411" stroke={isSelected ? '#10b981' : '#e8b949'} strokeWidth="2.5" filter="url(#matrixGlow)" />
-                    <circle r="14" fill="#f3cc68" className="animate-pulse" />
-                    <text y="70" textAnchor="middle" fill="#e8b949" fontSize="12" fontWeight="900" letterSpacing="1">
-                      NEXA AI CORE
-                    </text>
-                    <text y="86" textAnchor="middle" fill="#10b981" fontSize="10" fontWeight="700">
-                      ● 0.2ms Latency
-                    </text>
-                  </>
-                ) : (
-                  <>
-                    <circle r={isSelected ? '24' : '18'} fill="#0a0f0d" stroke={isSelected ? '#10b981' : '#e8b949'} strokeWidth={isSelected ? '3' : '2'} filter="url(#matrixGlow)" />
-                    <circle r="6" fill={isSelected ? '#10b981' : '#e8b949'} />
-                    <text y="38" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="800">
-                      {node.name}
-                    </text>
-                    <text y="52" textAnchor="middle" fill="#10b981" fontSize="9" fontWeight="700">
-                      {node.ping} • {node.spread}
-                    </text>
-                  </>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* FLOATING TELEMETRY OVERLAY CARD */}
-        <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-30 rounded-2xl border border-primary/50 bg-black/85 p-3.5 sm:p-4 backdrop-blur-xl shadow-2xl max-w-[260px] font-mono text-xs">
-          <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
-            <span className="text-[10px] uppercase font-bold text-primary tracking-wider">{selectedNode.name}</span>
-            <span className="text-[9px] font-bold text-accent bg-accent/20 px-2 py-0.5 rounded-full border border-accent/40">
-              {selectedNode.status}
-            </span>
-          </div>
-          <div className="space-y-1.5 text-[11px]">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Network Latency:</span>
-              <strong className="text-accent font-bold">{selectedNode.ping}</strong>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">24H Liquidity:</span>
-              <strong className="text-foreground font-bold">{selectedNode.volume}</strong>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Spread Edge:</span>
-              <strong className="text-primary font-bold">{selectedNode.spread}</strong>
-            </div>
-          </div>
-        </div>
-
-        {/* MANUAL ROUTE EXECUTION SIMULATOR BUTTON */}
-        <button
-          type="button"
-          onClick={handleSimulate}
-          disabled={simulating}
-          className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-30 rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-4 py-2.5 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:scale-105 transition-all flex items-center gap-1.5"
-        >
-          <Zap size={14} className={simulating ? 'animate-spin' : ''} />
-          {simulating ? 'Routing...' : 'Simulate Live Execution'}
-        </button>
-      </div>
-
-      {/* BOTTOM LIVE ROUTE TICKER FEED */}
-      <div className="relative z-20 mt-4 rounded-2xl border border-white/10 bg-black/60 p-3 font-mono text-[11px] flex items-center justify-between gap-3 overflow-hidden">
-        <div className="flex items-center gap-2 flex-shrink-0 text-accent font-bold uppercase text-[10px]">
-          <Activity size={14} className="text-accent animate-pulse" /> LIVE STREAM:
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <div className="flex items-center gap-4 text-xs font-mono text-foreground truncate">
-            {liveTrades.map((t, idx) => (
-              <span key={idx} className="inline-flex items-center gap-1.5 flex-shrink-0 bg-white/[0.04] px-3 py-1 rounded-xl border border-white/10">
-                <strong className="text-primary">{t.pair}</strong>
-                <span className="text-muted-foreground">({t.from} ➔ {t.to})</span>
-                <span className="text-accent font-bold">{t.spread}</span>
-                <span className="text-emerald-400 font-extrabold">{t.profit}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-foreground tracking-wider">NEXA AI ROUTER</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" /> ● 18 VENUES ACTIVE
               </span>
-            ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Real-Time Quantitative Arbitrage Matcher</p>
+          </div>
+        </div>
+
+        {/* INTERACTIVE PAIR TABS */}
+        <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-white/10 bg-black/60 p-1 text-[11px]">
+          {Object.keys(pairData).map((pair) => (
+            <button
+              key={pair}
+              type="button"
+              onClick={() => setSelectedPair(pair)}
+              className={`rounded-xl px-3 py-1.5 font-bold transition-all ${
+                selectedPair === pair
+                  ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+              }`}
+            >
+              {pair}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* CORE LIVE ROUTING DISPLAY CARD */}
+      <div className="mt-6 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+          {/* Source Venue */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center sm:text-left space-y-1.5 shadow-inner">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block font-bold">SOURCE (BUY SIDE)</span>
+            <h4 className="text-base font-black text-foreground">{current.buyEx}</h4>
+            <div className="text-xl font-extrabold text-primary font-mono">{current.buyPrice}</div>
+            <span className="text-[10px] text-muted-foreground block">Depth: {current.volume}</span>
+          </div>
+
+          {/* AI Routing Beams & Spread Badge */}
+          <div className="flex flex-col items-center justify-center p-2 text-center relative">
+            <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 text-xs font-black text-emerald-400 shadow-sm animate-pulse mb-2">
+              ⚡ SPREAD EDGE: {current.spread}
+            </span>
+
+            <div className="w-full flex items-center justify-center gap-2 my-1">
+              <div className="h-0.5 flex-1 bg-gradient-to-r from-primary to-emerald-400" />
+              <div className="rounded-full bg-primary/20 p-2 border border-primary text-primary animate-spin-slow">
+                <BrainCircuit size={18} />
+              </div>
+              <div className="h-0.5 flex-1 bg-gradient-to-r from-emerald-400 to-primary" />
+            </div>
+
+            <span className="text-[10px] text-muted-foreground font-bold mt-1">
+              AI Latency: <strong className="text-accent">{current.latency}</strong>
+            </span>
+          </div>
+
+          {/* Target Venue */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center sm:text-right space-y-1.5 shadow-inner">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block font-bold">TARGET (SELL SIDE)</span>
+            <h4 className="text-base font-black text-foreground">{current.sellEx}</h4>
+            <div className="text-xl font-extrabold text-accent font-mono">{current.sellPrice}</div>
+            <span className="text-[10px] text-emerald-400 font-bold block">Est. Yield: +{current.profit}</span>
+          </div>
+        </div>
+
+        {/* INTERACTIVE SIMULATION CONTROL & PROGRESS BAR */}
+        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-center sm:text-left">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest block font-bold">LIVE EXECUTION ENGINE</span>
+              <span className="text-xs text-foreground font-bold">
+                {execStep === 1
+                  ? 'Step 01: Orderbook Locked on ' + current.buyEx
+                  : execStep === 2
+                  ? 'Step 02: ' + current.latency + ' Cross-Venue Matching...'
+                  : execStep === 3
+                  ? 'Step 03: Trade Settled! Net Yield Credit ' + lastProfit
+                  : 'Ready to Simulate Live Execution Route'}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleRunSimulation}
+              disabled={executing}
+              className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-6 py-3 text-xs font-black uppercase text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-105 transition-all flex items-center justify-center gap-2"
+            >
+              <Zap size={15} className={executing ? 'animate-spin' : ''} />
+              {executing ? 'Executing Route...' : 'Simulate Live Route'}
+            </button>
+          </div>
+
+          {/* Progress Animation Bar */}
+          {executing && (
+            <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden mt-2">
+              <div
+                className="h-full bg-gradient-to-r from-primary via-emerald-400 to-accent transition-all duration-500"
+                style={{ width: `${execStep * 33.3}%` }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* BOTTOM METRICS STRIP */}
+        <div className="grid grid-cols-3 gap-3 text-center border-t border-white/10 pt-4 font-mono text-xs">
+          <div>
+            <span className="text-[10px] text-muted-foreground uppercase block">Avg Latency</span>
+            <strong className="text-primary font-bold">{current.latency}</strong>
+          </div>
+          <div>
+            <span className="text-[10px] text-muted-foreground uppercase block">Execution Edge</span>
+            <strong className="text-accent font-bold">{current.spread}</strong>
+          </div>
+          <div>
+            <span className="text-[10px] text-muted-foreground uppercase block">Accuracy Rate</span>
+            <strong className="text-emerald-400 font-bold">99.8%</strong>
           </div>
         </div>
       </div>
