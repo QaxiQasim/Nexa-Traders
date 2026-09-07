@@ -125,6 +125,239 @@ const TIMELINE_STEPS = [
   }
 ];
 
+function CompanyMilestonesRoadmap() {
+  const [activeStep, setActiveStep] = useState(2); // Default 2026 Beta Platform
+
+  const milestones = [
+    {
+      step: '01',
+      date: '2023',
+      title: 'AI Arbitrage Research',
+      desc: 'Development and exploration of AI-driven crypto arbitrage technology begins.',
+      tag: 'FOUNDATION',
+      status: 'Completed',
+      dotColor: 'bg-emerald-400',
+      activeColor: 'text-emerald-400',
+      badgeStyle: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+    },
+    {
+      step: '02',
+      date: '15 JUN 2025',
+      title: 'Nexa Traders Launch',
+      desc: 'Nexa Traders officially launches as a crypto trading technology platform.',
+      tag: 'OFFICIAL LAUNCH',
+      status: 'Live Platform',
+      dotColor: 'bg-emerald-400',
+      activeColor: 'text-emerald-400',
+      badgeStyle: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+    },
+    {
+      step: '03',
+      date: '2026',
+      title: 'Beta Platform Expansion',
+      desc: 'Expansion of exchange connectivity, crypto coverage, trading pairs and AI infrastructure.',
+      tag: 'BETA EXPANSION',
+      status: 'Active Stage',
+      dotColor: 'bg-primary',
+      activeColor: 'text-primary',
+      badgeStyle: 'border-primary/40 bg-primary/10 text-primary'
+    },
+    {
+      step: '04',
+      date: '10K+ USERS',
+      title: 'Growing User Base',
+      desc: 'The platform reaches more than 10,000 active users globally across markets.',
+      tag: 'MILESTONE',
+      status: 'Achieved',
+      dotColor: 'bg-primary',
+      activeColor: 'text-primary',
+      badgeStyle: 'border-primary/40 bg-primary/10 text-primary'
+    },
+    {
+      step: '05',
+      date: '01 JAN 2027',
+      title: 'Full Platform Version',
+      desc: 'The planned final version of Nexa Traders launches with expanded platform capabilities.',
+      tag: 'TARGET GOAL',
+      status: 'Planned',
+      dotColor: 'bg-white/40',
+      activeColor: 'text-foreground',
+      badgeStyle: 'border-white/20 bg-white/5 text-muted-foreground'
+    }
+  ];
+
+  return (
+    <section className="relative overflow-hidden py-24 lg:py-32 bg-[#08090a] border-b border-white/10 font-sans">
+      {/* Background ambient glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-primary/5 blur-[150px] pointer-events-none rounded-full" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold block mb-2">
+            STRATEGIC EXECUTION
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+            Company Milestones
+          </h2>
+          <p className="mt-3 text-xs sm:text-sm text-muted-foreground">
+            Interactive Roadmap — Click or hover any stage below to inspect timeline progression.
+          </p>
+        </div>
+
+        {/* Master Glass Roadmap Shell */}
+        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.7)] relative overflow-hidden">
+          
+          {/* Continuous Interactive Horizontal Roadmap Track (Visible on md+) */}
+          <div className="hidden md:block relative mb-12 px-4">
+            {/* Background Rail */}
+            <div className="absolute top-5 left-10 right-10 h-[2px] bg-white/10 rounded-full" />
+
+            {/* Glowing Active Progress Line */}
+            <div
+              className="absolute top-5 left-10 h-[2px] bg-gradient-to-r from-emerald-500 via-primary to-amber-400 transition-all duration-500 rounded-full shadow-[0_0_12px_rgba(232,185,73,0.5)]"
+              style={{ width: `${(activeStep / (milestones.length - 1)) * 88}%` }}
+            />
+
+            {/* Interactive Nodes Row */}
+            <div className="grid grid-cols-5 relative z-10 text-center">
+              {milestones.map((item, idx) => {
+                const isActive = activeStep === idx;
+                const isPassed = idx <= activeStep;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveStep(idx)}
+                    onMouseEnter={() => setActiveStep(idx)}
+                    className="group flex flex-col items-center cursor-pointer focus:outline-none"
+                  >
+                    {/* Node Dot */}
+                    <div
+                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                        isActive
+                          ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.6)] scale-110 font-bold'
+                          : isPassed
+                          ? 'border-primary/60 bg-[#08090a] text-primary group-hover:border-primary'
+                          : 'border-white/20 bg-[#08090a] text-muted-foreground group-hover:border-white/40 group-hover:text-foreground'
+                      }`}
+                    >
+                      <span className="font-mono text-xs">{item.step}</span>
+                    </div>
+
+                    {/* Stage Label under Node */}
+                    <span
+                      className={`mt-3 font-mono text-xs font-bold transition-colors ${
+                        isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+                      }`}
+                    >
+                      {item.date}
+                    </span>
+
+                    <span className="text-[10px] text-muted-foreground/80 truncate max-w-[100px] mt-0.5 font-medium">
+                      {item.tag}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Interactive Cards Grid */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {milestones.map((m, idx) => {
+              const isActive = activeStep === idx;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => setActiveStep(idx)}
+                  onMouseEnter={() => setActiveStep(idx)}
+                  className={`group rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                    isActive
+                      ? 'border-primary/60 bg-white/[0.05] shadow-[0_0_30px_rgba(232,185,73,0.15)] scale-[1.02]'
+                      : 'border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  {/* Active Indicator Top Bar */}
+                  {isActive && (
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-[#f5c542] to-primary" />
+                  )}
+
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`font-mono text-sm font-black ${isActive ? m.activeColor : 'text-foreground'}`}>
+                        {m.date}
+                      </span>
+                      <span className="font-mono text-[10px] text-muted-foreground/70 font-semibold">
+                        #{m.step}
+                      </span>
+                    </div>
+
+                    <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug">
+                      {m.title}
+                    </h3>
+
+                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                      {m.desc}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-3 border-t border-white/5 flex items-center justify-between">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground font-bold">
+                      {m.tag}
+                    </span>
+                    <span className={`font-mono text-[9px] px-2 py-0.5 rounded-full border font-semibold ${m.badgeStyle}`}>
+                      {m.status}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Interactive Inspection Detail Box */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeStep}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="mt-8 rounded-2xl border border-primary/30 bg-primary/5 p-5 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl border border-primary/40 bg-primary/10 p-2.5 text-primary shrink-0">
+                  <Activity size={18} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-primary">
+                      STAGE {milestones[activeStep].step} • {milestones[activeStep].date}
+                    </span>
+                    <span className="text-white/20">|</span>
+                    <span className="text-xs font-bold text-foreground">
+                      {milestones[activeStep].title}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {milestones[activeStep].desc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="shrink-0 flex items-center gap-2">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase font-semibold">STATUS:</span>
+                <span className={`font-mono text-xs px-3 py-1 rounded-full border font-bold ${milestones[activeStep].badgeStyle}`}>
+                  ● {milestones[activeStep].status}
+                </span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function AboutPage() {
   const [, setLocation] = useLocation();
   const [lightboxImg, setLightboxImg] = useState<{ src: string; title: string; desc: string } | null>(null);
@@ -506,74 +739,9 @@ export function AboutPage() {
       </section>
 
 
-      {/* 🗓️ 8. COMPANY MILESTONES */}
-      <section className="relative overflow-hidden py-24 lg:py-32 bg-[#090d0b] border-b border-white/10 font-sans">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">HISTORICAL MILESTONES</span>
-            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
-              Company Milestones
-            </h2>
-          </div>
+      {/* 🗓️ 8. COMPANY MILESTONES ROADMAP */}
+      <CompanyMilestonesRoadmap />
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 font-sans">
-            <div className="rounded-3xl border border-white/10 bg-black/60 p-6 flex flex-col justify-between hover:border-primary/50 transition-all">
-              <div>
-                <span className="font-mono text-sm text-primary font-black block">2023</span>
-                <h3 className="mt-3 text-base font-bold text-foreground">AI Arbitrage Research Begins</h3>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  Development and exploration of AI-driven crypto arbitrage technology begins.
-                </p>
-              </div>
-              <span className="mt-6 text-[10px] font-mono text-muted-foreground uppercase">FOUNDATION</span>
-            </div>
-
-            <div className="rounded-3xl border border-emerald-500/40 bg-emerald-500/10 p-6 flex flex-col justify-between hover:border-emerald-500 transition-all">
-              <div>
-                <span className="font-mono text-sm text-emerald-400 font-black block">15 JUN 2025</span>
-                <h3 className="mt-3 text-base font-bold text-foreground">Nexa Traders Launch</h3>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  Nexa Traders officially launches as a crypto trading technology platform.
-                </p>
-              </div>
-              <span className="mt-6 text-[10px] font-mono text-emerald-400 uppercase">OFFICIAL LAUNCH</span>
-            </div>
-
-            <div className="rounded-3xl border border-amber-500/40 bg-amber-500/10 p-6 flex flex-col justify-between hover:border-amber-500 transition-all">
-              <div>
-                <span className="font-mono text-sm text-amber-400 font-black block">2026</span>
-                <h3 className="mt-3 text-base font-bold text-foreground">Beta Platform</h3>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  Expansion of exchange connectivity, crypto coverage, trading pairs and AI infrastructure.
-                </p>
-              </div>
-              <span className="mt-6 text-[10px] font-mono text-amber-400 uppercase">BETA EXPANSION</span>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-black/60 p-6 flex flex-col justify-between hover:border-primary/50 transition-all">
-              <div>
-                <span className="font-mono text-sm text-primary font-black block">10K+ USERS</span>
-                <h3 className="mt-3 text-base font-bold text-foreground">Growing User Base</h3>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  The platform reaches more than 10,000 active users globally.
-                </p>
-              </div>
-              <span className="mt-6 text-[10px] font-mono text-primary uppercase">MILESTONE</span>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-black/60 p-6 flex flex-col justify-between hover:border-primary/50 transition-all">
-              <div>
-                <span className="font-mono text-sm text-foreground font-black block">01 JAN 2027</span>
-                <h3 className="mt-3 text-base font-bold text-foreground">Full Platform Version</h3>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  The planned final version of Nexa Traders launches with expanded platform capabilities.
-                </p>
-              </div>
-              <span className="mt-6 text-[10px] font-mono text-muted-foreground uppercase">TARGET GOAL</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
 
       {/* 🗺️ 9. ROADMAP */}
