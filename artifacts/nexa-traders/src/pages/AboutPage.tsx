@@ -125,195 +125,217 @@ const TIMELINE_STEPS = [
   }
 ];
 
-function CompanyMilestonesRoadmap() {
-  const [activeStep, setActiveStep] = useState(2); // Default 2026 Beta Platform
-
-  const milestones = [
+function OfficialJourneyRoadmap() {
+  const roadmapData = [
     {
-      step: '01',
-      date: '2023',
-      title: 'AI Arbitrage Research',
-      desc: 'Development and exploration of AI-driven crypto arbitrage technology begins.',
-      tag: 'FOUNDATION',
-      status: 'Completed',
-      dotColor: 'bg-emerald-400',
-      activeColor: 'text-emerald-400',
-      badgeStyle: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+      year: '2023',
+      phase: 'Foundation & Research Phase',
+      position: 'above',
+      items: [
+        'Company formation and core team assembly in Panama',
+        'Initial concept development of AI-powered arbitrage ecosystem',
+        'Early-stage research collaboration inspired by institutions like Google DeepMind and MIT Computer Science and Artificial Intelligence Laboratory (CSAIL)',
+        'Prototype development of arbitrage detection engine',
+        'Backtesting strategies on historical multi-exchange data',
+        'Initial security architecture and API framework design'
+      ]
     },
     {
-      step: '02',
-      date: '15 JUN 2025',
-      title: 'Nexa Traders Launch',
-      desc: 'Nexa Traders officially launches as a crypto trading technology platform.',
-      tag: 'OFFICIAL LAUNCH',
-      status: 'Live Platform',
-      dotColor: 'bg-emerald-400',
-      activeColor: 'text-emerald-400',
-      badgeStyle: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+      year: '2024',
+      phase: 'Development & Internal Testing',
+      position: 'below',
+      items: [
+        'Development of Arbitrage Bot (NEXA Core Engine)',
+        'Integration with 20+ crypto exchanges (API connectivity)',
+        'Launch of internal beta testing environment',
+        'Implementation of:',
+        '  • Risk management engine (limits, circuit breakers)',
+        '  • Smart trade execution algorithms',
+        'Initial KYC/AML compliance framework setup',
+        'Early-stage mobile app UI/UX design'
+      ]
     },
     {
-      step: '03',
-      date: '2026',
-      title: 'Beta Platform Expansion',
-      desc: 'Expansion of exchange connectivity, crypto coverage, trading pairs and AI infrastructure.',
-      tag: 'BETA EXPANSION',
-      status: 'Active Stage',
-      dotColor: 'bg-primary',
-      activeColor: 'text-primary',
-      badgeStyle: 'border-primary/40 bg-primary/10 text-primary'
+      year: '2025',
+      phase: 'Beta Launch & Ecosystem Expansion',
+      position: 'above',
+      items: [
+        'Public Beta Launch of AI Arbitrage Bot',
+        'Expansion to 50+ exchanges and 1000+ trading pairs',
+        'Deployment of:',
+        '  • AI-assisted trade signals',
+        '  • Real-time risk monitoring dashboard',
+        'Launch of Referral & Subscription System',
+        'Strategic compliance alignment (VASP registrations)',
+        'Security partnerships onboarding (Hacken, Veriff, etc.)',
+        'Start of Smartphone App Development (Cross-platform)'
+      ]
     },
     {
-      step: '04',
-      date: '10K+ USERS',
-      title: 'Growing User Base',
-      desc: 'The platform reaches more than 10,000 active users globally across markets.',
-      tag: 'MILESTONE',
-      status: 'Achieved',
-      dotColor: 'bg-primary',
-      activeColor: 'text-primary',
-      badgeStyle: 'border-primary/40 bg-primary/10 text-primary'
+      year: '2026',
+      phase: 'Product Scaling & AI Integration',
+      position: 'below',
+      items: [
+        'Full release of:',
+        '  • Spot Marketplace Aggregator',
+        '  • AI-Powered Perpetual Futures Trading',
+        'Advanced AI model improvements inspired by leaders like Yoshua Bengio',
+        'Execution speed optimization (< 650ms trade cycles)',
+        'Liquidity aggregation across 25+ major exchanges',
+        'Launch of real-time portfolio & risk analytics dashboard',
+        'Global user acquisition and marketing expansion',
+        'Mobile App Beta Release (iOS & Android)'
+      ]
     },
     {
-      step: '05',
-      date: '01 JAN 2027',
-      title: 'Full Platform Version',
-      desc: 'The planned final version of Nexa Traders launches with expanded platform capabilities.',
-      tag: 'TARGET GOAL',
-      status: 'Planned',
-      dotColor: 'bg-white/40',
-      activeColor: 'text-foreground',
-      badgeStyle: 'border-white/20 bg-white/5 text-muted-foreground'
+      year: '2027',
+      phase: 'Global Expansion & Automation Era',
+      position: 'above',
+      items: [
+        'Full launch of NexaTraders Mobile App (All Platforms)',
+        'Autonomous AI trading systems with minimal manual input',
+        'Expansion into:',
+        '  • Institutional-grade trading tools',
+        '  • API access for external developers',
+        'Regulatory expansion across multiple jurisdictions',
+        'Advanced AI features:',
+        '  • Self-learning trading strategies',
+        '  • Predictive market modeling'
+      ]
     }
   ];
 
   return (
-    <section className="relative overflow-hidden py-24 lg:py-32 bg-[#08090a] border-b border-white/10 font-sans">
-      {/* Background ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-primary/5 blur-[150px] pointer-events-none rounded-full" />
+    <section className="relative overflow-hidden py-24 lg:py-36 bg-[#070908] border-b border-white/10 font-sans selection:bg-primary selection:text-primary-foreground">
+      {/* Ambient background glow and grid */}
+      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[700px] h-[500px] bg-primary/10 blur-[180px] pointer-events-none rounded-full" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-40 pointer-events-none" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold block mb-2">
-            STRATEGIC EXECUTION
-          </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
-            Company Milestones
-          </h2>
-          <p className="mt-3 text-xs sm:text-sm text-muted-foreground">
-            Interactive Roadmap — Click or hover any stage below to inspect timeline progression.
+      {/* Cybernetic AI Robot Graphic Background */}
+      <div className="absolute right-0 top-0 bottom-0 w-full lg:w-1/2 pointer-events-none overflow-hidden z-0 flex items-center justify-end">
+        <img
+          src="/roadmap_robot.png"
+          alt="Nexa AI Robot Character"
+          className="w-full max-w-[620px] lg:max-w-[800px] h-auto object-contain opacity-25 lg:opacity-75 mix-blend-screen transform translate-x-12 lg:translate-x-24 drop-shadow-[0_0_60px_rgba(232,185,73,0.3)] transition-all duration-700 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#070908] via-[#070908]/70 to-transparent" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-[1440px] px-5 lg:px-12">
+        {/* Main Title Banner */}
+        <div className="mb-16 lg:mb-24">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="h-2 w-2 rounded-full bg-primary animate-ping" />
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-primary uppercase font-sans drop-shadow-[0_0_25px_rgba(232,185,73,0.4)]">
+              Roadmap
+            </h1>
+          </div>
+          <p className="text-xl sm:text-2xl font-mono text-foreground/90 tracking-wide">
+            The Journey <span className="text-primary font-bold">2023-2027</span>
           </p>
         </div>
 
-        {/* Master Glass Roadmap Shell */}
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.7)] relative overflow-hidden">
-          
-          {/* Continuous Interactive Horizontal Roadmap Track (Visible on md+) */}
-          <div className="hidden md:block relative mb-12 px-4">
-            {/* Background Rail */}
-            <div className="absolute top-5 left-10 right-10 h-[2px] bg-white/10 rounded-full" />
+        {/* --- DESKTOP HORIZONTAL TIMELINE TRACK (lg+) --- */}
+        <div className="hidden lg:block relative py-12">
+          {/* Main Gold Connector Rail */}
+          <div className="absolute top-1/2 left-0 right-12 -translate-y-1/2 h-1.5 bg-gradient-to-r from-primary via-[#f5c542] to-amber-500 rounded-full shadow-[0_0_20px_rgba(232,185,73,0.8)] z-10" />
 
-            {/* Glowing Active Progress Line */}
-            <div
-              className="absolute top-5 left-10 h-[2px] bg-gradient-to-r from-emerald-500 via-primary to-amber-400 transition-all duration-500 rounded-full shadow-[0_0_12px_rgba(232,185,73,0.5)]"
-              style={{ width: `${(activeStep / (milestones.length - 1)) * 88}%` }}
-            />
-
-            {/* Interactive Nodes Row */}
-            <div className="grid grid-cols-5 relative z-10 text-center">
-              {milestones.map((item, idx) => {
-                const isActive = activeStep === idx;
-                const isPassed = idx <= activeStep;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveStep(idx)}
-                    onMouseEnter={() => setActiveStep(idx)}
-                    className="group flex flex-col items-center cursor-pointer focus:outline-none"
-                  >
-                    {/* Node Dot */}
-                    <div
-                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-                        isActive
-                          ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.6)] scale-110 font-bold'
-                          : isPassed
-                          ? 'border-primary/60 bg-[#08090a] text-primary group-hover:border-primary'
-                          : 'border-white/20 bg-[#08090a] text-muted-foreground group-hover:border-white/40 group-hover:text-foreground'
-                      }`}
-                    >
-                      <span className="font-mono text-xs">{item.step}</span>
-                    </div>
-
-                    {/* Stage Label under Node */}
-                    <span
-                      className={`mt-3 font-mono text-xs font-bold transition-colors ${
-                        isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-                      }`}
-                    >
-                      {item.date}
-                    </span>
-
-                    <span className="text-[10px] text-muted-foreground/80 truncate max-w-[100px] mt-0.5 font-medium">
-                      {item.tag}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+          {/* Arrowhead at End of Rail */}
+          <div className="absolute top-1/2 right-4 -translate-y-1/2 z-10">
+            <div className="w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[20px] border-l-primary drop-shadow-[0_0_15px_rgba(232,185,73,0.9)]" />
           </div>
 
-          {/* Interactive Cards Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {milestones.map((m, idx) => {
-              const isActive = activeStep === idx;
+          {/* Timeline Grid (5 Columns) */}
+          <div className="grid grid-cols-5 gap-4 relative z-20">
+            {roadmapData.map((data, idx) => {
               return (
-                <div
-                  key={idx}
-                  onClick={() => setActiveStep(idx)}
-                  onMouseEnter={() => setActiveStep(idx)}
-                  className={`group rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 cursor-pointer relative overflow-hidden ${
-                    isActive
-                      ? 'border-primary/60 bg-white/[0.05] shadow-[0_0_30px_rgba(232,185,73,0.15)] scale-[1.02]'
-                      : 'border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]'
-                  }`}
-                >
-                  {/* Active Indicator Top Bar */}
-                  {isActive && (
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-[#f5c542] to-primary" />
+                <div key={idx} className="relative flex flex-col items-center">
+                  {/* --- TOP CALLOUT (FOR ABOVE NODES: 2023, 2025, 2027) --- */}
+                  {data.position === 'above' && (
+                    <div className="mb-8 w-full">
+                      <div className="rounded-2xl border border-white/10 bg-[#0b0e0d]/90 backdrop-blur-xl p-5 shadow-[0_0_35px_rgba(0,0,0,0.8)] hover:border-primary/60 transition-all duration-300 group">
+                        <h3 className="text-xs sm:text-sm font-mono font-black text-primary flex flex-wrap items-center gap-1.5 border-b border-white/10 pb-2 mb-3">
+                          <span className="text-foreground text-sm sm:text-base font-bold">{data.year}</span> – {data.phase}
+                        </h3>
+                        <ul className="space-y-1.5 text-[11px] text-muted-foreground/90 leading-relaxed font-sans">
+                          {data.items.map((item, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className="text-primary shrink-0 font-bold mt-0.5">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   )}
 
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className={`font-mono text-sm font-black ${isActive ? m.activeColor : 'text-foreground'}`}>
-                        {m.date}
-                      </span>
-                      <span className="font-mono text-[10px] text-muted-foreground/70 font-semibold">
-                        #{m.step}
-                      </span>
+                  {/* Spacer if position is below so node stays on track */}
+                  {data.position === 'below' && <div className="h-[220px] w-full" />}
+
+                  {/* --- TIMELINE NODE CIRCLE --- */}
+                  <div className="relative my-auto flex items-center justify-center shrink-0 z-30">
+                    <div className="w-9 h-9 rounded-full bg-[#070908] border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.6)] flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-125 hover:border-primary">
+                      <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                     </div>
-
-                    <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug">
-                      {m.title}
-                    </h3>
-
-                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                      {m.desc}
-                    </p>
                   </div>
 
-                  <div className="mt-6 pt-3 border-t border-white/5 flex items-center justify-between">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground font-bold">
-                      {m.tag}
-                    </span>
-                    <span className={`font-mono text-[9px] px-2 py-0.5 rounded-full border font-semibold ${m.badgeStyle}`}>
-                      {m.status}
-                    </span>
-                  </div>
+                  {/* --- BOTTOM CALLOUT (FOR BELOW NODES: 2024, 2026) --- */}
+                  {data.position === 'below' && (
+                    <div className="mt-8 w-full">
+                      <div className="rounded-2xl border border-white/10 bg-[#0b0e0d]/90 backdrop-blur-xl p-5 shadow-[0_0_35px_rgba(0,0,0,0.8)] hover:border-primary/60 transition-all duration-300 group">
+                        <h3 className="text-xs sm:text-sm font-mono font-black text-primary flex flex-wrap items-center gap-1.5 border-b border-white/10 pb-2 mb-3">
+                          <span className="text-foreground text-sm sm:text-base font-bold">{data.year}</span> – {data.phase}
+                        </h3>
+                        <ul className="space-y-1.5 text-[11px] text-muted-foreground/90 leading-relaxed font-sans">
+                          {data.items.map((item, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className="text-primary shrink-0 font-bold mt-0.5">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Spacer if position is above so node stays aligned */}
+                  {data.position === 'above' && <div className="h-[220px] w-full" />}
                 </div>
               );
             })}
           </div>
-
         </div>
+
+        {/* --- MOBILE / TABLET VERTICAL TIMELINE TRACK (< lg) --- */}
+        <div className="lg:hidden relative pl-6 border-l-2 border-primary space-y-8">
+          {roadmapData.map((data, idx) => (
+            <div key={idx} className="relative group">
+              {/* Node Circle on Mobile Rail */}
+              <div className="absolute -left-[31px] top-1.5 w-6 h-6 rounded-full bg-[#070908] border-2 border-white shadow-[0_0_15px_rgba(232,185,73,0.8)] flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+              </div>
+
+              {/* Mobile Card */}
+              <div className="rounded-2xl border border-white/10 bg-[#0b0e0d]/95 backdrop-blur-xl p-5 shadow-2xl">
+                <span className="font-mono text-xs font-bold text-primary block mb-1 uppercase tracking-wider">
+                  PHASE {idx + 1}
+                </span>
+                <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+                  <span className="text-primary font-mono font-black">{data.year}</span> – {data.phase}
+                </h3>
+                <ul className="space-y-2 text-xs text-muted-foreground leading-relaxed">
+                  {data.items.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-primary shrink-0 font-bold mt-0.5">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   );
@@ -700,87 +722,9 @@ export function AboutPage() {
       </section>
 
 
-      {/* 🗓️ 8. COMPANY MILESTONES ROADMAP */}
-      <CompanyMilestonesRoadmap />
+      {/* 🗓️ OFFICIAL JOURNEY ROADMAP (2023-2027) */}
+      <OfficialJourneyRoadmap />
 
-
-
-      {/* 🗺️ 9. ROADMAP */}
-      <section className="relative overflow-hidden py-24 lg:py-32 font-sans border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">FUTURE OUTLOOK</span>
-            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
-              The Road Ahead
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground">
-              We're building beyond today's trading infrastructure.
-            </p>
-          </div>
-
-          <div className="space-y-6 max-w-4xl mx-auto">
-            {/* Phase 1 */}
-            <div className="rounded-3xl border border-emerald-500/40 bg-emerald-500/10 p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
-              <div>
-                <span className="font-mono text-xs text-emerald-400 font-bold uppercase tracking-wider block">PHASE 01</span>
-                <h3 className="text-xl font-bold text-foreground mt-1">AI Arbitrage Infrastructure</h3>
-                <p className="text-xs text-muted-foreground mt-2">Multi-exchange connectivity, AI market analysis, Arbitrage infrastructure, Capital routing.</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-emerald-500/20 border border-emerald-500/50 px-4 py-1.5 font-mono text-xs font-bold text-emerald-400">
-                ● Live / Beta
-              </span>
-            </div>
-
-            {/* Phase 2 */}
-            <div className="rounded-3xl border border-amber-500/40 bg-amber-500/10 p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
-              <div>
-                <span className="font-mono text-xs text-amber-400 font-bold uppercase tracking-wider block">PHASE 02</span>
-                <h3 className="text-xl font-bold text-foreground mt-1">Platform Expansion</h3>
-                <p className="text-xs text-muted-foreground mt-2">Enhanced trading infrastructure, Improved user experience, Expanded market coverage.</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-amber-500/20 border border-amber-500/50 px-4 py-1.5 font-mono text-xs font-bold text-amber-400">
-                In Development
-              </span>
-            </div>
-
-            {/* Phase 3 */}
-            <div className="rounded-3xl border border-white/15 bg-white/[0.03] p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
-              <div>
-                <span className="font-mono text-xs text-primary font-bold uppercase tracking-wider block">PHASE 03</span>
-                <h3 className="text-xl font-bold text-foreground mt-1">Spot Marketplace</h3>
-                <p className="text-xs text-muted-foreground mt-2">A dedicated spot marketplace designed to bring supported digital assets into the Nexa Traders ecosystem.</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 font-mono text-xs font-bold text-muted-foreground">
-                Upcoming
-              </span>
-            </div>
-
-            {/* Phase 4 */}
-            <div className="rounded-3xl border border-white/15 bg-white/[0.03] p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
-              <div>
-                <span className="font-mono text-xs text-primary font-bold uppercase tracking-wider block">PHASE 04</span>
-                <h3 className="text-xl font-bold text-foreground mt-1">AI Perpetual Futures</h3>
-                <p className="text-xs text-muted-foreground mt-2">AI-powered perpetual futures infrastructure designed for advanced digital asset trading.</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 font-mono text-xs font-bold text-muted-foreground">
-                Upcoming
-              </span>
-            </div>
-
-            {/* Phase 5 */}
-            <div className="rounded-3xl border border-primary/50 bg-gradient-to-r from-primary/20 to-primary/10 p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center shadow-[0_0_30px_rgba(232,185,73,0.2)]">
-              <div>
-                <span className="font-mono text-xs text-primary font-bold uppercase tracking-wider block">PHASE 05</span>
-                <h3 className="text-xl font-black text-foreground mt-1">Full Nexa Traders Platform</h3>
-                <p className="text-xs text-muted-foreground mt-2">The planned full version of the Nexa Traders platform with expanded products and global capabilities.</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-primary text-primary-foreground font-mono text-xs font-black px-4 py-1.5">
-                Target: 01 January 2027
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
 
 
       {/* 🖼️ 10. ROADMAP SCREENSHOTS & GALLERY */}
