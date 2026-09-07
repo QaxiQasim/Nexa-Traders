@@ -72,177 +72,26 @@ function AnimatedNumber({ value, prefix = '', suffix = '' }: { value: string; pr
   );
 }
 
-// Interactive Hero AI Network Clean Control Dashboard
+// Clean Hero AI Arbitrage Visual Image Component
 function HeroNetworkVisual() {
-  const [selectedPair, setSelectedPair] = useState<string>('BTC/USDT');
-  const [executing, setExecuting] = useState(false);
-  const [execStep, setExecStep] = useState(0);
-  const [lastProfit, setLastProfit] = useState<string>('$184.20');
-
-  const pairData: Record<string, { buyEx: string; buyPrice: string; sellEx: string; sellPrice: string; spread: string; profit: string; volume: string; latency: string }> = {
-    'BTC/USDT': { buyEx: 'Binance API', buyPrice: '$94,180.50', sellEx: 'OKX Liquidity', sellPrice: '$94,364.70', spread: '+1.96%', profit: '$184.20', volume: '$4.2B', latency: '8.4ms' },
-    'ETH/USDT': { buyEx: 'Bybit Stream', buyPrice: '$3,420.10', sellEx: 'Coinbase Desk', sellPrice: '$3,488.50', spread: '+2.00%', profit: '$68.40', volume: '$2.8B', latency: '9.1ms' },
-    'SOL/USDT': { buyEx: 'Kraken Feed', buyPrice: '$188.40', sellEx: 'Binance API', sellPrice: '$193.10', spread: '+2.49%', profit: '$4.70', volume: '$1.9B', latency: '11.2ms' },
-    'BNB/USDT': { buyEx: 'Gate.io Feed', buyPrice: '$612.30', sellEx: 'OKX Liquidity', sellPrice: '$625.80', spread: '+2.20%', profit: '$13.50', volume: '$1.1B', latency: '10.5ms' }
-  };
-
-  const current = pairData[selectedPair] || pairData['BTC/USDT'];
-
-  const handleRunSimulation = () => {
-    if (executing) return;
-    setExecuting(true);
-    setExecStep(1);
-
-    setTimeout(() => {
-      setExecStep(2);
-      setTimeout(() => {
-        setExecStep(3);
-        const randomBonus = (10 + Math.random() * 40).toFixed(2);
-        setLastProfit(`$${(parseFloat(current.profit.replace('$', '')) + parseFloat(randomBonus)).toFixed(2)}`);
-        setTimeout(() => {
-          setExecuting(false);
-          setExecStep(0);
-        }, 1200);
-      }, 700);
-    }, 700);
-  };
-
   return (
-    <div className="relative w-full rounded-3xl border border-white/15 bg-gradient-to-b from-[#111815] via-[#0d1310] to-[#080c0a] p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_60px_rgba(232,185,73,0.18)] font-mono select-none overflow-hidden">
+    <div className="relative w-full rounded-3xl border border-primary/30 bg-gradient-to-b from-[#0e1411]/95 via-[#090e0c]/95 to-[#060807]/98 p-2 sm:p-3 backdrop-blur-2xl shadow-[0_0_70px_rgba(232,185,73,0.25)] font-mono select-none overflow-hidden group">
       {/* Specular Top Line Accent */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent z-10" />
       
       {/* Soft Ambient Radial Glow */}
-      <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute -top-24 -right-24 w-80 h-80 bg-primary/20 blur-[90px] rounded-full pointer-events-none" />
 
-      {/* HEADER BAR */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-sm">
-            <Activity size={18} className="animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-foreground tracking-wider">NEXA AI ROUTER</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" /> ● 18 VENUES ACTIVE
-              </span>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-0.5">Real-Time Quantitative Arbitrage Matcher</p>
-          </div>
-        </div>
-
-        {/* INTERACTIVE PAIR TABS */}
-        <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-white/10 bg-black/60 p-1 text-[11px]">
-          {Object.keys(pairData).map((pair) => (
-            <button
-              key={pair}
-              type="button"
-              onClick={() => setSelectedPair(pair)}
-              className={`rounded-xl px-3 py-1.5 font-bold transition-all ${
-                selectedPair === pair
-                  ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-md'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-              }`}
-            >
-              {pair}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* CORE LIVE ROUTING DISPLAY CARD */}
-      <div className="mt-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-          {/* Source Venue */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center sm:text-left space-y-1.5 shadow-inner">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block font-bold">SOURCE (BUY SIDE)</span>
-            <h4 className="text-base font-black text-foreground">{current.buyEx}</h4>
-            <div className="text-xl font-extrabold text-primary font-mono">{current.buyPrice}</div>
-            <span className="text-[10px] text-muted-foreground block">Depth: {current.volume}</span>
-          </div>
-
-          {/* AI Routing Beams & Spread Badge */}
-          <div className="flex flex-col items-center justify-center p-2 text-center relative">
-            <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 text-xs font-black text-emerald-400 shadow-sm animate-pulse mb-2">
-              ⚡ SPREAD EDGE: {current.spread}
-            </span>
-
-            <div className="w-full flex items-center justify-center gap-2 my-1">
-              <div className="h-0.5 flex-1 bg-gradient-to-r from-primary to-emerald-400" />
-              <div className="rounded-full bg-primary/20 p-2 border border-primary text-primary animate-spin-slow">
-                <BrainCircuit size={18} />
-              </div>
-              <div className="h-0.5 flex-1 bg-gradient-to-r from-emerald-400 to-primary" />
-            </div>
-
-            <span className="text-[10px] text-muted-foreground font-bold mt-1">
-              AI Latency: <strong className="text-accent">{current.latency}</strong>
-            </span>
-          </div>
-
-          {/* Target Venue */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center sm:text-right space-y-1.5 shadow-inner">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block font-bold">TARGET (SELL SIDE)</span>
-            <h4 className="text-base font-black text-foreground">{current.sellEx}</h4>
-            <div className="text-xl font-extrabold text-accent font-mono">{current.sellPrice}</div>
-            <span className="text-[10px] text-emerald-400 font-bold block">Est. Yield: +{current.profit}</span>
-          </div>
-        </div>
-
-        {/* INTERACTIVE SIMULATION CONTROL & PROGRESS BAR */}
-        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="text-center sm:text-left">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-widest block font-bold">LIVE EXECUTION ENGINE</span>
-              <span className="text-xs text-foreground font-bold">
-                {execStep === 1
-                  ? 'Step 01: Orderbook Locked on ' + current.buyEx
-                  : execStep === 2
-                  ? 'Step 02: ' + current.latency + ' Cross-Venue Matching...'
-                  : execStep === 3
-                  ? 'Step 03: Trade Settled! Net Yield Credit ' + lastProfit
-                  : 'Ready to Simulate Live Execution Route'}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleRunSimulation}
-              disabled={executing}
-              className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-6 py-3 text-xs font-black uppercase text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-105 transition-all flex items-center justify-center gap-2"
-            >
-              <Zap size={15} className={executing ? 'animate-spin' : ''} />
-              {executing ? 'Executing Route...' : 'Simulate Live Route'}
-            </button>
-          </div>
-
-          {/* Progress Animation Bar */}
-          {executing && (
-            <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden mt-2">
-              <div
-                className="h-full bg-gradient-to-r from-primary via-emerald-400 to-accent transition-all duration-500"
-                style={{ width: `${execStep * 33.3}%` }}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* BOTTOM METRICS STRIP */}
-        <div className="grid grid-cols-3 gap-3 text-center border-t border-white/10 pt-4 font-mono text-xs">
-          <div>
-            <span className="text-[10px] text-muted-foreground uppercase block">Avg Latency</span>
-            <strong className="text-primary font-bold">{current.latency}</strong>
-          </div>
-          <div>
-            <span className="text-[10px] text-muted-foreground uppercase block">Execution Edge</span>
-            <strong className="text-accent font-bold">{current.spread}</strong>
-          </div>
-          <div>
-            <span className="text-[10px] text-muted-foreground uppercase block">Accuracy Rate</span>
-            <strong className="text-emerald-400 font-bold">99.8%</strong>
-          </div>
-        </div>
+      {/* Image Container Frame */}
+      <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/60 aspect-[16/11] flex items-center justify-center">
+        <img
+          src="/ai_arbitrage_hero_graphic.png"
+          alt="Nexa Traders AI Crypto Arbitrage Technology Network"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        
+        {/* Subtle Inner Shadow & Gradient Overlay for Depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#08090a]/80 via-transparent to-transparent pointer-events-none" />
       </div>
     </div>
   );
