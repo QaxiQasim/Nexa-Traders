@@ -844,46 +844,144 @@ export function AboutPage() {
       </section>
 
 
-      {/* 📱 12. MOBILE APP */}
+      {/* 📱 12. MOBILE APP ECOSYSTEM */}
       <section className="relative overflow-hidden py-24 lg:py-32 bg-[#090d0b] border-b border-white/10 font-sans">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        {/* Background Ambient Spotlight */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.15)_0%,rgba(16,185,129,0.08)_50%,transparent_70%)] blur-[100px] pointer-events-none rounded-full" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <Smartphone size={36} className="mx-auto text-primary mb-3 animate-pulse" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-xs font-bold text-primary uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
+              <Smartphone size={14} className="text-primary animate-pulse" />
+              MOBILE ECOSYSTEM
+            </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
               Nexa Traders. Wherever You Trade.
             </h2>
             <p className="mt-3 text-sm text-muted-foreground">
-              The Nexa Traders mobile experience is coming to Android and iOS.
+              Institutional AI trading infrastructure, now in your pocket.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto font-mono text-xs">
-            {/* Android Card */}
-            <div className="rounded-3xl border border-white/15 bg-black/60 p-8 text-center backdrop-blur-xl flex flex-col justify-between">
-              <div>
-                <span className="text-2xl font-bold text-foreground block">ANDROID</span>
-                <span className="mt-2 block text-emerald-400 font-bold">Launching November 2026</span>
-                <p className="mt-3 text-[11px] text-muted-foreground font-sans leading-relaxed">
-                  Native Android app optimized for real-time notifications and mobile portfolio management.
-                </p>
+          <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto items-stretch">
+            {/* 🤖 ANDROID DEVICE MOCKUP */}
+            <div className="group relative rounded-[44px] border-4 border-[#1e2722] bg-[#0c100e] p-6 shadow-[0_0_50px_rgba(16,185,129,0.15)] hover:shadow-[0_0_70px_rgba(16,185,129,0.3)] hover:-translate-y-1 transition-all duration-500 flex flex-col justify-between overflow-hidden">
+              {/* Android Punch Hole Notch */}
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-[#1e2722] z-20 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#080b09]" />
               </div>
-              <button disabled className="mt-6 w-full rounded-2xl border border-white/15 bg-white/5 py-3.5 font-bold text-muted-foreground cursor-not-allowed">
-                Android — Coming Soon
-              </button>
+
+              {/* Status Bar */}
+              <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground pt-1 px-3 mb-4 z-10">
+                <span>17:50</span>
+                <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                  <span>5G</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                </div>
+              </div>
+
+              {/* Mobile App Header with Official Logo */}
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl mb-4 text-center relative z-10">
+                <img
+                  src="/logo.png"
+                  alt="Nexa Trades Logo"
+                  className="h-10 w-auto object-contain mx-auto drop-shadow-[0_0_15px_rgba(232,185,73,0.4)]"
+                />
+                <div className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                  <span>● Android Native App</span>
+                </div>
+              </div>
+
+              {/* Mobile Screen Content */}
+              <div className="space-y-4 text-center my-auto z-10 px-2">
+                <div className="inline-block rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 font-mono text-xs font-extrabold text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                  Launching November 2026
+                </div>
+
+                <h3 className="text-2xl font-black text-foreground font-mono tracking-tight">ANDROID OS</h3>
+
+                <p className="text-xs text-muted-foreground leading-relaxed font-sans">
+                  Native Android app optimized for real-time notifications, instant AI execution alerts, and mobile portfolio management.
+                </p>
+
+                {/* Feature Pills */}
+                <div className="grid grid-cols-2 gap-2 pt-2 text-left font-mono text-[11px]">
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5 flex items-center gap-2">
+                    <Zap size={14} className="text-emerald-400 shrink-0" />
+                    <span className="text-foreground font-bold truncate">Sub-10ms Alerts</span>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5 flex items-center gap-2">
+                    <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
+                    <span className="text-foreground font-bold truncate">Biometric Key</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile App Screen Button */}
+              <div className="mt-6 z-10">
+                <button disabled className="w-full rounded-2xl border border-emerald-500/40 bg-emerald-500/15 py-3.5 font-mono text-xs font-extrabold text-emerald-400 cursor-not-allowed shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                  Android — Coming Soon
+                </button>
+              </div>
             </div>
 
-            {/* iOS Card */}
-            <div className="rounded-3xl border border-white/15 bg-black/60 p-8 text-center backdrop-blur-xl flex flex-col justify-between">
-              <div>
-                <span className="text-2xl font-bold text-foreground block">iOS</span>
-                <span className="mt-2 block text-primary font-bold">Launching February 2027</span>
-                <p className="mt-3 text-[11px] text-muted-foreground font-sans leading-relaxed">
-                  Sleek iOS application with biometric authentication and live push alerts.
-                </p>
+            {/* 🍎 iOS DEVICE MOCKUP */}
+            <div className="group relative rounded-[44px] border-4 border-[#26241e] bg-[#100f0c] p-6 shadow-[0_0_50px_rgba(232,185,73,0.15)] hover:shadow-[0_0_70px_rgba(232,185,73,0.3)] hover:-translate-y-1 transition-all duration-500 flex flex-col justify-between overflow-hidden">
+              {/* iPhone Dynamic Island Notch */}
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-4 rounded-full bg-[#1e1c17] z-20" />
+
+              {/* Status Bar */}
+              <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground pt-1 px-3 mb-4 z-10">
+                <span>17:50</span>
+                <div className="flex items-center gap-1.5 text-primary font-bold">
+                  <span>5G</span>
+                  <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                </div>
               </div>
-              <button disabled className="mt-6 w-full rounded-2xl border border-white/15 bg-white/5 py-3.5 font-bold text-muted-foreground cursor-not-allowed">
-                iOS — Coming Soon
-              </button>
+
+              {/* Mobile App Header with Official Logo */}
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl mb-4 text-center relative z-10">
+                <img
+                  src="/logo.png"
+                  alt="Nexa Trades Logo"
+                  className="h-10 w-auto object-contain mx-auto drop-shadow-[0_0_15px_rgba(232,185,73,0.4)]"
+                />
+                <div className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-[10px] text-primary font-bold uppercase tracking-wider">
+                  <span>● iOS Native App</span>
+                </div>
+              </div>
+
+              {/* Mobile Screen Content */}
+              <div className="space-y-4 text-center my-auto z-10 px-2">
+                <div className="inline-block rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1 font-mono text-xs font-extrabold text-primary shadow-[0_0_15px_rgba(232,185,73,0.15)]">
+                  Launching February 2027
+                </div>
+
+                <h3 className="text-2xl font-black text-foreground font-mono tracking-tight">iOS APPLICATION</h3>
+
+                <p className="text-xs text-muted-foreground leading-relaxed font-sans">
+                  Sleek iOS application with FaceID biometric authentication, live widgets, and real-time push alerts.
+                </p>
+
+                {/* Feature Pills */}
+                <div className="grid grid-cols-2 gap-2 pt-2 text-left font-mono text-[11px]">
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5 flex items-center gap-2">
+                    <LockKeyhole size={14} className="text-primary shrink-0" />
+                    <span className="text-foreground font-bold truncate">FaceID Security</span>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5 flex items-center gap-2">
+                    <Activity size={14} className="text-primary shrink-0" />
+                    <span className="text-foreground font-bold truncate">Live Activity</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile App Screen Button */}
+              <div className="mt-6 z-10">
+                <button disabled className="w-full rounded-2xl border border-primary/40 bg-primary/15 py-3.5 font-mono text-xs font-extrabold text-primary cursor-not-allowed shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+                  iOS — Coming Soon
+                </button>
+              </div>
             </div>
           </div>
         </div>
