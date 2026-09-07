@@ -162,13 +162,7 @@ function HeroNetworkVisual() {
         })}
       </svg>
 
-      {/* Floating Status Bar */}
-      <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between border-t border-white/10 pt-3 text-[10px] text-muted-foreground z-20">
-        <span className="flex items-center gap-1.5 text-accent font-bold">
-          <span className="h-2 w-2 rounded-full bg-accent animate-ping" /> Real-time Multichain Stream
-        </span>
-        <span className="text-primary font-bold">18 Venues Active</span>
-      </div>
+      {/* Hero Visual Container */}
     </div>
   );
 }
@@ -211,12 +205,6 @@ export function AboutPage() {
                 Nexa Traders is an AI-powered crypto arbitrage trading technology platform designed to identify market inefficiencies across multiple cryptocurrency exchanges and intelligently route opportunities in real time.
               </p>
 
-              {/* Highlight Pill */}
-              <div className="mt-6 inline-flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 font-mono text-xs font-bold text-emerald-400">
-                <ShieldCheck size={16} />
-                Built on AI Arbitrage Technology Since 2023
-              </div>
-
               {/* CTAs */}
               <div className="mt-9 flex flex-wrap items-center gap-4">
                 <button
@@ -238,34 +226,6 @@ export function AboutPage() {
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }}>
               <HeroNetworkVisual />
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* 📢 2. IMPORTANT BETA NOTICE */}
-      <section className="relative border-y border-emerald-500/30 bg-gradient-to-r from-[#0d1c15] via-[#09140f] to-[#0d1c15] py-8 font-sans">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="rounded-3xl border border-emerald-500/40 bg-black/40 p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_40px_rgba(16,185,129,0.15)] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-emerald-400 font-extrabold border border-emerald-500/40">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" /> ● BETA LIVE
-                </span>
-                <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-3 py-1 font-bold text-amber-400">
-                  FINAL VERSION — 01 JAN 2027
-                </span>
-                <span className="text-muted-foreground uppercase tracking-widest text-[10px]">
-                  CURRENT PLATFORM STATUS
-                </span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground font-sans">
-                Nexa Traders is currently in Beta.
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-3xl">
-                This is the beta version of Nexa Traders, built to introduce our AI-powered trading infrastructure and technology to the market. The full final version of Nexa Traders is scheduled for 1 January 2027, bringing expanded products, infrastructure and platform capabilities.
-              </p>
-            </div>
           </div>
         </div>
       </section>
