@@ -361,62 +361,94 @@ export function AboutPage() {
 
 
       {/* 📊 5. NEXA BY THE NUMBERS */}
-      <section className="relative overflow-hidden py-24 lg:py-32 font-sans border-b border-white/10">
+      <section className="relative overflow-hidden py-20 lg:py-28 font-sans border-b border-white/10">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">PLATFORM TELEMETRY</span>
-            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold block mb-2">
+              PLATFORM TELEMETRY
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
               Nexa By The Numbers
             </h2>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18]/80 to-[#0a0e0c]/90 p-8 backdrop-blur-xl shadow-2xl hover:border-primary/50 transition-all">
-              <p className="text-4xl sm:text-5xl font-black text-primary tracking-tight font-mono">
-                <AnimatedNumber value="18" suffix="+" />
-              </p>
-              <h3 className="mt-4 text-base font-bold text-foreground">Crypto Exchanges Integrated</h3>
-              <p className="mt-1 text-xs text-muted-foreground">Direct low-latency API connections to top liquidity venues.</p>
-            </div>
+          {/* Unified Glass Telemetry Shell */}
+          <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-3 sm:p-5 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.6)] max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {[
+                {
+                  value: '18',
+                  suffix: '+',
+                  title: 'Crypto Exchanges Integrated',
+                  desc: 'Direct low-latency API connections to top liquidity venues.',
+                  icon: Network
+                },
+                {
+                  value: '1,100',
+                  suffix: '+',
+                  title: 'Cryptocurrencies',
+                  desc: 'Supported digital assets scanned across markets.',
+                  icon: Layers
+                },
+                {
+                  value: '1,500',
+                  suffix: '+',
+                  title: 'Crypto Trading Pairs',
+                  desc: 'Active market pairs evaluated in real time.',
+                  icon: Activity
+                },
+                {
+                  value: '42',
+                  suffix: 'ms',
+                  title: 'Decision Latency',
+                  desc: 'Reported decision speed under operating conditions.',
+                  icon: Clock
+                },
+                {
+                  value: '1.5',
+                  prefix: '$',
+                  suffix: 'M+',
+                  title: 'Capital Routed',
+                  desc: 'Volume processed through AI arbitrage routes.',
+                  icon: TrendingUp
+                },
+                {
+                  value: '10,000',
+                  suffix: '+',
+                  title: 'Platform Users',
+                  desc: 'Global user community on Nexa Traders.',
+                  icon: Users
+                }
+              ].map((stat, idx) => {
+                const IconComponent = stat.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="group rounded-2xl border border-white/5 bg-white/[0.02] p-6 transition-all duration-300 hover:border-primary/40 hover:bg-white/[0.04] hover:shadow-[0_0_25px_rgba(232,185,73,0.1)] flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="font-mono text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">
+                          0{idx + 1} / METRIC
+                        </span>
+                        <div className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-muted-foreground group-hover:text-primary group-hover:border-primary/30 transition-colors">
+                          <IconComponent size={15} />
+                        </div>
+                      </div>
 
-            <div className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18]/80 to-[#0a0e0c]/90 p-8 backdrop-blur-xl shadow-2xl hover:border-emerald-500/50 transition-all">
-              <p className="text-4xl sm:text-5xl font-black text-emerald-400 tracking-tight font-mono">
-                <AnimatedNumber value="1,100" suffix="+" />
-              </p>
-              <h3 className="mt-4 text-base font-bold text-foreground">Cryptocurrencies</h3>
-              <p className="mt-1 text-xs text-muted-foreground">Supported digital assets scanned across markets.</p>
-            </div>
+                      <p className="text-3xl sm:text-4xl font-black text-foreground tracking-tight font-mono group-hover:text-primary transition-colors">
+                        <AnimatedNumber value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
+                      </p>
 
-            <div className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18]/80 to-[#0a0e0c]/90 p-8 backdrop-blur-xl shadow-2xl hover:border-primary/50 transition-all">
-              <p className="text-4xl sm:text-5xl font-black text-primary tracking-tight font-mono">
-                <AnimatedNumber value="1,500" suffix="+" />
-              </p>
-              <h3 className="mt-4 text-base font-bold text-foreground">Crypto Trading Pairs</h3>
-              <p className="mt-1 text-xs text-muted-foreground">Active market pairs evaluated in real time.</p>
-            </div>
+                      <h3 className="mt-3 text-sm font-bold text-foreground">{stat.title}</h3>
+                    </div>
 
-            <div className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18]/80 to-[#0a0e0c]/90 p-8 backdrop-blur-xl shadow-2xl hover:border-amber-500/50 transition-all">
-              <p className="text-4xl sm:text-5xl font-black text-amber-400 tracking-tight font-mono">
-                <AnimatedNumber value="42" suffix="ms" />
-              </p>
-              <h3 className="mt-4 text-base font-bold text-foreground">Decision Latency</h3>
-              <p className="mt-1 text-xs text-muted-foreground">Reported decision speed under operating conditions.</p>
-            </div>
-
-            <div className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18]/80 to-[#0a0e0c]/90 p-8 backdrop-blur-xl shadow-2xl hover:border-emerald-500/50 transition-all">
-              <p className="text-4xl sm:text-5xl font-black text-emerald-400 tracking-tight font-mono">
-                <AnimatedNumber value="1.5" prefix="$" suffix="M+" />
-              </p>
-              <h3 className="mt-4 text-base font-bold text-foreground">Capital Routed</h3>
-              <p className="mt-1 text-xs text-muted-foreground">Volume processed through AI arbitrage routes.</p>
-            </div>
-
-            <div className="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18]/80 to-[#0a0e0c]/90 p-8 backdrop-blur-xl shadow-2xl hover:border-primary/50 transition-all">
-              <p className="text-4xl sm:text-5xl font-black text-primary tracking-tight font-mono">
-                <AnimatedNumber value="10,000" suffix="+" />
-              </p>
-              <h3 className="mt-4 text-base font-bold text-foreground">Platform Users</h3>
-              <p className="mt-1 text-xs text-muted-foreground">Global user community on Nexa Traders.</p>
+                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                      {stat.desc}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
