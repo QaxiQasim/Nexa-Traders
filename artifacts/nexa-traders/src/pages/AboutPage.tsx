@@ -332,64 +332,28 @@ export function AboutPage() {
             </p>
           </div>
 
-          {/* Interactive Flow Visual */}
-          <div className="rounded-3xl border border-white/15 bg-gradient-to-b from-[#121815]/90 to-[#080b09]/95 p-6 sm:p-10 backdrop-blur-2xl shadow-2xl max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-6 items-center text-center font-mono">
-              {/* Exchange A */}
-              <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-6">
-                <span className="text-[10px] uppercase text-emerald-400 font-bold block mb-1">MARKET A</span>
-                <strong className="text-lg text-foreground block">EXCHANGE A (BINANCE)</strong>
-                <div className="mt-3 text-2xl font-black text-emerald-400">$96,450.80</div>
-                <span className="text-[10px] text-muted-foreground block mt-1">BTC/USDT Bid</span>
-              </div>
-
-              {/* AI Engine Center */}
-              <div className="rounded-2xl border border-primary bg-primary/20 p-6 relative overflow-hidden shadow-[0_0_30px_rgba(232,185,73,0.25)]">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-pulse" />
-                <Bot size={28} className="mx-auto text-primary animate-bounce mb-2" />
-                <strong className="text-xs uppercase text-primary font-black block tracking-widest">
-                  AI DECISION ENGINE
-                </strong>
-                <span className="text-[10px] text-foreground font-bold block mt-1">
-                  Evaluating Spread & Liquidity (42ms)
-                </span>
-              </div>
-
-              {/* Exchange B */}
-              <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-6">
-                <span className="text-[10px] uppercase text-amber-400 font-bold block mb-1">MARKET B</span>
-                <strong className="text-lg text-foreground block">EXCHANGE B (BYBIT)</strong>
-                <div className="mt-3 text-2xl font-black text-amber-400">$96,820.15</div>
-                <span className="text-[10px] text-muted-foreground block mt-1">BTC/USDT Ask</span>
-              </div>
+          {/* 3 Step Process Breakdown */}
+          <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto font-sans">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl hover:border-primary/40 transition-colors">
+              <span className="font-mono text-xs text-primary font-bold block mb-2">01 — Detect</span>
+              <h3 className="font-bold text-foreground mb-2">Market Scanning</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Monitor markets continuously and identify real-time price differences across exchanges.
+              </p>
             </div>
-
-            {/* 3 Step Process Breakdown */}
-            <div className="grid sm:grid-cols-3 gap-4 mt-8 pt-8 border-t border-white/10 text-left font-sans">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                <span className="font-mono text-xs text-primary font-bold block">01 — Detect</span>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  Monitor markets continuously and identify real-time price differences across exchanges.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                <span className="font-mono text-xs text-primary font-bold block">02 — Analyze</span>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  Evaluate orderbook liquidity, latency, fees, and predefined risk boundaries.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                <span className="font-mono text-xs text-primary font-bold block">03 — Route</span>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                  Determine potential execution routes based on predefined strategies and account parameters.
-                </p>
-              </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl hover:border-primary/40 transition-colors">
+              <span className="font-mono text-xs text-primary font-bold block mb-2">02 — Analyze</span>
+              <h3 className="font-bold text-foreground mb-2">Liquidity Analysis</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Evaluate orderbook liquidity, latency, fees, and predefined risk boundaries.
+              </p>
             </div>
-
-            {/* Disclaimer Callout */}
-            <div className="mt-6 flex items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-center text-xs text-amber-300 font-mono">
-              <AlertCircle size={15} className="shrink-0 text-amber-400" />
-              <span>Arbitrage opportunities are market-dependent and do not guarantee profits.</span>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl hover:border-primary/40 transition-colors">
+              <span className="font-mono text-xs text-primary font-bold block mb-2">03 — Route</span>
+              <h3 className="font-bold text-foreground mb-2">Smart Capital Routing</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Determine potential execution routes based on predefined strategies and account parameters.
+              </p>
             </div>
           </div>
         </div>
