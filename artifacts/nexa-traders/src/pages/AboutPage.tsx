@@ -874,10 +874,6 @@ export function AboutPage() {
               {/* Mobile Status Bar */}
               <div className="flex items-center justify-between font-mono text-[11px] text-muted-foreground pt-1.5 px-3 z-20">
                 <span className="font-bold text-foreground">17:50</span>
-                <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                  <span>5G</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                </div>
               </div>
 
               {/* Mobile Screen Header with Official Logo */}
@@ -945,10 +941,6 @@ export function AboutPage() {
               {/* Mobile Status Bar */}
               <div className="flex items-center justify-between font-mono text-[11px] text-muted-foreground pt-1.5 px-3 z-20">
                 <span className="font-bold text-foreground">17:50</span>
-                <div className="flex items-center gap-1.5 text-primary font-bold">
-                  <span>5G</span>
-                  <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                </div>
               </div>
 
               {/* Mobile Screen Header with Official Logo */}
