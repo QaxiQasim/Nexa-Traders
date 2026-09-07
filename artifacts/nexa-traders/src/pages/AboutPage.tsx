@@ -890,41 +890,7 @@ export function AboutPage() {
       </section>
 
 
-      {/* 🤝 13. TRUST / COMMUNITY SECTION */}
-      <section className="relative overflow-hidden py-24 lg:py-32 font-sans border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8 text-center">
-          <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">GROWTH TELEMETRY</span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
-            10,000+ Users and Growing
-          </h2>
-          <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Since launch, Nexa Traders has continued to expand its technology, exchange connectivity and global user community.
-          </p>
 
-          <div className="mt-12 text-6xl sm:text-7xl font-black text-primary font-mono tracking-tight">
-            <AnimatedNumber value="10,000" suffix="+" />
-          </div>
-
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto font-mono text-xs">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-              <strong className="text-lg text-foreground block">18+</strong>
-              <span className="text-[10px] text-muted-foreground">Exchanges</span>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-              <strong className="text-lg text-foreground block">1,100+</strong>
-              <span className="text-[10px] text-muted-foreground">Assets</span>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-              <strong className="text-lg text-foreground block">1,500+</strong>
-              <span className="text-[10px] text-muted-foreground">Pairs</span>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-              <strong className="text-lg text-emerald-400 block">$1.5M+</strong>
-              <span className="text-[10px] text-muted-foreground">Capital Routed</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
 
       {/* 👁️ 14. OUR VISION */}
