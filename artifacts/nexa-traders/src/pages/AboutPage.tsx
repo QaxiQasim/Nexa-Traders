@@ -27,7 +27,8 @@ import {
   LockKeyhole,
   ExternalLink,
   Bot,
-  Scale
+  Scale,
+  Quote
 } from 'lucide-react';
 
 // Count-up Animated Number Component
@@ -97,9 +98,45 @@ function HeroNetworkVisual() {
   );
 }
 
+const TIMELINE_STEPS = [
+  {
+    year: '2023',
+    title: 'R&D & Core AI Engine',
+    badge: 'Foundation',
+    color: 'text-primary',
+    bgBorder: 'border-primary/40 bg-primary/10',
+    description: 'Development of proprietary multi-exchange AI market-scanning algorithms targeting order-book latency and cross-venue spread detection.'
+  },
+  {
+    year: '15 JUN 2025',
+    title: 'Official Platform Launch',
+    badge: 'Live Launch',
+    color: 'text-emerald-400',
+    bgBorder: 'border-emerald-500/40 bg-emerald-500/10',
+    description: 'Nexa Traders officially deployed its institutional-grade execution infrastructure and automated liquidity routing engine for real-time arbitrage.'
+  },
+  {
+    year: '2026',
+    title: 'Platform Scaling',
+    badge: 'Beta Platform',
+    color: 'text-amber-400',
+    bgBorder: 'border-amber-500/40 bg-amber-500/10',
+    description: 'Expansion to 18+ global exchanges, 1100+ cryptocurrencies, and 1500+ trading pairs with sub-10ms AI routing response speed.'
+  },
+  {
+    year: '2027',
+    title: 'Global Infrastructure',
+    badge: 'V1 Full Launch',
+    color: 'text-cyan-400',
+    bgBorder: 'border-cyan-500/40 bg-cyan-500/10',
+    description: 'Deployment of decentralized AI liquidity nodes and zero-knowledge arbitrage settlement protocols for institutional market participants.'
+  }
+];
+
 export function AboutPage() {
   const [, setLocation] = useLocation();
   const [lightboxImg, setLightboxImg] = useState<{ src: string; title: string; desc: string } | null>(null);
+  const [activeTimelineStep, setActiveTimelineStep] = useState(1);
 
   // Scroll smooth helper
   const scrollToJourney = () => {
@@ -158,51 +195,109 @@ export function AboutPage() {
 
 
       {/* 📜 3. OUR STORY */}
-      <section id="our-story" className="relative overflow-hidden py-24 lg:py-32 font-sans border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2 items-start">
-            {/* Left Side */}
-            <div>
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">OUR ORIGINS</span>
-              <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
-                From an Idea to an Intelligent Trading Infrastructure
-              </h2>
-              <div className="mt-8 rounded-2xl border border-primary/30 bg-primary/10 p-6 backdrop-blur-xl">
-                <p className="font-mono text-sm sm:text-base font-bold text-primary italic">
-                  “Markets move fast. Intelligence needs to move faster.”
-                </p>
+      <section id="our-story" className="relative overflow-hidden py-20 lg:py-28 font-sans border-b border-white/10">
+        {/* Background Ambient Spotlights */}
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 blur-[130px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 blur-[130px] pointer-events-none rounded-full" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
+          {/* Outer Glass Card Frame */}
+          <div className="rounded-3xl border border-white/15 bg-gradient-to-b from-white/[0.05] via-[#0d120f]/80 to-[#080b09]/95 p-6 sm:p-10 lg:p-12 backdrop-blur-2xl shadow-[0_0_60px_rgba(0,0,0,0.8)] relative overflow-hidden">
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 blur-3xl rounded-full pointer-events-none" />
+
+            <div className="grid gap-10 lg:grid-cols-2 items-center">
+              {/* Left Side */}
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-xs font-mono font-bold text-primary uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
+                  <Sparkles size={12} className="text-primary animate-pulse" />
+                  OUR ORIGINS
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-[1.15]">
+                  From an Idea to an Intelligent <span className="bg-gradient-to-r from-primary via-[#f5c542] to-emerald-400 bg-clip-text text-transparent">Trading Infrastructure</span>
+                </h2>
+
+                {/* Interactive Glass Quote Box */}
+                <div className="mt-8 rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent p-5 sm:p-6 backdrop-blur-xl relative overflow-hidden group hover:border-primary/60 transition-all shadow-[0_0_30px_rgba(232,185,73,0.1)]">
+                  <div className="flex items-start gap-4">
+                    <div className="rounded-xl border border-primary/40 bg-primary/20 p-3 text-primary shrink-0 group-hover:scale-110 transition-transform">
+                      <Quote size={22} />
+                    </div>
+                    <p className="font-mono text-sm sm:text-base font-bold text-primary leading-relaxed italic">
+                      “Markets move fast. Intelligence needs to move faster.”
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Right Side Story & Timeline */}
-            <div className="space-y-6 text-sm text-muted-foreground leading-relaxed">
-              <p>
-                Nexa Traders began developing its AI arbitrage trading technology in 2023, with a focus on solving one of crypto markets' biggest challenges: fragmented liquidity and rapidly changing prices across exchanges.
-              </p>
-              <p>
-                The company was officially launched on 15 June 2025 and has since been developing an intelligent infrastructure capable of monitoring markets, identifying potential arbitrage opportunities and routing capital across multiple exchanges.
-              </p>
+              {/* Right Side Story & Interactive Timeline */}
+              <div className="space-y-6">
+                <div className="space-y-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  <p className="border-l-2 border-primary/40 pl-4">
+                    Nexa Traders began developing its AI arbitrage trading technology in 2023, targeting one of crypto markets' core challenges: fragmented liquidity and rapidly changing prices across exchanges.
+                  </p>
+                  <p className="border-l-2 border-emerald-500/40 pl-4">
+                    Officially launched on <strong className="text-foreground font-semibold">15 June 2025</strong>, Nexa Traders deployed an automated execution infrastructure capable of monitoring markets, identifying potential arbitrage opportunities, and routing capital in real time.
+                  </p>
+                </div>
 
-              {/* Subtle Animated Timeline Bar */}
-              <div className="pt-6 border-t border-white/10 font-mono text-xs">
-                <span className="text-foreground font-bold block mb-4">EVOLUTION TIMELINE</span>
-                <div className="grid grid-cols-4 gap-2 text-center">
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                    <strong className="text-primary block text-sm">2023</strong>
-                    <span className="text-[10px] text-muted-foreground">R&D Begins</span>
+                {/* Glass Interactive Timeline */}
+                <div className="pt-6 border-t border-white/10 font-sans">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono text-xs uppercase tracking-widest text-foreground font-bold flex items-center gap-2">
+                      <Activity size={14} className="text-primary" /> EVOLUTION TIMELINE
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground hidden sm:inline">Click milestone to inspect</span>
                   </div>
-                  <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
-                    <strong className="text-emerald-400 block text-sm">15 JUN 2025</strong>
-                    <span className="text-[10px] text-emerald-400">Launch</span>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {TIMELINE_STEPS.map((step, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveTimelineStep(idx)}
+                        className={`rounded-2xl border p-3 text-left transition-all duration-300 backdrop-blur-xl relative overflow-hidden group cursor-pointer ${
+                          activeTimelineStep === idx
+                            ? 'border-primary bg-primary/20 shadow-[0_0_25px_rgba(232,185,73,0.3)] scale-[1.03]'
+                            : 'border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.08]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <strong className={`font-mono text-xs sm:text-sm font-extrabold block ${step.color}`}>
+                            {step.year}
+                          </strong>
+                          <span className={`w-2 h-2 rounded-full ${activeTimelineStep === idx ? 'bg-primary animate-ping' : 'bg-white/20'}`} />
+                        </div>
+                        <div className="text-[11px] font-bold text-foreground truncate">{step.badge}</div>
+                      </button>
+                    ))}
                   </div>
-                  <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3">
-                    <strong className="text-amber-400 block text-sm">2026</strong>
-                    <span className="text-[10px] text-amber-400">Beta Platform</span>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                    <strong className="text-foreground block text-sm">2027</strong>
-                    <span className="text-[10px] text-muted-foreground">V1 Full Launch</span>
-                  </div>
+
+                  {/* Active Step Detail Card */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeTimelineStep}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-4 rounded-2xl border border-white/15 bg-white/[0.04] p-4 backdrop-blur-xl flex items-start gap-3.5"
+                    >
+                      <div className={`rounded-xl border p-2.5 shrink-0 ${TIMELINE_STEPS[activeTimelineStep].bgBorder}`}>
+                        <Cpu size={18} className={TIMELINE_STEPS[activeTimelineStep].color} />
+                      </div>
+                      <div className="text-xs space-y-1">
+                        <div className="font-mono font-bold text-foreground flex items-center gap-2">
+                          <span>{TIMELINE_STEPS[activeTimelineStep].year} — {TIMELINE_STEPS[activeTimelineStep].title}</span>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${TIMELINE_STEPS[activeTimelineStep].bgBorder} ${TIMELINE_STEPS[activeTimelineStep].color}`}>
+                            {TIMELINE_STEPS[activeTimelineStep].badge}
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground text-xs leading-normal">
+                          {TIMELINE_STEPS[activeTimelineStep].description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
