@@ -119,11 +119,7 @@ export function AboutPage() {
           <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] items-center">
             {/* Left Hero Content */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              {/* Small Label */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
-                <Sparkles size={13} className="text-primary animate-spin-slow" />
-                ABOUT NEXA TRADERS
-              </div>
+
 
               {/* Main Heading */}
               <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.08]">
