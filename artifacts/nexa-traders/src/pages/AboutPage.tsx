@@ -103,32 +103,24 @@ const TIMELINE_STEPS = [
     year: '2023',
     title: 'R&D & Core AI Engine',
     badge: 'Foundation',
-    color: 'text-primary',
-    bgBorder: 'border-primary/40 bg-primary/10',
     description: 'Development of proprietary multi-exchange AI market-scanning algorithms targeting order-book latency and cross-venue spread detection.'
   },
   {
-    year: '15 JUN 2025',
-    title: 'Official Platform Launch',
+    year: '2025',
+    title: 'Official Platform Launch (15 Jun)',
     badge: 'Live Launch',
-    color: 'text-emerald-400',
-    bgBorder: 'border-emerald-500/40 bg-emerald-500/10',
     description: 'Nexa Traders officially deployed its institutional-grade execution infrastructure and automated liquidity routing engine for real-time arbitrage.'
   },
   {
     year: '2026',
     title: 'Platform Scaling',
     badge: 'Beta Platform',
-    color: 'text-amber-400',
-    bgBorder: 'border-amber-500/40 bg-amber-500/10',
     description: 'Expansion to 18+ global exchanges, 1100+ cryptocurrencies, and 1500+ trading pairs with sub-10ms AI routing response speed.'
   },
   {
     year: '2027',
     title: 'Global Infrastructure',
     badge: 'V1 Full Launch',
-    color: 'text-cyan-400',
-    bgBorder: 'border-cyan-500/40 bg-cyan-500/10',
     description: 'Deployment of decentralized AI liquidity nodes and zero-knowledge arbitrage settlement protocols for institutional market participants.'
   }
 ];
@@ -197,105 +189,126 @@ export function AboutPage() {
       {/* 📜 3. OUR STORY */}
       <section id="our-story" className="relative overflow-hidden py-20 lg:py-28 font-sans border-b border-white/10">
         {/* Background Ambient Spotlights */}
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 blur-[130px] pointer-events-none rounded-full" />
-        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 blur-[130px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 blur-[140px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 blur-[140px] pointer-events-none rounded-full" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
           {/* Outer Glass Card Frame */}
-          <div className="rounded-3xl border border-white/15 bg-gradient-to-b from-white/[0.05] via-[#0d120f]/80 to-[#080b09]/95 p-6 sm:p-10 lg:p-12 backdrop-blur-2xl shadow-[0_0_60px_rgba(0,0,0,0.8)] relative overflow-hidden">
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 blur-3xl rounded-full pointer-events-none" />
-
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] via-[#0b0e0c]/90 to-[#08090a] p-6 sm:p-10 lg:p-12 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden">
             <div className="grid gap-10 lg:grid-cols-2 items-center">
               {/* Left Side */}
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-xs font-mono font-bold text-primary uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
-                  <Sparkles size={12} className="text-primary animate-pulse" />
+                <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest block mb-3">
                   OUR ORIGINS
-                </div>
+                </span>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-[1.15]">
-                  From an Idea to an Intelligent <span className="bg-gradient-to-r from-primary via-[#f5c542] to-emerald-400 bg-clip-text text-transparent">Trading Infrastructure</span>
+                  From an Idea to an Intelligent <span className="text-primary">Trading Infrastructure</span>
                 </h2>
 
-                {/* Interactive Glass Quote Box */}
-                <div className="mt-8 rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent p-5 sm:p-6 backdrop-blur-xl relative overflow-hidden group hover:border-primary/60 transition-all shadow-[0_0_30px_rgba(232,185,73,0.1)]">
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-xl border border-primary/40 bg-primary/20 p-3 text-primary shrink-0 group-hover:scale-110 transition-transform">
-                      <Quote size={22} />
+                {/* Minimalist Institutional Quote Box */}
+                <div className="mt-8 rounded-2xl border border-primary/30 bg-primary/5 p-5 backdrop-blur-xl relative overflow-hidden">
+                  <div className="flex items-start gap-3.5">
+                    <div className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-primary shrink-0 mt-0.5">
+                      <Quote size={18} />
                     </div>
-                    <p className="font-mono text-sm sm:text-base font-bold text-primary leading-relaxed italic">
+                    <p className="font-mono text-xs sm:text-sm font-semibold text-primary leading-relaxed italic">
                       “Markets move fast. Intelligence needs to move faster.”
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Right Side Story & Interactive Timeline */}
+              {/* Right Side Story & Stepper Timeline */}
               <div className="space-y-6">
-                <div className="space-y-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  <p className="border-l-2 border-primary/40 pl-4">
+                <div className="space-y-4 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  <p className="border-l border-primary/40 pl-3.5">
                     Nexa Traders began developing its AI arbitrage trading technology in 2023, targeting one of crypto markets' core challenges: fragmented liquidity and rapidly changing prices across exchanges.
                   </p>
-                  <p className="border-l-2 border-emerald-500/40 pl-4">
-                    Officially launched on <strong className="text-foreground font-semibold">15 June 2025</strong>, Nexa Traders deployed an automated execution infrastructure capable of monitoring markets, identifying potential arbitrage opportunities, and routing capital in real time.
+                  <p className="border-l border-white/20 pl-3.5">
+                    Officially launched on <strong className="text-foreground font-medium">15 June 2025</strong>, Nexa Traders deployed an automated execution infrastructure capable of monitoring markets, identifying potential arbitrage opportunities, and routing capital in real time.
                   </p>
                 </div>
 
-                {/* Glass Interactive Timeline */}
+                {/* Stepper Evolution Timeline */}
                 <div className="pt-6 border-t border-white/10 font-sans">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-6">
                     <span className="font-mono text-xs uppercase tracking-widest text-foreground font-bold flex items-center gap-2">
                       <Activity size={14} className="text-primary" /> EVOLUTION TIMELINE
                     </span>
-                    <span className="font-mono text-[10px] text-muted-foreground hidden sm:inline">Click milestone to inspect</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">Select milestone</span>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {TIMELINE_STEPS.map((step, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveTimelineStep(idx)}
-                        className={`rounded-2xl border p-3 text-left transition-all duration-300 backdrop-blur-xl relative overflow-hidden group cursor-pointer ${
-                          activeTimelineStep === idx
-                            ? 'border-primary bg-primary/20 shadow-[0_0_25px_rgba(232,185,73,0.3)] scale-[1.03]'
-                            : 'border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.08]'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <strong className={`font-mono text-xs sm:text-sm font-extrabold block ${step.color}`}>
-                            {step.year}
-                          </strong>
-                          <span className={`w-2 h-2 rounded-full ${activeTimelineStep === idx ? 'bg-primary animate-ping' : 'bg-white/20'}`} />
-                        </div>
-                        <div className="text-[11px] font-bold text-foreground truncate">{step.badge}</div>
-                      </button>
-                    ))}
+                  {/* Connected Stepper */}
+                  <div className="relative px-2">
+                    {/* Background Progress Bar Line */}
+                    <div className="absolute top-4 left-6 right-6 h-[2px] bg-white/10" />
+                    <div
+                      className="absolute top-4 left-6 h-[2px] bg-primary transition-all duration-500"
+                      style={{ width: `${(activeTimelineStep / (TIMELINE_STEPS.length - 1)) * 84}%` }}
+                    />
+
+                    <div className="grid grid-cols-4 gap-1 relative z-10 text-center">
+                      {TIMELINE_STEPS.map((step, idx) => {
+                        const isActive = activeTimelineStep === idx;
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => setActiveTimelineStep(idx)}
+                            className="group flex flex-col items-center cursor-pointer focus:outline-none"
+                          >
+                            {/* Circle Node */}
+                            <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-300 ${
+                              isActive
+                                ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.4)] scale-110'
+                                : 'border-white/20 bg-[#08090a] text-muted-foreground group-hover:border-white/40 group-hover:text-foreground'
+                            }`}>
+                              <span className="font-mono text-xs font-bold">{idx + 1}</span>
+                            </div>
+
+                            {/* Year */}
+                            <span className={`mt-2 font-mono text-xs font-bold tracking-tight transition-colors ${
+                              isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+                            }`}>
+                              {step.year}
+                            </span>
+
+                            <span className="text-[10px] text-muted-foreground/80 font-medium truncate max-w-[70px] hidden sm:block">
+                              {step.badge}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  {/* Active Step Detail Card */}
+                  {/* Clean Detail Inspector Card */}
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeTimelineStep}
-                      initial={{ opacity: 0, y: 8 }}
+                      initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
+                      exit={{ opacity: 0, y: -6 }}
                       transition={{ duration: 0.2 }}
-                      className="mt-4 rounded-2xl border border-white/15 bg-white/[0.04] p-4 backdrop-blur-xl flex items-start gap-3.5"
+                      className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-4.5 backdrop-blur-xl"
                     >
-                      <div className={`rounded-xl border p-2.5 shrink-0 ${TIMELINE_STEPS[activeTimelineStep].bgBorder}`}>
-                        <Cpu size={18} className={TIMELINE_STEPS[activeTimelineStep].color} />
-                      </div>
-                      <div className="text-xs space-y-1">
-                        <div className="font-mono font-bold text-foreground flex items-center gap-2">
-                          <span>{TIMELINE_STEPS[activeTimelineStep].year} — {TIMELINE_STEPS[activeTimelineStep].title}</span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${TIMELINE_STEPS[activeTimelineStep].bgBorder} ${TIMELINE_STEPS[activeTimelineStep].color}`}>
-                            {TIMELINE_STEPS[activeTimelineStep].badge}
+                      <div className="flex items-center justify-between mb-2 border-b border-white/5 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-primary">
+                            {TIMELINE_STEPS[activeTimelineStep].year}
+                          </span>
+                          <span className="text-white/20">•</span>
+                          <span className="font-sans text-xs font-semibold text-foreground">
+                            {TIMELINE_STEPS[activeTimelineStep].title}
                           </span>
                         </div>
-                        <p className="text-muted-foreground text-xs leading-normal">
-                          {TIMELINE_STEPS[activeTimelineStep].description}
-                        </p>
+                        <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full border border-white/15 bg-white/5 text-foreground font-medium">
+                          {TIMELINE_STEPS[activeTimelineStep].badge}
+                        </span>
                       </div>
+                      <p className="text-muted-foreground text-xs leading-relaxed">
+                        {TIMELINE_STEPS[activeTimelineStep].description}
+                      </p>
                     </motion.div>
                   </AnimatePresence>
                 </div>
