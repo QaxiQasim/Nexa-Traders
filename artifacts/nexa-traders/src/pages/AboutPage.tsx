@@ -125,13 +125,15 @@ const TIMELINE_STEPS = [
   }
 ];
 
-function OfficialJourneyRoadmap() {
+function CompanyMilestonesRoadmap() {
+  const [activeStep, setActiveStep] = useState<number | null>(null);
+
   const roadmapData = [
     {
       year: '2023',
       phase: 'Foundation & Research Phase',
-      position: 'above',
-      items: [
+      position: 'top',
+      bullets: [
         'Company formation and core team assembly in Panama',
         'Initial concept development of AI-powered arbitrage ecosystem',
         'Early-stage research collaboration inspired by institutions like Google DeepMind and MIT Computer Science and Artificial Intelligence Laboratory (CSAIL)',
@@ -143,8 +145,8 @@ function OfficialJourneyRoadmap() {
     {
       year: '2024',
       phase: 'Development & Internal Testing',
-      position: 'below',
-      items: [
+      position: 'bottom',
+      bullets: [
         'Development of Arbitrage Bot (NEXA Core Engine)',
         'Integration with 20+ crypto exchanges (API connectivity)',
         'Launch of internal beta testing environment',
@@ -158,8 +160,8 @@ function OfficialJourneyRoadmap() {
     {
       year: '2025',
       phase: 'Beta Launch & Ecosystem Expansion',
-      position: 'above',
-      items: [
+      position: 'top',
+      bullets: [
         'Public Beta Launch of AI Arbitrage Bot',
         'Expansion to 50+ exchanges and 1000+ trading pairs',
         'Deployment of:',
@@ -174,8 +176,8 @@ function OfficialJourneyRoadmap() {
     {
       year: '2026',
       phase: 'Product Scaling & AI Integration',
-      position: 'below',
-      items: [
+      position: 'bottom',
+      bullets: [
         'Full release of:',
         '  • Spot Marketplace Aggregator',
         '  • AI-Powered Perpetual Futures Trading',
@@ -190,8 +192,8 @@ function OfficialJourneyRoadmap() {
     {
       year: '2027',
       phase: 'Global Expansion & Automation Era',
-      position: 'above',
-      items: [
+      position: 'top',
+      bullets: [
         'Full launch of NexaTraders Mobile App (All Platforms)',
         'Autonomous AI trading systems with minimal manual input',
         'Expansion into:',
@@ -206,128 +208,129 @@ function OfficialJourneyRoadmap() {
   ];
 
   return (
-    <section className="relative overflow-hidden py-24 lg:py-36 bg-[#070908] border-b border-white/10 font-sans selection:bg-primary selection:text-primary-foreground">
-      {/* Ambient background glow and grid */}
-      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[700px] h-[500px] bg-primary/10 blur-[180px] pointer-events-none rounded-full" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-40 pointer-events-none" />
-
-      {/* Cybernetic AI Robot Graphic Background */}
-      <div className="absolute right-0 top-0 bottom-0 w-full lg:w-1/2 pointer-events-none overflow-hidden z-0 flex items-center justify-end">
+    <section className="relative overflow-hidden py-24 lg:py-36 bg-[#060708] border-b border-white/10 font-sans text-foreground">
+      {/* Ambient Radial Overlay */}
+      <div className="absolute inset-0 opacity-25 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
+      
+      {/* Mecha Cybernetic Robot Background Graphic */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-full lg:w-1/2 h-full opacity-20 lg:opacity-35 pointer-events-none flex justify-end items-center overflow-hidden">
         <img
-          src="/roadmap_robot.png"
-          alt="Nexa AI Robot Character"
-          className="w-full max-w-[620px] lg:max-w-[800px] h-auto object-contain opacity-25 lg:opacity-75 mix-blend-screen transform translate-x-12 lg:translate-x-24 drop-shadow-[0_0_60px_rgba(232,185,73,0.3)] transition-all duration-700 hover:scale-105"
+          src="/ai_robot_roadmap_bg.png"
+          alt="AI Mecha Trading Robot"
+          className="h-full max-h-[850px] object-contain object-right"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#070908] via-[#070908]/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060708] via-[#060708]/60 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1440px] px-5 lg:px-12">
-        {/* Main Title Banner */}
-        <div className="mb-16 lg:mb-24">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="h-2 w-2 rounded-full bg-primary animate-ping" />
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-primary uppercase font-sans drop-shadow-[0_0_25px_rgba(232,185,73,0.4)]">
-              Roadmap
-            </h1>
-          </div>
-          <p className="text-xl sm:text-2xl font-mono text-foreground/90 tracking-wide">
-            The Journey <span className="text-primary font-bold">2023-2027</span>
+      <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
+        
+        {/* Main Header */}
+        <div className="mb-12">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-primary uppercase drop-shadow-[0_0_20px_rgba(232,185,73,0.3)]">
+            Roadmap
+          </h2>
+          <p className="mt-2 text-xl sm:text-2xl font-bold font-mono text-foreground flex items-center gap-2">
+            The Journey <span className="text-primary font-black">2023-2027</span>
           </p>
         </div>
 
-        {/* --- DESKTOP HORIZONTAL TIMELINE TRACK (lg+) --- */}
+        {/* Central Arrow Horizontal Timeline Rail for Desktop (sm+) */}
         <div className="hidden lg:block relative py-12">
-          {/* Main Gold Connector Rail */}
-          <div className="absolute top-1/2 left-0 right-12 -translate-y-1/2 h-1.5 bg-gradient-to-r from-primary via-[#f5c542] to-amber-500 rounded-full shadow-[0_0_20px_rgba(232,185,73,0.8)] z-10" />
-
-          {/* Arrowhead at End of Rail */}
-          <div className="absolute top-1/2 right-4 -translate-y-1/2 z-10">
-            <div className="w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[20px] border-l-primary drop-shadow-[0_0_15px_rgba(232,185,73,0.9)]" />
+          
+          {/* Main Gold Arrow Bar */}
+          <div className="relative flex items-center my-20">
+            <div className="w-full h-[4px] bg-gradient-to-r from-primary via-[#f5c542] to-primary rounded-full shadow-[0_0_18px_rgba(232,185,73,0.65)]" />
+            <div className="w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[20px] border-l-primary shrink-0 -ml-1 filter drop-shadow-[0_0_12px_rgba(232,185,73,0.85)]" />
           </div>
 
-          {/* Timeline Grid (5 Columns) */}
-          <div className="grid grid-cols-5 gap-4 relative z-20">
-            {roadmapData.map((data, idx) => {
+          {/* Staggered Timeline Items */}
+          <div className="grid grid-cols-5 gap-6 absolute inset-0">
+            {roadmapData.map((item, idx) => {
+              const isTop = item.position === 'top';
+              const isSelected = activeStep === idx;
               return (
-                <div key={idx} className="relative flex flex-col items-center">
-                  {/* --- TOP CALLOUT (FOR ABOVE NODES: 2023, 2025, 2027) --- */}
-                  {data.position === 'above' && (
-                    <div className="mb-8 w-full">
-                      <div className="rounded-2xl border border-white/10 bg-[#0b0e0d]/90 backdrop-blur-xl p-5 shadow-[0_0_35px_rgba(0,0,0,0.8)] hover:border-primary/60 transition-all duration-300 group">
-                        <h3 className="text-xs sm:text-sm font-mono font-black text-primary flex flex-wrap items-center gap-1.5 border-b border-white/10 pb-2 mb-3">
-                          <span className="text-foreground text-sm sm:text-base font-bold">{data.year}</span> – {data.phase}
-                        </h3>
-                        <ul className="space-y-1.5 text-[11px] text-muted-foreground/90 leading-relaxed font-sans">
-                          {data.items.map((item, i) => (
-                            <li key={i} className="flex items-start gap-1.5">
-                              <span className="text-primary shrink-0 font-bold mt-0.5">•</span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Spacer if position is below so node stays on track */}
-                  {data.position === 'below' && <div className="h-[220px] w-full" />}
-
-                  {/* --- TIMELINE NODE CIRCLE --- */}
-                  <div className="relative my-auto flex items-center justify-center shrink-0 z-30">
-                    <div className="w-9 h-9 rounded-full bg-[#070908] border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.6)] flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-125 hover:border-primary">
-                      <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                    </div>
+                <div
+                  key={idx}
+                  className={`flex flex-col relative ${isTop ? 'justify-start pb-20' : 'justify-end pt-20'}`}
+                >
+                  {/* Glowing Node Dot on Arrow Rail */}
+                  <div
+                    onClick={() => setActiveStep(activeStep === idx ? null : idx)}
+                    className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-4 cursor-pointer transition-all duration-300 z-20 flex items-center justify-center ${
+                      isSelected
+                        ? 'border-primary bg-foreground scale-125 shadow-[0_0_25px_rgba(232,185,73,0.9)]'
+                        : 'border-white bg-[#08090a] hover:border-primary hover:scale-110 shadow-[0_0_12px_rgba(255,255,255,0.4)]'
+                    }`}
+                  >
+                    <div className="w-2 h-2 rounded-full bg-primary" />
                   </div>
 
-                  {/* --- BOTTOM CALLOUT (FOR BELOW NODES: 2024, 2026) --- */}
-                  {data.position === 'below' && (
-                    <div className="mt-8 w-full">
-                      <div className="rounded-2xl border border-white/10 bg-[#0b0e0d]/90 backdrop-blur-xl p-5 shadow-[0_0_35px_rgba(0,0,0,0.8)] hover:border-primary/60 transition-all duration-300 group">
-                        <h3 className="text-xs sm:text-sm font-mono font-black text-primary flex flex-wrap items-center gap-1.5 border-b border-white/10 pb-2 mb-3">
-                          <span className="text-foreground text-sm sm:text-base font-bold">{data.year}</span> – {data.phase}
-                        </h3>
-                        <ul className="space-y-1.5 text-[11px] text-muted-foreground/90 leading-relaxed font-sans">
-                          {data.items.map((item, i) => (
-                            <li key={i} className="flex items-start gap-1.5">
-                              <span className="text-primary shrink-0 font-bold mt-0.5">•</span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
+                  {/* Milestone Content Card */}
+                  <div
+                    onClick={() => setActiveStep(activeStep === idx ? null : idx)}
+                    className={`rounded-2xl border p-5 backdrop-blur-2xl transition-all duration-300 cursor-pointer shadow-xl relative overflow-hidden ${
+                      isSelected
+                        ? 'border-primary bg-[#0f1311] shadow-[0_0_35px_rgba(232,185,73,0.25)] scale-[1.03]'
+                        : 'border-white/10 bg-black/75 hover:border-primary/50 hover:bg-[#0c0f0d]'
+                    }`}
+                  >
+                    {/* Top Gold Accent Bar */}
+                    <div className="h-0.5 bg-gradient-to-r from-primary via-[#f5c542] to-transparent mb-3" />
 
-                  {/* Spacer if position is above so node stays aligned */}
-                  {data.position === 'above' && <div className="h-[220px] w-full" />}
+                    <h3 className="font-mono text-sm sm:text-base font-bold text-primary tracking-wide leading-tight">
+                      {item.year} <span className="text-foreground font-sans text-xs sm:text-sm font-semibold">– {item.phase}</span>
+                    </h3>
+
+                    <ul className="mt-3 space-y-1.5 text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
+                      {item.bullets.map((b, bIdx) => (
+                        <li
+                          key={bIdx}
+                          className={
+                            b.startsWith('  •')
+                              ? 'pl-3.5 text-primary/90 font-mono text-[10px]'
+                              : b.endsWith(':')
+                              ? 'font-bold text-foreground mt-1'
+                              : 'before:content-["•"] before:text-primary before:mr-1.5'
+                          }
+                        >
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* --- MOBILE / TABLET VERTICAL TIMELINE TRACK (< lg) --- */}
-        <div className="lg:hidden relative pl-6 border-l-2 border-primary space-y-8">
-          {roadmapData.map((data, idx) => (
-            <div key={idx} className="relative group">
-              {/* Node Circle on Mobile Rail */}
-              <div className="absolute -left-[31px] top-1.5 w-6 h-6 rounded-full bg-[#070908] border-2 border-white shadow-[0_0_15px_rgba(232,185,73,0.8)] flex items-center justify-center">
+        {/* Responsive Mobile Timeline Layout */}
+        <div className="lg:hidden space-y-8 relative pl-6 border-l-2 border-primary/60">
+          {roadmapData.map((item, idx) => (
+            <div key={idx} className="relative">
+              {/* Timeline Node Circle */}
+              <div className="absolute -left-[31px] top-1.5 w-6 h-6 rounded-full border-2 border-primary bg-black flex items-center justify-center shadow-[0_0_15px_rgba(232,185,73,0.5)]">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
               </div>
 
-              {/* Mobile Card */}
-              <div className="rounded-2xl border border-white/10 bg-[#0b0e0d]/95 backdrop-blur-xl p-5 shadow-2xl">
-                <span className="font-mono text-xs font-bold text-primary block mb-1 uppercase tracking-wider">
-                  PHASE {idx + 1}
-                </span>
-                <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-                  <span className="text-primary font-mono font-black">{data.year}</span> – {data.phase}
+              <div className="rounded-2xl border border-white/10 bg-black/85 p-5 backdrop-blur-xl">
+                <h3 className="font-mono text-base font-bold text-primary leading-tight">
+                  {item.year} <span className="text-foreground font-sans text-sm font-semibold">– {item.phase}</span>
                 </h3>
-                <ul className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-                  {data.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-primary shrink-0 font-bold mt-0.5">•</span>
-                      <span>{item}</span>
+
+                <ul className="mt-3 space-y-2 text-xs text-muted-foreground leading-relaxed">
+                  {item.bullets.map((b, bIdx) => (
+                    <li
+                      key={bIdx}
+                      className={
+                        b.startsWith('  •')
+                          ? 'pl-4 text-primary font-mono text-xs'
+                          : b.endsWith(':')
+                          ? 'font-bold text-foreground mt-1'
+                          : 'before:content-["•"] before:text-primary before:mr-2'
+                      }
+                    >
+                      {b}
                     </li>
                   ))}
                 </ul>
@@ -722,9 +725,87 @@ export function AboutPage() {
       </section>
 
 
-      {/* 🗓️ OFFICIAL JOURNEY ROADMAP (2023-2027) */}
-      <OfficialJourneyRoadmap />
+      {/* 🗓️ 8. COMPANY MILESTONES ROADMAP */}
+      <CompanyMilestonesRoadmap />
 
+
+
+      {/* 🗺️ 9. ROADMAP */}
+      <section className="relative overflow-hidden py-24 lg:py-32 font-sans border-b border-white/10">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">FUTURE OUTLOOK</span>
+            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+              The Road Ahead
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              We're building beyond today's trading infrastructure.
+            </p>
+          </div>
+
+          <div className="space-y-6 max-w-4xl mx-auto">
+            {/* Phase 1 */}
+            <div className="rounded-3xl border border-emerald-500/40 bg-emerald-500/10 p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
+              <div>
+                <span className="font-mono text-xs text-emerald-400 font-bold uppercase tracking-wider block">PHASE 01</span>
+                <h3 className="text-xl font-bold text-foreground mt-1">AI Arbitrage Infrastructure</h3>
+                <p className="text-xs text-muted-foreground mt-2">Multi-exchange connectivity, AI market analysis, Arbitrage infrastructure, Capital routing.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-emerald-500/20 border border-emerald-500/50 px-4 py-1.5 font-mono text-xs font-bold text-emerald-400">
+                ● Live / Beta
+              </span>
+            </div>
+
+            {/* Phase 2 */}
+            <div className="rounded-3xl border border-amber-500/40 bg-amber-500/10 p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
+              <div>
+                <span className="font-mono text-xs text-amber-400 font-bold uppercase tracking-wider block">PHASE 02</span>
+                <h3 className="text-xl font-bold text-foreground mt-1">Platform Expansion</h3>
+                <p className="text-xs text-muted-foreground mt-2">Enhanced trading infrastructure, Improved user experience, Expanded market coverage.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-amber-500/20 border border-amber-500/50 px-4 py-1.5 font-mono text-xs font-bold text-amber-400">
+                In Development
+              </span>
+            </div>
+
+            {/* Phase 3 */}
+            <div className="rounded-3xl border border-white/15 bg-white/[0.03] p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
+              <div>
+                <span className="font-mono text-xs text-primary font-bold uppercase tracking-wider block">PHASE 03</span>
+                <h3 className="text-xl font-bold text-foreground mt-1">Spot Marketplace</h3>
+                <p className="text-xs text-muted-foreground mt-2">A dedicated spot marketplace designed to bring supported digital assets into the Nexa Traders ecosystem.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 font-mono text-xs font-bold text-muted-foreground">
+                Upcoming
+              </span>
+            </div>
+
+            {/* Phase 4 */}
+            <div className="rounded-3xl border border-white/15 bg-white/[0.03] p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
+              <div>
+                <span className="font-mono text-xs text-primary font-bold uppercase tracking-wider block">PHASE 04</span>
+                <h3 className="text-xl font-bold text-foreground mt-1">AI Perpetual Futures</h3>
+                <p className="text-xs text-muted-foreground mt-2">AI-powered perpetual futures infrastructure designed for advanced digital asset trading.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 font-mono text-xs font-bold text-muted-foreground">
+                Upcoming
+              </span>
+            </div>
+
+            {/* Phase 5 */}
+            <div className="rounded-3xl border border-primary/50 bg-gradient-to-r from-primary/20 to-primary/10 p-6 sm:p-8 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center shadow-[0_0_30px_rgba(232,185,73,0.2)]">
+              <div>
+                <span className="font-mono text-xs text-primary font-bold uppercase tracking-wider block">PHASE 05</span>
+                <h3 className="text-xl font-black text-foreground mt-1">Full Nexa Traders Platform</h3>
+                <p className="text-xs text-muted-foreground mt-2">The planned full version of the Nexa Traders platform with expanded products and global capabilities.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-primary text-primary-foreground font-mono text-xs font-black px-4 py-1.5">
+                Target: 01 January 2027
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
 
       {/* 🖼️ 10. ROADMAP SCREENSHOTS & GALLERY */}
