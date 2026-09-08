@@ -2267,8 +2267,212 @@ function ArticlePage() {
 
 function ContactPage() {
   const [sent, setSent] = useState(false);
-  const submit = (event: React.FormEvent<HTMLFormElement>) => { event.preventDefault(); setSent(true); };
-  return <div><PageIntro eyebrow="Human support / 09:00–18:00 UTC" title="Bring us the question behind the question." copy="Whether you are comparing packages or trying to understand a signal, our support team will give you a straight answer." /><section className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[.7fr_1.3fr] lg:px-8 lg:py-24"><Reveal><div><SectionHeading eyebrow="Reach the desk" title="No scripts. No pressure." copy="Tell us what you are trying to solve. We usually respond within one business day." /><div className="mt-9 space-y-4"><a href="mailto:support@nexatraders.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary" data-testid="link-contact-email"><Mail size={17} className="text-primary" />support@nexatraders.com</a><a href="mailto:compliance@nexatraders.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary" data-testid="link-contact-compliance"><ShieldCheck size={17} className="text-primary" />compliance@nexatraders.com</a><div className="flex items-center gap-3 text-sm text-muted-foreground"><Clock3 size={17} className="text-primary" />Mon–Fri / 09:00–18:00 UTC</div></div></div></Reveal><Reveal delay={.1}><div className="rounded-xl border border-border bg-card/70 p-5 sm:p-7">{sent ? <div className="flex min-h-[360px] flex-col items-center justify-center text-center"><span className="grid h-12 w-12 place-items-center rounded-full border border-accent/30 bg-accent/10 text-accent"><Check size={22} /></span><h2 className="mt-6 text-2xl font-semibold tracking-[-.04em]">Message received.</h2><p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">A member of the NexaTraders desk will be in touch within one business day.</p><button onClick={() => setSent(false)} className="mt-6 text-sm text-primary hover:underline" data-testid="button-send-another">Send another message</button></div> : <form onSubmit={submit} className="space-y-5"><div className="grid gap-5 sm:grid-cols-2"><label className="text-sm"><span className="mb-2 block text-muted-foreground">Name</span><input required className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-contact-name" /></label><label className="text-sm"><span className="mb-2 block text-muted-foreground">Email</span><input required type="email" className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="input-contact-email" /></label></div><label className="block text-sm"><span className="mb-2 block text-muted-foreground">What can we help with?</span><select className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="select-contact-topic"><option>Understanding a package</option><option>Account question</option><option>Security and compliance</option><option>Something else</option></select></label><label className="block text-sm"><span className="mb-2 block text-muted-foreground">Message</span><textarea required rows={6} placeholder="A little context helps us give a useful answer." className="w-full resize-none rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary" data-testid="textarea-contact-message" /></label><button type="submit" className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-[#f3cc68]" data-testid="button-submit-contact">Send to the desk <Send size={15} /></button></form>}</div></Reveal></section></div>;
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [topic, setTopic] = useState('Package Activation');
+  const [message, setMessage] = useState('');
+
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSent(true);
+  };
+
+  return (
+    <div className="min-h-[calc(100vh-72px)] bg-[#08090a] text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
+      {/* 🌟 Compact Spotlight Header */}
+      <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-[#0b0e0d] via-[#0d110f] to-[#08090a] pt-12 pb-10 lg:pt-16 lg:pb-12">
+        <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.22)_0%,rgba(16,185,129,0.06)_50%,transparent_75%)] blur-[90px] pointer-events-none rounded-full" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-40 pointer-events-none" />
+
+        <div className="relative z-10 mx-auto max-w-5xl px-5 text-center lg:px-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 font-mono text-xs font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
+            <Sparkles size={13} className="text-primary animate-pulse" />
+            SUPPORT DESK · 24/7 ASSISTANCE
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+            Get in Touch with <span className="text-primary">Nexa Traders</span>
+          </h1>
+          <p className="mt-3 text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Have questions about arbitrage packages, 2FA security, or account activation? Our support team responds within 24 hours.
+          </p>
+        </div>
+      </section>
+
+      {/* 📬 Main Contact Grid Section (Compact & Sleek) */}
+      <section className="mx-auto max-w-6xl px-5 py-10 lg:py-14 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-12 items-start">
+          
+          {/* Left Column: Direct Communication Cards (5 Columns) */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl space-y-4">
+              <h3 className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
+                DIRECT CHANNELS
+              </h3>
+
+              {/* Support Email Card */}
+              <a
+                href="mailto:support@nexatraders.io"
+                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.03] p-3.5 transition-all hover:border-primary/40 hover:bg-primary/5"
+              >
+                <div className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-primary shrink-0 group-hover:scale-110 transition-transform">
+                  <Mail size={18} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">Customer Support</span>
+                  <strong className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate block">
+                    support@nexatraders.io
+                  </strong>
+                </div>
+              </a>
+
+              {/* Compliance Email Card */}
+              <a
+                href="mailto:compliance@nexatraders.io"
+                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.03] p-3.5 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
+              >
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform">
+                  <ShieldCheck size={18} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">Security & Compliance</span>
+                  <strong className="text-xs sm:text-sm font-bold text-foreground group-hover:text-emerald-400 transition-colors truncate block">
+                    compliance@nexatraders.io
+                  </strong>
+                </div>
+              </a>
+
+              {/* Operating Hours Card */}
+              <div className="flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.03] p-3.5">
+                <div className="rounded-lg border border-white/10 bg-white/5 p-2 text-muted-foreground shrink-0">
+                  <Clock3 size={18} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">Desk Hours</span>
+                  <strong className="text-xs font-bold text-foreground block">
+                    Mon – Sun / 24/7 Priority Support
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Telegram / Instant Help Card */}
+            <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5 backdrop-blur-xl">
+              <div className="flex items-center gap-2 font-mono text-xs text-primary font-bold uppercase tracking-wider mb-2">
+                <MessageCircle size={15} /> Instant Response Desk
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Need urgent assistance with package deposit verification or 2FA login? Message our live support channel.
+              </p>
+              <a
+                href="https://t.me/NexaTradersOfficial"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3.5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 font-mono text-xs font-black uppercase text-primary-foreground hover:bg-[#f5c542] transition-all shadow-[0_0_15px_rgba(232,185,73,0.3)]"
+              >
+                Open Live Chat <ExternalLink size={13} />
+              </a>
+            </div>
+          </div>
+
+          {/* Right Column: Sleek Contact Form (7 Columns) */}
+          <div className="lg:col-span-7">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+              {sent ? (
+                <div className="flex py-12 flex-col items-center justify-center text-center font-sans">
+                  <div className="w-14 h-14 rounded-full border border-emerald-500/40 bg-emerald-500/10 grid place-items-center text-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.3)] animate-bounce">
+                    <Check size={28} />
+                  </div>
+                  <h3 className="mt-5 text-2xl font-extrabold text-foreground tracking-tight">Message Received!</h3>
+                  <p className="mt-2 max-w-md text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    Thank you for reaching out to Nexa Traders desk. Our support team will review your inquiry and get back to you shortly.
+                  </p>
+                  <button
+                    onClick={() => { setSent(false); setMessage(''); }}
+                    className="mt-6 font-mono text-xs font-bold text-primary hover:underline uppercase tracking-wider"
+                  >
+                    ← Send Another Message
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={submit} className="space-y-4 font-sans">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-2">
+                    <h3 className="font-mono text-xs uppercase tracking-widest text-foreground font-bold flex items-center gap-2">
+                      <Send size={13} className="text-primary" /> SEND US A MESSAGE
+                    </h3>
+                    <span className="font-mono text-[10px] text-muted-foreground">Response time: &lt; 24h</span>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block text-xs font-mono">
+                      <span className="mb-1.5 block text-muted-foreground uppercase">Your Name *</span>
+                      <input
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Alex Vance"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary focus:bg-black/40 transition-colors"
+                        data-testid="input-contact-name"
+                      />
+                    </label>
+
+                    <label className="block text-xs font-mono">
+                      <span className="mb-1.5 block text-muted-foreground uppercase">Your Email *</span>
+                      <input
+                        required
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@domain.com"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary focus:bg-black/40 transition-colors"
+                        data-testid="input-contact-email"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="block text-xs font-mono">
+                    <span className="mb-1.5 block text-muted-foreground uppercase">Subject / Category</span>
+                    <select
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-[#0c0f0d] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary transition-colors cursor-pointer"
+                      data-testid="select-contact-topic"
+                    >
+                      <option value="Package Activation">Package Activation & Deposits</option>
+                      <option value="Account Support">Account & 2FA OTP Support</option>
+                      <option value="Withdrawal Question">Withdrawal & Referral Rewards</option>
+                      <option value="General Inquiry">General Technical Question</option>
+                    </select>
+                  </label>
+
+                  <label className="block text-xs font-mono">
+                    <span className="mb-1.5 block text-muted-foreground uppercase">Message Details *</span>
+                    <textarea
+                      required
+                      rows={4}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Please provide details about your question..."
+                      className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary focus:bg-black/40 transition-colors"
+                      data-testid="textarea-contact-message"
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-3.5 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(232,185,73,0.5)] transition-all flex items-center justify-center gap-2"
+                    data-testid="button-submit-contact"
+                  >
+                    Send to Support Desk <Send size={14} />
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+  );
 }
 
 function PrivacyPage() {
