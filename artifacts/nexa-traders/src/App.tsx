@@ -27,6 +27,7 @@ import {
   DollarSign,
   ExternalLink,
   Eye,
+  EyeOff,
   Facebook,
   FileCheck2,
   Globe2,
@@ -2280,6 +2281,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [refCodeInput, setRefCodeInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState<string>('');
@@ -2737,17 +2739,28 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                 </label>
                 <label className="block text-sm">
                   <span className="mb-2 block text-muted-foreground">Password</span>
-                  <input
-                    required
-                    type="password"
-                    minLength={6}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
-                    data-testid="input-auth-password"
-                  />
+                  <div className="relative">
+                    <input
+                      required
+                      type={showPassword ? 'text' : 'password'}
+                      minLength={6}
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full rounded-lg border border-border bg-secondary px-3 py-3 pr-10 outline-none focus:border-primary font-mono text-sm"
+                      data-testid="input-auth-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none transition-colors p-1"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
                 </label>
+
                 <button
                   type="submit"
                   disabled={loading}
