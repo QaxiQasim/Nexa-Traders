@@ -1,10 +1,9 @@
-// Nexa Traders OTP Email Service via Resend API
+// Nexa Traders OTP Email Service via Vercel Serverless & Resend API
 
 const getResendApiKey = (): string => {
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_RESEND_API_KEY) {
     return import.meta.env.VITE_RESEND_API_KEY;
   }
-  // Fallback decoded key
   try {
     return atob('cmVfMmZ4Z1hVQ0FfTnZibVhpTDFTRko0Q0VISDNLQzlBRTVh');
   } catch (e) {
@@ -22,8 +21,34 @@ export async function sendOtpEmail(email: string, otpCode: string, name: string 
   const cleanEmail = email.trim().toLowerCase();
   const cleanName = name || cleanEmail.split('@')[0];
   const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-  const apiKey = getResendApiKey();
 
+  // 🚀 Step 1: Call Vercel Serverless Function /api/send-otp (Server-Side, No CORS issues)
+  try {
+    const apiRes = await fetch('/api/send-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: cleanEmail,
+        otpCode,
+        name: formattedName
+      })
+    });
+
+    if (apiRes.ok) {
+      const apiData = await apiRes.json();
+      if (apiData.success) {
+        console.log('OTP Email Sent Successfully via Serverless API:', apiData.id);
+        return true;
+      }
+    }
+  } catch (apiErr) {
+    console.warn('Serverless endpoint /api/send-otp unavailable, trying direct Resend API call:', apiErr);
+  }
+
+  // 🚀 Step 2: Direct Client Fallback (Resend API)
+  const apiKey = getResendApiKey();
   if (!apiKey) {
     console.error('Resend API key is missing.');
     return false;
@@ -85,14 +110,14 @@ export async function sendOtpEmail(email: string, otpCode: string, name: string 
 
     const data = await res.json();
     if (res.ok && data.id) {
-      console.log('OTP Email Sent Successfully via Resend:', data.id);
+      console.log('OTP Email Sent Successfully via Resend Direct API:', data.id);
       return true;
     } else {
-      console.error('Failed to send OTP Email via Resend:', data);
+      console.error('Failed to send OTP Email via Resend Direct API:', data);
       return false;
     }
   } catch (err) {
-    console.error('Error sending OTP Email via Resend:', err);
+    console.error('Error sending OTP Email via Resend Direct API:', err);
     return false;
   }
 }
