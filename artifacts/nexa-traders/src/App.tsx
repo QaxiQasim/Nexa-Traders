@@ -2267,208 +2267,208 @@ function ArticlePage() {
 
 function ContactPage() {
   const [sent, setSent] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [topic, setTopic] = useState('Package Activation');
-  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSent(true);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSent(true);
+    }, 500);
   };
 
   return (
-    <div className="min-h-[calc(100vh-72px)] bg-[#08090a] text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
-      {/* 🌟 Compact Spotlight Header */}
-      <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-[#0b0e0d] via-[#0d110f] to-[#08090a] pt-12 pb-10 lg:pt-16 lg:pb-12">
-        <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.22)_0%,rgba(16,185,129,0.06)_50%,transparent_75%)] blur-[90px] pointer-events-none rounded-full" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-40 pointer-events-none" />
+    <div className="min-h-[80vh] bg-[#08090a] text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
+      {/* 🚀 Compact Header Hero */}
+      <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-[#0b0e0d] via-[#0d110f] to-[#08090a] py-10 sm:py-14">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.18)_0%,transparent_70%)] blur-[80px] pointer-events-none rounded-full" />
 
         <div className="relative z-10 mx-auto max-w-5xl px-5 text-center lg:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 font-mono text-xs font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
-            <Sparkles size={13} className="text-primary animate-pulse" />
-            SUPPORT DESK · 24/7 ASSISTANCE
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[11px] font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
+            <Sparkles size={13} className="text-primary" />
+            SUPPORT DESK & HELP CENTER
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
-            Get in Touch with <span className="text-primary">Nexa Traders</span>
+            Contact Nexa Traders
           </h1>
-          <p className="mt-3 text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Have questions about arbitrage packages, 2FA security, or account activation? Our support team responds within 24 hours.
+          <p className="mt-2.5 text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            Have questions about packages, AI arbitrage routing, or technical integration? Reach our team directly.
           </p>
         </div>
       </section>
 
-      {/* 📬 Main Contact Grid Section (Compact & Sleek) */}
-      <section className="mx-auto max-w-6xl px-5 py-10 lg:py-14 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-12 items-start">
+      {/* 📬 Main Contact Content Grid */}
+      <section className="mx-auto max-w-6xl px-5 py-10 sm:py-14 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr] items-start">
           
-          {/* Left Column: Direct Communication Cards (5 Columns) */}
-          <div className="lg:col-span-5 space-y-4">
+          {/* Left Info Column */}
+          <div className="space-y-4 font-sans">
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl space-y-4">
-              <h3 className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
-                DIRECT CHANNELS
-              </h3>
+              <span className="font-mono text-[10px] text-primary uppercase font-bold tracking-widest block">
+                DIRECT CONTACT CHANNELS
+              </span>
 
-              {/* Support Email Card */}
+              {/* Support Email */}
               <a
-                href="mailto:support@nexatraders.io"
-                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.03] p-3.5 transition-all hover:border-primary/40 hover:bg-primary/5"
+                href="mailto:support@nexatraders.com"
+                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-all hover:border-primary/40 hover:bg-primary/5"
+                data-testid="link-contact-email"
               >
-                <div className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-primary shrink-0 group-hover:scale-110 transition-transform">
+                <div className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-primary group-hover:scale-105 transition-transform shrink-0">
                   <Mail size={18} />
                 </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">Customer Support</span>
-                  <strong className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate block">
-                    support@nexatraders.io
-                  </strong>
+                <div>
+                  <strong className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">Customer Support</strong>
+                  <span className="text-[11px] text-muted-foreground font-mono">support@nexatraders.com</span>
                 </div>
               </a>
 
-              {/* Compliance Email Card */}
+              {/* Compliance Email */}
               <a
-                href="mailto:compliance@nexatraders.io"
-                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.03] p-3.5 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                href="mailto:compliance@nexatraders.com"
+                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                data-testid="link-contact-compliance"
               >
-                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform">
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400 group-hover:scale-105 transition-transform shrink-0">
                   <ShieldCheck size={18} />
                 </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">Security & Compliance</span>
-                  <strong className="text-xs sm:text-sm font-bold text-foreground group-hover:text-emerald-400 transition-colors truncate block">
-                    compliance@nexatraders.io
-                  </strong>
+                <div>
+                  <strong className="text-xs font-bold text-foreground block group-hover:text-emerald-400 transition-colors">Legal & Compliance</strong>
+                  <span className="text-[11px] text-muted-foreground font-mono">compliance@nexatraders.com</span>
                 </div>
               </a>
 
-              {/* Operating Hours Card */}
-              <div className="flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.03] p-3.5">
+              {/* Hours */}
+              <div className="flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5">
                 <div className="rounded-lg border border-white/10 bg-white/5 p-2 text-muted-foreground shrink-0">
                   <Clock3 size={18} />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">Desk Hours</span>
-                  <strong className="text-xs font-bold text-foreground block">
-                    Mon – Sun / 24/7 Priority Support
-                  </strong>
+                  <strong className="text-xs font-bold text-foreground block">Desk Hours</strong>
+                  <span className="text-[11px] text-muted-foreground font-mono">Mon–Fri / 09:00–18:00 UTC</span>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5">
+                <div className="rounded-lg border border-white/10 bg-white/5 p-2 text-muted-foreground shrink-0">
+                  <Globe2 size={18} />
+                </div>
+                <div>
+                  <strong className="text-xs font-bold text-foreground block">Global Hubs</strong>
+                  <span className="text-[11px] text-muted-foreground font-mono">Panama City 🇵🇦 • Slovakia 🇸🇰</span>
                 </div>
               </div>
             </div>
 
-            {/* Quick Telegram / Instant Help Card */}
-            <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5 backdrop-blur-xl">
-              <div className="flex items-center gap-2 font-mono text-xs text-primary font-bold uppercase tracking-wider mb-2">
-                <MessageCircle size={15} /> Instant Response Desk
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Need urgent assistance with package deposit verification or 2FA login? Message our live support channel.
-              </p>
-              <a
-                href="https://t.me/NexaTradersOfficial"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3.5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 font-mono text-xs font-black uppercase text-primary-foreground hover:bg-[#f5c542] transition-all shadow-[0_0_15px_rgba(232,185,73,0.3)]"
-              >
-                Open Live Chat <ExternalLink size={13} />
-              </a>
+            {/* Fast Response Guarantee Box */}
+            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 font-mono text-xs text-emerald-400 flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span>Typical response time: <strong>&lt; 2 Business Hours</strong></span>
             </div>
           </div>
 
-          {/* Right Column: Sleek Contact Form (7 Columns) */}
-          <div className="lg:col-span-7">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
-              {sent ? (
-                <div className="flex py-12 flex-col items-center justify-center text-center font-sans">
-                  <div className="w-14 h-14 rounded-full border border-emerald-500/40 bg-emerald-500/10 grid place-items-center text-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.3)] animate-bounce">
-                    <Check size={28} />
-                  </div>
-                  <h3 className="mt-5 text-2xl font-extrabold text-foreground tracking-tight">Message Received!</h3>
-                  <p className="mt-2 max-w-md text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    Thank you for reaching out to Nexa Traders desk. Our support team will review your inquiry and get back to you shortly.
-                  </p>
-                  <button
-                    onClick={() => { setSent(false); setMessage(''); }}
-                    className="mt-6 font-mono text-xs font-bold text-primary hover:underline uppercase tracking-wider"
-                  >
-                    ← Send Another Message
-                  </button>
+          {/* Right Contact Form Column */}
+          <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#0c100e] to-[#080a09] p-6 sm:p-7 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+            {sent ? (
+              <div className="py-12 text-center flex flex-col items-center justify-center">
+                <div className="w-14 h-14 rounded-full border border-emerald-500/40 bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.3)] mb-4">
+                  <Check size={28} />
                 </div>
-              ) : (
-                <form onSubmit={submit} className="space-y-4 font-sans">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-2">
-                    <h3 className="font-mono text-xs uppercase tracking-widest text-foreground font-bold flex items-center gap-2">
-                      <Send size={13} className="text-primary" /> SEND US A MESSAGE
-                    </h3>
-                    <span className="font-mono text-[10px] text-muted-foreground">Response time: &lt; 24h</span>
-                  </div>
+                <h3 className="text-xl font-bold text-foreground">Message Sent Successfully!</h3>
+                <p className="mt-2 text-xs text-muted-foreground max-w-sm leading-relaxed">
+                  Thank you for contacting Nexa Traders. A member of our support desk will respond to your email shortly.
+                </p>
+                <button
+                  onClick={() => setSent(false)}
+                  className="mt-6 rounded-full border border-primary/40 bg-primary/10 px-6 py-2.5 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all"
+                  data-testid="button-send-another"
+                >
+                  Send Another Message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={submit} className="space-y-4">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+                  <span className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
+                    SEND A DIRECT MESSAGE
+                  </span>
+                  <span className="font-mono text-[10px] text-primary font-bold">LIVE SUPPORT</span>
+                </div>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <label className="block text-xs font-mono">
-                      <span className="mb-1.5 block text-muted-foreground uppercase">Your Name *</span>
-                      <input
-                        required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Alex Vance"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary focus:bg-black/40 transition-colors"
-                        data-testid="input-contact-name"
-                      />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                      Your Name *
                     </label>
-
-                    <label className="block text-xs font-mono">
-                      <span className="mb-1.5 block text-muted-foreground uppercase">Your Email *</span>
-                      <input
-                        required
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@domain.com"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary focus:bg-black/40 transition-colors"
-                        data-testid="input-contact-email"
-                      />
-                    </label>
-                  </div>
-
-                  <label className="block text-xs font-mono">
-                    <span className="mb-1.5 block text-muted-foreground uppercase">Subject / Category</span>
-                    <select
-                      value={topic}
-                      onChange={(e) => setTopic(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-[#0c0f0d] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary transition-colors cursor-pointer"
-                      data-testid="select-contact-topic"
-                    >
-                      <option value="Package Activation">Package Activation & Deposits</option>
-                      <option value="Account Support">Account & 2FA OTP Support</option>
-                      <option value="Withdrawal Question">Withdrawal & Referral Rewards</option>
-                      <option value="General Inquiry">General Technical Question</option>
-                    </select>
-                  </label>
-
-                  <label className="block text-xs font-mono">
-                    <span className="mb-1.5 block text-muted-foreground uppercase">Message Details *</span>
-                    <textarea
+                    <input
                       required
-                      rows={4}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Please provide details about your question..."
-                      className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 font-sans text-xs text-foreground outline-none focus:border-primary focus:bg-black/40 transition-colors"
-                      data-testid="textarea-contact-message"
+                      placeholder="e.g. Alex Vance"
+                      className="w-full rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/50 font-mono"
+                      data-testid="input-contact-name"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                      Email Address *
+                    </label>
+                    <input
+                      required
+                      type="email"
+                      placeholder="alex@domain.com"
+                      className="w-full rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/50 font-mono"
+                      data-testid="input-contact-email"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                    What can we help you with?
                   </label>
-
-                  <button
-                    type="submit"
-                    className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-3.5 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(232,185,73,0.5)] transition-all flex items-center justify-center gap-2"
-                    data-testid="button-submit-contact"
+                  <select
+                    className="w-full rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-mono"
+                    data-testid="select-contact-topic"
                   >
-                    Send to Support Desk <Send size={14} />
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
+                    <option className="bg-[#08090a]">Understanding Arbitrage Packages</option>
+                    <option className="bg-[#08090a]">Deposit & Withdrawal Assistance</option>
+                    <option className="bg-[#08090a]">Account & Security Inquiry</option>
+                    <option className="bg-[#08090a]">API & Technical Questions</option>
+                    <option className="bg-[#08090a]">General Question</option>
+                  </select>
+                </div>
 
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                    Your Message *
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Provide details about your question..."
+                    className="w-full resize-none rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/50 font-sans leading-relaxed"
+                    data-testid="textarea-contact-message"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-3 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                  data-testid="button-submit-contact"
+                >
+                  {loading ? (
+                    'Sending...'
+                  ) : (
+                    <>
+                      Send Message to Support <Send size={14} />
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       </section>
     </div>
