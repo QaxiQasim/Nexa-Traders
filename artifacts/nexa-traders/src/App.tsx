@@ -2275,160 +2275,160 @@ function ContactPage() {
     setTimeout(() => {
       setLoading(false);
       setSent(true);
-    }, 500);
+    }, 400);
   };
 
   return (
     <div className="min-h-[80vh] bg-[#08090a] text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
-      {/* 🚀 Compact Header Hero */}
-      <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-[#0b0e0d] via-[#0d110f] to-[#08090a] py-10 sm:py-14">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.18)_0%,transparent_70%)] blur-[80px] pointer-events-none rounded-full" />
+      {/* 🚀 Header */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-[#0b0e0d] to-[#08090a] py-10 lg:py-12">
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/10 blur-[90px] pointer-events-none rounded-full" />
 
-        <div className="relative z-10 mx-auto max-w-5xl px-5 text-center lg:px-8">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[11px] font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
-            <Sparkles size={13} className="text-primary" />
-            SUPPORT DESK & HELP CENTER
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
-            Contact Nexa Traders
+        <div className="relative z-10 mx-auto max-w-4xl px-5 text-center lg:px-8">
+          <span className="font-mono text-xs font-semibold text-primary uppercase tracking-wider block mb-2">
+            Support Desk
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+            How can we help you?
           </h1>
-          <p className="mt-2.5 text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            Have questions about packages, AI arbitrage routing, or technical integration? Reach our team directly.
+          <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+            Have questions about packages, account setup, or AI arbitrage? Send us a message and our support team will get back to you shortly.
           </p>
         </div>
       </section>
 
-      {/* 📬 Main Contact Content Grid */}
-      <section className="mx-auto max-w-6xl px-5 py-10 sm:py-14 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr] items-start">
+      {/* 📬 Main Contact Grid */}
+      <section className="mx-auto max-w-5xl px-5 py-10 lg:py-14 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
           
-          {/* Left Info Column */}
-          <div className="space-y-4 font-sans">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl space-y-4">
-              <span className="font-mono text-[10px] text-primary uppercase font-bold tracking-widest block">
-                DIRECT CONTACT CHANNELS
-              </span>
+          {/* Left Side Info */}
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Get in touch</h3>
+              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                Reach out to our team directly via email or check our office hours below.
+              </p>
+            </div>
 
+            <div className="space-y-3 font-sans">
               {/* Support Email */}
               <a
                 href="mailto:support@nexatraders.com"
-                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-all hover:border-primary/40 hover:bg-primary/5"
+                className="group flex items-center gap-3.5 rounded-xl border border-border/70 bg-card/40 p-4 transition-all hover:border-primary/50 hover:bg-card/80"
                 data-testid="link-contact-email"
               >
-                <div className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-primary group-hover:scale-105 transition-transform shrink-0">
+                <div className="rounded-lg bg-primary/10 p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
                   <Mail size={18} />
                 </div>
                 <div>
-                  <strong className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">Customer Support</strong>
-                  <span className="text-[11px] text-muted-foreground font-mono">support@nexatraders.com</span>
+                  <div className="text-xs font-semibold text-foreground">Customer Support</div>
+                  <div className="text-xs text-muted-foreground font-mono mt-0.5">support@nexatraders.com</div>
                 </div>
               </a>
 
               {/* Compliance Email */}
               <a
                 href="mailto:compliance@nexatraders.com"
-                className="group flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                className="group flex items-center gap-3.5 rounded-xl border border-border/70 bg-card/40 p-4 transition-all hover:border-primary/50 hover:bg-card/80"
                 data-testid="link-contact-compliance"
               >
-                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400 group-hover:scale-105 transition-transform shrink-0">
+                <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-emerald-950 transition-colors shrink-0">
                   <ShieldCheck size={18} />
                 </div>
                 <div>
-                  <strong className="text-xs font-bold text-foreground block group-hover:text-emerald-400 transition-colors">Legal & Compliance</strong>
-                  <span className="text-[11px] text-muted-foreground font-mono">compliance@nexatraders.com</span>
+                  <div className="text-xs font-semibold text-foreground">Legal & Compliance</div>
+                  <div className="text-xs text-muted-foreground font-mono mt-0.5">compliance@nexatraders.com</div>
                 </div>
               </a>
 
-              {/* Hours */}
-              <div className="flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5">
-                <div className="rounded-lg border border-white/10 bg-white/5 p-2 text-muted-foreground shrink-0">
+              {/* Operating Hours */}
+              <div className="flex items-center gap-3.5 rounded-xl border border-border/70 bg-card/40 p-4">
+                <div className="rounded-lg bg-secondary p-2 text-muted-foreground shrink-0">
                   <Clock3 size={18} />
                 </div>
                 <div>
-                  <strong className="text-xs font-bold text-foreground block">Desk Hours</strong>
-                  <span className="text-[11px] text-muted-foreground font-mono">Mon–Fri / 09:00–18:00 UTC</span>
+                  <div className="text-xs font-semibold text-foreground">Working Hours</div>
+                  <div className="text-xs text-muted-foreground font-mono mt-0.5">Mon–Fri • 09:00–18:00 UTC</div>
                 </div>
               </div>
 
               {/* Location */}
-              <div className="flex items-center gap-3.5 rounded-xl border border-white/5 bg-white/[0.02] p-3.5">
-                <div className="rounded-lg border border-white/10 bg-white/5 p-2 text-muted-foreground shrink-0">
+              <div className="flex items-center gap-3.5 rounded-xl border border-border/70 bg-card/40 p-4">
+                <div className="rounded-lg bg-secondary p-2 text-muted-foreground shrink-0">
                   <Globe2 size={18} />
                 </div>
                 <div>
-                  <strong className="text-xs font-bold text-foreground block">Global Hubs</strong>
-                  <span className="text-[11px] text-muted-foreground font-mono">Panama City 🇵🇦 • Slovakia 🇸🇰</span>
+                  <div className="text-xs font-semibold text-foreground">Official Location</div>
+                  <div className="text-xs text-muted-foreground font-mono mt-0.5">Panama City 🇵🇦 • Slovakia 🇸🇰</div>
                 </div>
               </div>
             </div>
 
-            {/* Fast Response Guarantee Box */}
-            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 font-mono text-xs text-emerald-400 flex items-center gap-3">
+            {/* Response Time Badge */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono pt-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              <span>Typical response time: <strong>&lt; 2 Business Hours</strong></span>
+              <span>Average response time: <strong className="text-foreground font-semibold">Under 2 hours</strong></span>
             </div>
           </div>
 
-          {/* Right Contact Form Column */}
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#0c100e] to-[#080a09] p-6 sm:p-7 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+          {/* Right Form */}
+          <div className="rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-8 backdrop-blur-xl shadow-xl">
             {sent ? (
-              <div className="py-12 text-center flex flex-col items-center justify-center">
-                <div className="w-14 h-14 rounded-full border border-emerald-500/40 bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.3)] mb-4">
-                  <Check size={28} />
+              <div className="py-10 text-center flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-3 border border-emerald-500/30">
+                  <Check size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-foreground">Message Sent Successfully!</h3>
-                <p className="mt-2 text-xs text-muted-foreground max-w-sm leading-relaxed">
-                  Thank you for contacting Nexa Traders. A member of our support desk will respond to your email shortly.
+                <h3 className="text-lg font-semibold text-foreground">Message received</h3>
+                <p className="mt-1.5 text-xs text-muted-foreground max-w-xs leading-relaxed">
+                  Thank you for reaching out. A support representative will get back to you shortly.
                 </p>
                 <button
                   onClick={() => setSent(false)}
-                  className="mt-6 rounded-full border border-primary/40 bg-primary/10 px-6 py-2.5 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all"
+                  className="mt-5 text-xs text-primary hover:underline font-medium"
                   data-testid="button-send-another"
                 >
-                  Send Another Message
+                  Send another message
                 </button>
               </div>
             ) : (
-              <form onSubmit={submit} className="space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
-                  <span className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                    SEND A DIRECT MESSAGE
-                  </span>
-                  <span className="font-mono text-[10px] text-primary font-bold">LIVE SUPPORT</span>
+              <form onSubmit={submit} className="space-y-4 font-sans">
+                <div className="border-b border-border/60 pb-3 mb-5">
+                  <h3 className="text-base font-semibold text-foreground">Send a message</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Fill out the form below and we'll reply via email.</p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                      Your Name *
+                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                      Your Name
                     </label>
                     <input
                       required
-                      placeholder="e.g. Alex Vance"
-                      className="w-full rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/50 font-mono"
+                      placeholder="Alex Vance"
+                      className="w-full rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors placeholder:text-muted-foreground/40 font-sans"
                       data-testid="input-contact-name"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                      Email Address *
+                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                      Email Address
                     </label>
                     <input
                       required
                       type="email"
                       placeholder="alex@domain.com"
-                      className="w-full rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/50 font-mono"
+                      className="w-full rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors placeholder:text-muted-foreground/40 font-sans"
                       data-testid="input-contact-email"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                    What can we help you with?
+                  <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                    Subject / Topic
                   </label>
                   <select
-                    className="w-full rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-mono"
+                    className="w-full rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors font-sans"
                     data-testid="select-contact-topic"
                   >
                     <option className="bg-[#08090a]">Understanding Arbitrage Packages</option>
@@ -2440,14 +2440,14 @@ function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                    Your Message *
+                  <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                    Message
                   </label>
                   <textarea
                     required
                     rows={4}
-                    placeholder="Provide details about your question..."
-                    className="w-full resize-none rounded-xl border border-white/10 bg-black/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/50 font-sans leading-relaxed"
+                    placeholder="How can we help you?"
+                    className="w-full resize-none rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors placeholder:text-muted-foreground/40 font-sans leading-relaxed"
                     data-testid="textarea-contact-message"
                   />
                 </div>
@@ -2455,14 +2455,14 @@ function ContactPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-3 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                  className="w-full rounded-lg bg-primary py-3 text-xs font-semibold text-primary-foreground hover:bg-[#f3cc68] transition-colors flex items-center justify-center gap-2 shadow-md"
                   data-testid="button-submit-contact"
                 >
                   {loading ? (
                     'Sending...'
                   ) : (
                     <>
-                      Send Message to Support <Send size={14} />
+                      Send message <ArrowRight size={14} />
                     </>
                   )}
                 </button>
