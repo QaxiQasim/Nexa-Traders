@@ -638,14 +638,56 @@ export async function upsertKycToDb(email: string, kyc: any) {
   }
 }
 
+export function markTxHashAsClaimed(txHash: string) {
+  try {
+    const cleanHash = txHash.trim().toLowerCase();
+    if (!cleanHash) return;
+    const existing = localStorage.getItem('nexa_claimed_txhashes');
+    let list: string[] = [];
+    if (existing) {
+      try { list = JSON.parse(existing); } catch (e) {}
+    }
+    if (!Array.isArray(list)) list = [];
+    if (!list.includes(cleanHash)) {
+      list.push(cleanHash);
+      localStorage.setItem('nexa_claimed_txhashes', JSON.stringify(list));
+    }
+  } catch (e) {}
+}
+
 export async function isTxHashAlreadyUsed(txHash: string): Promise<{ used: boolean; userEmail?: string }> {
   try {
     const cleanHash = txHash.trim().toLowerCase();
     if (!cleanHash || cleanHash.length < 10) return { used: false };
 
-    // 1. Check Supabase DB globally across ALL users
+    // 1. Check local persistent claimed cache
+    try {
+      const claimedJson = localStorage.getItem('nexa_claimed_txhashes');
+      if (claimedJson) {
+        const claimedArr = JSON.parse(claimedJson);
+        if (Array.isArray(claimedArr) && claimedArr.includes(cleanHash)) {
+          return { used: true, userEmail: 'System Record (Claimed)' };
+        }
+      }
+    } catch (e) {}
+
+    // 2. Check local storage fallback across all stored transactions
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.includes('transactions') || key.includes('txs') || key.includes('nexa_'))) {
+        try {
+          const val = localStorage.getItem(key);
+          if (val && val.toLowerCase().includes(cleanHash)) {
+            markTxHashAsClaimed(cleanHash);
+            return { used: true, userEmail: 'Local Storage' };
+          }
+        } catch (e) {}
+      }
+    }
+
+    // 3. Query Supabase DB via description wildcard (ILIKE %cleanHash%)
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,description,tx_hash&or=(tx_hash.ilike.${encodeURIComponent(cleanHash)},description.ilike.*${encodeURIComponent(cleanHash)}*)`,
+      `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,description&description=ilike.%25${encodeURIComponent(cleanHash)}%25`,
       {
         method: 'GET',
         headers: getHeaders()
@@ -655,22 +697,28 @@ export async function isTxHashAlreadyUsed(txHash: string): Promise<{ used: boole
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
+        markTxHashAsClaimed(cleanHash);
         return { used: true, userEmail: data[0].user_email };
       }
     }
 
-    // 2. Check local storage fallback across stored transactions
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.includes('transactions') || key.includes('txs') || key.includes('nexa_'))) {
-        try {
-          const val = localStorage.getItem(key);
-          if (val && val.toLowerCase().includes(cleanHash)) {
-            return { used: true, userEmail: 'Local Storage' };
-          }
-        } catch (e) {}
+    // 4. Query Supabase DB via tx_hash column if present
+    try {
+      const res2 = await fetch(
+        `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,tx_hash&tx_hash=eq.${encodeURIComponent(cleanHash)}`,
+        {
+          method: 'GET',
+          headers: getHeaders()
+        }
+      );
+      if (res2.ok) {
+        const data2 = await res2.json();
+        if (Array.isArray(data2) && data2.length > 0) {
+          markTxHashAsClaimed(cleanHash);
+          return { used: true, userEmail: data2[0].user_email };
+        }
       }
-    }
+    } catch (e) {}
 
     return { used: false };
   } catch (err) {
@@ -724,24 +772,43 @@ export async function insertTransactionToDb(emailOrTx: string | any, txPayload?:
 
     if (!email) return;
 
-    const hashVal = txObj.txHash || txObj.tx_hash || '';
+    const hashVal = (txObj.txHash || txObj.tx_hash || '').trim().toLowerCase();
+    if (hashVal && hashVal.startsWith('0x')) {
+      markTxHashAsClaimed(hashVal);
+    }
+
     let desc = txObj.description || txObj.title || 'Transaction';
-    if (hashVal && !desc.toLowerCase().includes(hashVal.toLowerCase())) {
+    if (hashVal && !desc.toLowerCase().includes(hashVal)) {
       desc += ` [TxHash: ${hashVal}]`;
     }
 
-    await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({
-        user_email: email,
-        type: txObj.type || 'PACKAGE_PURCHASE',
-        amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
-        status: txObj.status || 'COMPLETED',
-        description: desc,
-        tx_hash: hashVal || null
-      })
-    });
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          user_email: email,
+          type: txObj.type || 'PACKAGE_PURCHASE',
+          amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
+          status: txObj.status || 'COMPLETED',
+          description: desc,
+          tx_hash: hashVal || null
+        })
+      });
+      if (!res.ok) {
+        await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({
+            user_email: email,
+            type: txObj.type || 'PACKAGE_PURCHASE',
+            amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
+            status: txObj.status || 'COMPLETED',
+            description: desc
+          })
+        });
+      }
+    } catch (e) {}
   } catch (err) {
     console.warn('Supabase transaction notice: saved locally.', err);
   }

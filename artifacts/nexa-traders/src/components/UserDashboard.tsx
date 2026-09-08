@@ -61,7 +61,8 @@ import {
   fetchDirectReferralsFromDb,
   fetchFullTeamHierarchyFromDb,
   processDirectReferralCommission,
-  isTxHashAlreadyUsed
+  isTxHashAlreadyUsed,
+  markTxHashAsClaimed
 } from '@/lib/supabase';
 import { verifyBep20Transaction, DEFAULT_DEPOSIT_WALLET } from '@/lib/bep20';
 
@@ -473,15 +474,18 @@ export function UserDashboard() {
         }
 
         if (dbTxs && dbTxs.length > 0) {
-          const mapped: Transaction[] = dbTxs.map((t: any) => ({
-            id: t.id || `TX-${Math.floor(10000 + Math.random() * 90000)}`,
-            date: t.created_at ? new Date(t.created_at).toISOString().replace('T', ' ').substring(0, 16) : 'Recent',
-            type: (t.type || 'DEPOSIT') as any,
-            title: t.description || `${t.type} Transaction`,
-            amount: Number(t.amount || 0),
-            status: (t.status || 'COMPLETED') as any,
-            txHash: t.id
-          }));
+          const mapped: Transaction[] = dbTxs.map((t: any) => {
+            const extracted = t.txHash || t.tx_hash || (t.description && t.description.match(/0x[a-fA-F0-9]{64}/)?.[0]) || (t.title && t.title.match(/0x[a-fA-F0-9]{64}/)?.[0]) || t.id;
+            return {
+              id: t.id || `TX-${Math.floor(10000 + Math.random() * 90000)}`,
+              date: t.created_at ? new Date(t.created_at).toISOString().replace('T', ' ').substring(0, 16) : 'Recent',
+              type: (t.type || 'DEPOSIT') as any,
+              title: t.description || `${t.type} Transaction`,
+              amount: Number(t.amount || 0),
+              status: (t.status || 'COMPLETED') as any,
+              txHash: extracted
+            };
+          });
           setTransactions(mapped);
           try { localStorage.setItem(`nexa_tx_${userEmail}`, JSON.stringify(mapped)); } catch (e) {}
         }
@@ -1037,15 +1041,32 @@ export function UserDashboard() {
 
     setIsVerifyingDeposit(true);
 
-    // 1. Check local state transactions across current user
-    const alreadyInLocal = (transactions || []).some(t => t.txHash && t.txHash.toLowerCase() === cleanTxHash);
+    // 1. Check persistent claimed hash cache across device/session
+    try {
+      const claimedJson = localStorage.getItem('nexa_claimed_txhashes');
+      if (claimedJson) {
+        const claimedArr = JSON.parse(claimedJson);
+        if (Array.isArray(claimedArr) && claimedArr.includes(cleanTxHash)) {
+          setIsVerifyingDeposit(false);
+          setDepositErrorMsg(`This TxHash (${cleanTxHash.substring(0, 10)}...) has ALREADY been claimed and credited. Duplicate submissions are strictly prohibited.`);
+          return;
+        }
+      }
+    } catch (e) {}
+
+    // 2. Check local state transactions across current user
+    const alreadyInLocal = (transactions || []).some(t => {
+      const h = (t.txHash || '').toLowerCase();
+      const titleStr = (t.title || '').toLowerCase();
+      return (h && h === cleanTxHash) || (titleStr && titleStr.includes(cleanTxHash));
+    });
     if (alreadyInLocal) {
       setIsVerifyingDeposit(false);
       setDepositErrorMsg('This TxHash has ALREADY been claimed and credited to an account. Duplicate claims are strictly prohibited.');
       return;
     }
 
-    // 2. Check Supabase DB globally across ALL registered users
+    // 3. Check Supabase DB globally across ALL registered users
     const dbCheck = await isTxHashAlreadyUsed(cleanTxHash);
     if (dbCheck.used) {
       setIsVerifyingDeposit(false);
@@ -1053,7 +1074,7 @@ export function UserDashboard() {
       return;
     }
 
-    // 3. Perform Live On-Chain Verification
+    // 4. Perform Live On-Chain Verification
     const verRes = await verifyBep20Transaction(cleanTxHash, DEFAULT_DEPOSIT_WALLET);
     setIsVerifyingDeposit(false);
 
@@ -1062,12 +1083,15 @@ export function UserDashboard() {
       return;
     }
 
-    // 4. Strictly use actual on-chain verified amount sent via BEP20 (No manual input fallbacks)
+    // 5. Strictly use actual on-chain verified amount sent via BEP20 (No manual input fallbacks)
     const verifiedAmount = verRes.amountUsdt || 0;
     if (verifiedAmount <= 0) {
       setDepositErrorMsg('Could not verify on-chain USDT transfer value. Transaction amount is 0 USDT.');
       return;
     }
+
+    // Immediately mark TxHash as claimed to prevent concurrent re-submissions
+    markTxHashAsClaimed(cleanTxHash);
 
     const newBal = (walletBalance || 0) + verifiedAmount;
     setWalletBalance(newBal);
@@ -1077,7 +1101,7 @@ export function UserDashboard() {
       id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
       date: new Date().toISOString().replace('T', ' ').substring(0, 16),
       type: 'DEPOSIT',
-      title: 'BEP20 USDT Verified On-Chain Deposit',
+      title: `BEP20 USDT Verified On-Chain Deposit [TxHash: ${cleanTxHash}]`,
       amount: verifiedAmount,
       status: 'COMPLETED',
       txHash: cleanTxHash
@@ -1112,15 +1136,32 @@ export function UserDashboard() {
     setBep20VerifyError('');
     setBep20VerifySuccess('');
 
-    // 1. Check local state transactions across current user
-    const alreadyInLocal = (transactions || []).some(t => t.txHash && t.txHash.toLowerCase() === cleanHash);
+    // 1. Check persistent claimed hash cache across device/session
+    try {
+      const claimedJson = localStorage.getItem('nexa_claimed_txhashes');
+      if (claimedJson) {
+        const claimedArr = JSON.parse(claimedJson);
+        if (Array.isArray(claimedArr) && claimedArr.includes(cleanHash)) {
+          setIsVerifyingBep20(false);
+          setBep20VerifyError(`This TxHash (${cleanHash.substring(0, 10)}...) has ALREADY been claimed and used. Duplicate claims are strictly prohibited.`);
+          return;
+        }
+      }
+    } catch (e) {}
+
+    // 2. Check local state transactions across current user
+    const alreadyInLocal = (transactions || []).some(t => {
+      const h = (t.txHash || '').toLowerCase();
+      const titleStr = (t.title || '').toLowerCase();
+      return (h && h === cleanHash) || (titleStr && titleStr.includes(cleanHash));
+    });
     if (alreadyInLocal) {
       setIsVerifyingBep20(false);
       setBep20VerifyError('This TxHash has ALREADY been claimed and used. Duplicate claims are strictly prohibited.');
       return;
     }
 
-    // 2. Check Supabase DB globally across ALL registered users
+    // 3. Check Supabase DB globally across ALL registered users
     const dbCheck = await isTxHashAlreadyUsed(cleanHash);
     if (dbCheck.used) {
       setIsVerifyingBep20(false);
@@ -1128,7 +1169,7 @@ export function UserDashboard() {
       return;
     }
 
-    // 3. Perform Live On-Chain Verification
+    // 4. Perform Live On-Chain Verification
     const res = await verifyBep20Transaction(cleanHash, DEFAULT_DEPOSIT_WALLET);
     setIsVerifyingBep20(false);
 
@@ -1151,6 +1192,9 @@ export function UserDashboard() {
       setBep20VerifyError(`On-chain verified USDT sent ($${verifiedAmount.toFixed(2)}) is less than the required package investment ($${reqAmount.toFixed(2)}).`);
       return;
     }
+
+    // Immediately mark TxHash as claimed to prevent concurrent re-submissions
+    markTxHashAsClaimed(cleanHash);
 
     setBep20VerifySuccess(res.message);
 
@@ -1185,7 +1229,7 @@ export function UserDashboard() {
       id: `TX-${Math.floor(80000 + Math.random() * 10000)}`,
       date: new Date().toISOString().replace('T', ' ').substring(0, 16),
       type: 'DEPOSIT',
-      title: `BEP20 Auto-Deposit (${selectedPlanForBuy?.name || 'Package'})${isPromoActive ? ' [Promo Applied]' : ''}`,
+      title: `BEP20 Auto-Deposit (${selectedPlanForBuy?.name || 'Package'})${isPromoActive ? ' [Promo Applied]' : ''} [TxHash: ${cleanHash}]`,
       amount: amount,
       status: 'COMPLETED',
       txHash: cleanHash
