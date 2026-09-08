@@ -701,40 +701,22 @@ export async function isTxHashAlreadyUsed(txHash: string): Promise<{ used: boole
       }
     } catch (e) {}
 
-    // 4. Query Supabase DB via title column wildcard (ILIKE %cleanHash%)
-    const resTitle = await fetch(
-      `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,title&title=ilike.%25${encodeURIComponent(cleanHash)}%25`,
+    // 4. Query Supabase DB via description column wildcard (ILIKE %cleanHash%)
+    const resDesc = await fetch(
+      `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,description&description=ilike.%25${encodeURIComponent(cleanHash)}%25`,
       {
         method: 'GET',
         headers: getHeaders()
       }
     );
 
-    if (resTitle.ok) {
-      const data = await resTitle.json();
+    if (resDesc.ok) {
+      const data = await resDesc.json();
       if (Array.isArray(data) && data.length > 0) {
         markTxHashAsClaimed(cleanHash);
         return { used: true, userEmail: data[0].user_email };
       }
     }
-
-    // 5. Query Supabase DB via tx_hash column
-    try {
-      const resHash = await fetch(
-        `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,tx_hash&tx_hash=eq.${encodeURIComponent(cleanHash)}`,
-        {
-          method: 'GET',
-          headers: getHeaders()
-        }
-      );
-      if (resHash.ok) {
-        const dataHash = await resHash.json();
-        if (Array.isArray(dataHash) && dataHash.length > 0) {
-          markTxHashAsClaimed(cleanHash);
-          return { used: true, userEmail: dataHash[0].user_email };
-        }
-      }
-    } catch (e) {}
 
     return { used: false };
   } catch (err) {
@@ -754,16 +736,16 @@ export async function fetchTransactionsFromDb(email: string) {
     if (!Array.isArray(data)) return [];
     return data.map((tx: any) => {
       let extractedHash = tx.tx_hash || tx.txHash;
-      const titleStr = tx.title || tx.description || '';
-      if (!extractedHash && titleStr.includes('0x')) {
-        const match = titleStr.match(/0x[a-fA-F0-9]{64}/);
+      const descStr = tx.description || tx.title || '';
+      if (!extractedHash && descStr.includes('0x')) {
+        const match = descStr.match(/0x[a-fA-F0-9]{64}/);
         if (match) extractedHash = match[0];
       }
       return {
         id: tx.id || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
         date: tx.date || ((typeof tx.created_at === 'string') ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16)),
         type: tx.type || 'DEPOSIT',
-        title: titleStr || tx.type || 'Transaction',
+        title: descStr || tx.type || 'Transaction',
         amount: isNaN(Number(tx.amount)) ? 0 : Number(tx.amount),
         status: tx.status || 'COMPLETED',
         txHash: extractedHash
@@ -794,23 +776,17 @@ export async function insertTransactionToDb(emailOrTx: string | any, txPayload?:
       markTxHashAsClaimed(hashVal);
     }
 
-    let titleStr = txObj.title || txObj.description || 'Transaction';
-    if (hashVal && !titleStr.toLowerCase().includes(hashVal)) {
-      titleStr += ` [TxHash: ${hashVal}]`;
+    let descStr = txObj.description || txObj.title || 'Transaction';
+    if (hashVal && !descStr.toLowerCase().includes(hashVal)) {
+      descStr += ` [TxHash: ${hashVal}]`;
     }
 
-    const txId = txObj.id || `TX-${Math.floor(100000 + Math.random() * 900000)}`;
-    const txDate = txObj.date || new Date().toISOString().replace('T', ' ').substring(0, 16);
-
     const bodyObj = {
-      id: txId,
       user_email: email,
-      date: txDate,
       type: txObj.type || 'DEPOSIT',
-      title: titleStr,
       amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
       status: txObj.status || 'COMPLETED',
-      tx_hash: hashVal || null
+      description: descStr
     };
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
@@ -820,13 +796,7 @@ export async function insertTransactionToDb(emailOrTx: string | any, txPayload?:
     });
 
     if (!res.ok) {
-      // Fallback without tx_hash column if schema does not include tx_hash
-      const { tx_hash, ...fallbackObj } = bodyObj;
-      await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(fallbackObj)
-      });
+      console.warn('Supabase transaction post warning status:', res.status);
     }
   } catch (err) {
     console.warn('Supabase transaction notice: saved locally.', err);

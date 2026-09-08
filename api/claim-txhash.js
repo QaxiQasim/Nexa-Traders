@@ -53,32 +53,17 @@ export default async function handler(req, res) {
       'Content-Type': 'application/json'
     };
 
-    // 2. Query Supabase transactions table by title containing cleanHash
-    const searchUrl1 = `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,title&title=ilike.%25${encodeURIComponent(cleanHash)}%25`;
-    const dbRes1 = await fetch(searchUrl1, { headers });
-    if (dbRes1.ok) {
-      const data1 = await dbRes1.json();
-      if (Array.isArray(data1) && data1.length > 0) {
+    // 2. Query Supabase transactions table by description containing cleanHash
+    const searchUrl = `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,description&description=ilike.%25${encodeURIComponent(cleanHash)}%25`;
+    const dbRes = await fetch(searchUrl, { headers });
+    if (dbRes.ok) {
+      const data = await dbRes.json();
+      if (Array.isArray(data) && data.length > 0) {
         globalClaimedSet.add(cleanHash);
         return res.status(200).json({
           claimed: true,
-          userEmail: data1[0].user_email,
-          error: `TxHash has ALREADY been claimed by registered user (${data1[0].user_email}). Replay usage is strictly blocked.`
-        });
-      }
-    }
-
-    // 3. Query Supabase transactions table by tx_hash column
-    const searchUrl2 = `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,tx_hash&tx_hash=eq.${encodeURIComponent(cleanHash)}`;
-    const dbRes2 = await fetch(searchUrl2, { headers });
-    if (dbRes2.ok) {
-      const data2 = await dbRes2.json();
-      if (Array.isArray(data2) && data2.length > 0) {
-        globalClaimedSet.add(cleanHash);
-        return res.status(200).json({
-          claimed: true,
-          userEmail: data2[0].user_email,
-          error: `TxHash has ALREADY been claimed by registered user (${data2[0].user_email}). Replay usage is strictly blocked.`
+          userEmail: data[0].user_email,
+          error: `TxHash has ALREADY been claimed by registered user (${data[0].user_email}). Replay usage is strictly blocked.`
         });
       }
     }
