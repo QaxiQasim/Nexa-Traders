@@ -1108,7 +1108,7 @@ export function UserDashboard() {
     };
 
     setTransactions(prev => [depTx, ...(prev || [])]);
-    insertTransactionToDb(userEmail, depTx);
+    await insertTransactionToDb(userEmail, depTx);
 
     setDepositSuccessMsg(`Verified on BNB Smart Chain! Credited $${verifiedAmount.toFixed(2)} USDT to your account. Total Available Balance: $${newBal.toFixed(2)} USDT.`);
     setDepositTxHash('');
@@ -1235,7 +1235,7 @@ export function UserDashboard() {
       txHash: cleanHash
     };
     setTransactions(prev => [newTx, ...prev]);
-    insertTransactionToDb(userEmail, newTx);
+    await insertTransactionToDb(userEmail, newTx);
 
     setBuySuccessMessage(`Verified Live on BNB Smart Chain! Activated ${selectedPlanForBuy?.name} plan with $${amount.toFixed(2)} USDT${isPromoActive ? ' (+5% Promo Bonus 🎉)' : ''}.`);
     setTimeout(() => {

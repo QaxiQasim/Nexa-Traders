@@ -660,7 +660,7 @@ export async function isTxHashAlreadyUsed(txHash: string): Promise<{ used: boole
     const cleanHash = txHash.trim().toLowerCase();
     if (!cleanHash || cleanHash.length < 10) return { used: false };
 
-    // 1. Check local persistent claimed cache
+    // 1. Check local persistent claimed cache (across sessions/tabs)
     try {
       const claimedJson = localStorage.getItem('nexa_claimed_txhashes');
       if (claimedJson) {
@@ -685,37 +685,53 @@ export async function isTxHashAlreadyUsed(txHash: string): Promise<{ used: boole
       }
     }
 
-    // 3. Query Supabase DB via description wildcard (ILIKE %cleanHash%)
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,description&description=ilike.%25${encodeURIComponent(cleanHash)}%25`,
+    // 3. Serverless API Check (/api/claim-txhash)
+    try {
+      const apiRes = await fetch('/api/claim-txhash', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ txHash: cleanHash })
+      });
+      if (apiRes.ok) {
+        const apiData = await apiRes.json();
+        if (apiData && apiData.claimed) {
+          markTxHashAsClaimed(cleanHash);
+          return { used: true, userEmail: apiData.userEmail || 'Registered User' };
+        }
+      }
+    } catch (e) {}
+
+    // 4. Query Supabase DB via title column wildcard (ILIKE %cleanHash%)
+    const resTitle = await fetch(
+      `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,title&title=ilike.%25${encodeURIComponent(cleanHash)}%25`,
       {
         method: 'GET',
         headers: getHeaders()
       }
     );
 
-    if (res.ok) {
-      const data = await res.json();
+    if (resTitle.ok) {
+      const data = await resTitle.json();
       if (Array.isArray(data) && data.length > 0) {
         markTxHashAsClaimed(cleanHash);
         return { used: true, userEmail: data[0].user_email };
       }
     }
 
-    // 4. Query Supabase DB via tx_hash column if present
+    // 5. Query Supabase DB via tx_hash column
     try {
-      const res2 = await fetch(
+      const resHash = await fetch(
         `${SUPABASE_URL}/rest/v1/transactions?select=id,user_email,tx_hash&tx_hash=eq.${encodeURIComponent(cleanHash)}`,
         {
           method: 'GET',
           headers: getHeaders()
         }
       );
-      if (res2.ok) {
-        const data2 = await res2.json();
-        if (Array.isArray(data2) && data2.length > 0) {
+      if (resHash.ok) {
+        const dataHash = await resHash.json();
+        if (Array.isArray(dataHash) && dataHash.length > 0) {
           markTxHashAsClaimed(cleanHash);
-          return { used: true, userEmail: data2[0].user_email };
+          return { used: true, userEmail: dataHash[0].user_email };
         }
       }
     } catch (e) {}
@@ -738,15 +754,16 @@ export async function fetchTransactionsFromDb(email: string) {
     if (!Array.isArray(data)) return [];
     return data.map((tx: any) => {
       let extractedHash = tx.tx_hash || tx.txHash;
-      if (!extractedHash && tx.description && tx.description.includes('0x')) {
-        const match = tx.description.match(/0x[a-fA-F0-9]{64}/);
+      const titleStr = tx.title || tx.description || '';
+      if (!extractedHash && titleStr.includes('0x')) {
+        const match = titleStr.match(/0x[a-fA-F0-9]{64}/);
         if (match) extractedHash = match[0];
       }
       return {
         id: tx.id || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-        date: (typeof tx.created_at === 'string') ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16),
+        date: tx.date || ((typeof tx.created_at === 'string') ? tx.created_at.replace('T', ' ').substring(0, 16) : new Date().toISOString().substring(0, 16)),
         type: tx.type || 'DEPOSIT',
-        title: tx.description || tx.type || 'Transaction',
+        title: titleStr || tx.type || 'Transaction',
         amount: isNaN(Number(tx.amount)) ? 0 : Number(tx.amount),
         status: tx.status || 'COMPLETED',
         txHash: extractedHash
@@ -777,38 +794,40 @@ export async function insertTransactionToDb(emailOrTx: string | any, txPayload?:
       markTxHashAsClaimed(hashVal);
     }
 
-    let desc = txObj.description || txObj.title || 'Transaction';
-    if (hashVal && !desc.toLowerCase().includes(hashVal)) {
-      desc += ` [TxHash: ${hashVal}]`;
+    let titleStr = txObj.title || txObj.description || 'Transaction';
+    if (hashVal && !titleStr.toLowerCase().includes(hashVal)) {
+      titleStr += ` [TxHash: ${hashVal}]`;
     }
 
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+    const txId = txObj.id || `TX-${Math.floor(100000 + Math.random() * 900000)}`;
+    const txDate = txObj.date || new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+    const bodyObj = {
+      id: txId,
+      user_email: email,
+      date: txDate,
+      type: txObj.type || 'DEPOSIT',
+      title: titleStr,
+      amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
+      status: txObj.status || 'COMPLETED',
+      tx_hash: hashVal || null
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(bodyObj)
+    });
+
+    if (!res.ok) {
+      // Fallback without tx_hash column if schema does not include tx_hash
+      const { tx_hash, ...fallbackObj } = bodyObj;
+      await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify({
-          user_email: email,
-          type: txObj.type || 'PACKAGE_PURCHASE',
-          amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
-          status: txObj.status || 'COMPLETED',
-          description: desc,
-          tx_hash: hashVal || null
-        })
+        body: JSON.stringify(fallbackObj)
       });
-      if (!res.ok) {
-        await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
-          method: 'POST',
-          headers: getHeaders(),
-          body: JSON.stringify({
-            user_email: email,
-            type: txObj.type || 'PACKAGE_PURCHASE',
-            amount: isNaN(Number(txObj.amount)) ? 0 : Number(txObj.amount),
-            status: txObj.status || 'COMPLETED',
-            description: desc
-          })
-        });
-      }
-    } catch (e) {}
+    }
   } catch (err) {
     console.warn('Supabase transaction notice: saved locally.', err);
   }
