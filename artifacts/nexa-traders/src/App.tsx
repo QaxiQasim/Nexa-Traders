@@ -142,7 +142,7 @@ function Navbar() {
     window.location.href = '/login';
   };
 
-  const nav = [['/trades', 'Arbitrage Live Trades'], ['/packages', 'Packages'], ['/dashboard', 'Dashboard'], ['/about', 'About Us'], ['/blog', 'Insights'], ['/contact', 'Contact']];
+  const nav = [['/trades', 'Arbitrage Live Trades'], ['/packages', 'Packages'], ['/dashboard', 'Dashboard'], ['/about', 'About Us'], ['/contact', 'Contact']];
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 lg:px-8">
@@ -207,7 +207,7 @@ function Footer() {
     <footer className="border-t border-border bg-[#0a0b0c]">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[1.2fr_.8fr_.8fr_1.5fr] lg:px-8">
         <div><Logo /><p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">Market intelligence for people who want their capital to think in probabilities.</p><div className="mt-6 flex gap-2"><a href="https://twitter.com" target="_blank" rel="noreferrer" className="rounded-md border border-border p-2 text-muted-foreground hover:border-primary/50 hover:text-primary" data-testid="link-social-twitter"><Twitter size={15} /></a><a href="https://linkedin.com" target="_blank" rel="noreferrer" className="rounded-md border border-border p-2 text-muted-foreground hover:border-primary/50 hover:text-primary" data-testid="link-social-linkedin"><Linkedin size={15} /></a><a href="https://instagram.com" target="_blank" rel="noreferrer" className="rounded-md border border-border p-2 text-muted-foreground hover:border-primary/50 hover:text-primary" data-testid="link-social-instagram"><Instagram size={15} /></a></div></div>
-        <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-primary">Explore</p><div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground"><Link href="/about" className="hover:text-foreground" data-testid="link-footer-about">About Us</Link><Link href="/packages" className="hover:text-foreground" data-testid="link-footer-packages">Packages</Link><Link href="/blog" className="hover:text-foreground" data-testid="link-footer-blog">Insights</Link><Link href="/contact" className="hover:text-foreground" data-testid="link-footer-contact">Support</Link></div></div>
+        <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-primary">Explore</p><div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground"><Link href="/about" className="hover:text-foreground" data-testid="link-footer-about">About Us</Link><Link href="/packages" className="hover:text-foreground" data-testid="link-footer-packages">Packages</Link><Link href="/contact" className="hover:text-foreground" data-testid="link-footer-contact">Support</Link></div></div>
         <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-primary">Legal</p><div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground"><Link href="/privacy" className="hover:text-foreground" data-testid="link-footer-privacy">Privacy policy</Link><a href="mailto:legal@nexatraders.com" className="hover:text-foreground" data-testid="link-footer-legal">Legal desk</a><a href="mailto:hello@nexatraders.com" className="hover:text-foreground" data-testid="link-footer-email">hello@nexatraders.com</a></div></div>
         <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-primary">Signal letter</p><p className="mt-4 text-sm leading-6 text-muted-foreground">One considered market note each week. No noise, no referral bait.</p>{subscribed ? <div className="mt-5 flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 p-3 text-sm text-accent"><Check size={16} />You’re on the list.</div> : <form onSubmit={submit} className="mt-5 flex gap-2"><input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="you@domain.com" className="min-w-0 flex-1 rounded-lg border border-border bg-secondary px-3 py-2 text-sm outline-none placeholder:text-muted-foreground/60 focus:border-primary" aria-label="Email address" data-testid="input-footer-email" /><button type="submit" className="rounded-lg bg-primary px-3 text-primary-foreground hover:bg-[#f3cc68]" aria-label="Subscribe" data-testid="button-footer-subscribe"><Send size={16} /></button></form>}</div>
       </div>
@@ -3718,8 +3718,6 @@ function Router() {
         <Route path="/admin/login" component={AdminLoginPage} />
         <Route path="/admin" component={AdminLayout} />
         <Route path="/about" component={AboutPage} />
-        <Route path="/blog" component={BlogPage} />
-        <Route path="/blog/:slug" component={ArticlePage} />
         <Route path="/privacy" component={PrivacyPage} />
         <Route path="/contact" component={ContactPage} />
         <Route path="/login">{() => <AuthPage mode="login" />}</Route>
