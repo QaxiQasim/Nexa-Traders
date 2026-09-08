@@ -2270,7 +2270,6 @@ function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState('Understanding Arbitrage Packages');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   const handleCopy = (email: string) => {
     try {
@@ -2286,147 +2285,123 @@ function ContactPage() {
     setTimeout(() => {
       setLoading(false);
       setSent(true);
-    }, 600);
+    }, 400);
   };
 
   const categories = [
     {
       id: 'Understanding Arbitrage Packages',
       title: 'Packages & Yields',
-      desc: 'Plan features, expected returns & deposits',
-      icon: Layers,
-      color: 'text-primary border-primary/40 bg-primary/10'
+      desc: 'Plan details, ROI & deposit routes',
+      icon: Layers
     },
     {
       id: 'Account & Security Inquiry',
       title: 'Account & Security',
-      desc: '2FA verification, passwords & login help',
-      icon: Lock,
-      color: 'text-amber-400 border-amber-500/40 bg-amber-500/10'
+      desc: '2FA setup, password & login help',
+      icon: Lock
     },
     {
       id: 'API & Technical Questions',
-      title: 'AI Live Trading',
-      desc: 'Order latency, API connectivity & signals',
-      icon: Zap,
-      color: 'text-cyan-400 border-cyan-500/40 bg-cyan-500/10'
+      title: 'AI Trading & Signals',
+      desc: 'Execution speed & live pair data',
+      icon: Zap
     },
     {
       id: 'Security and compliance',
       title: 'Legal & Compliance',
-      desc: 'Corporate licensing, VASP & desk policies',
-      icon: ShieldCheck,
-      color: 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10'
-    }
-  ];
-
-  const faqs = [
-    {
-      q: 'How fast are package deposits credited?',
-      a: 'Deposits are automatically verified on the blockchain (BEP-20 / TRC-20) and credited to your account within 10-15 minutes.'
-    },
-    {
-      q: 'Where can I monitor real-time AI arbitrage trades?',
-      a: 'Visit the "Arbitrage Live Trades" section in the navigation bar to see real-time order-book scanning telemetry.'
-    },
-    {
-      q: 'How do I reset my password or update 2FA?',
-      a: 'Click "Sign in" on the top right and select "Forgot password" or access Security Settings inside your User Dashboard.'
+      desc: 'Corporate licensing & compliance desk',
+      icon: ShieldCheck
     }
   ];
 
   return (
     <div className="min-h-screen bg-[#08090a] text-foreground font-sans selection:bg-primary selection:text-primary-foreground pb-20">
       
-      {/* 🚀 1. HERO & INTERACTIVE CATEGORY HEADER */}
-      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-[#0e1411] via-[#0b0e0d] to-[#08090a] py-14 lg:py-20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[350px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.18)_0%,rgba(16,185,129,0.06)_50%,transparent_75%)] blur-[100px] pointer-events-none rounded-full" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94908_1px,transparent_1px),linear-gradient(to_bottom,#e8b94908_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-40 pointer-events-none" />
+      {/* 🚀 1. HERO HEADER */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-[#0b0e0d] via-[#090c0a] to-[#08090a] py-12 lg:py-16">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-primary/10 blur-[100px] pointer-events-none rounded-full" />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-xs font-bold text-primary uppercase tracking-widest mb-4 shadow-[0_0_20px_rgba(232,185,73,0.15)]">
-              <Sparkles size={14} className="text-primary animate-pulse" />
-              NEXA SUPPORT DESK & HELP CENTER
-            </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-tight">
-              How can our team help you today?
-            </h1>
-            <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              Select a category below to quickly set up your support inquiry, or send a message directly to our desk.
-            </p>
-          </div>
-
-          {/* 4 Interactive Quick Topic Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-            {categories.map((cat) => {
-              const IconComp = cat.icon;
-              const isSelected = selectedTopic === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedTopic(cat.id);
-                    document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className={`group relative rounded-2xl border p-5 text-left transition-all duration-300 backdrop-blur-xl shadow-lg flex flex-col justify-between ${
-                    isSelected
-                      ? 'border-primary bg-primary/10 shadow-[0_0_25px_rgba(232,185,73,0.2)] scale-[1.02]'
-                      : 'border-white/10 bg-white/[0.02] hover:border-primary/50 hover:bg-white/[0.04]'
-                  }`}
-                >
-                  <div>
-                    <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-3.5 transition-transform group-hover:scale-110 ${cat.color}`}>
-                      <IconComp size={20} />
-                    </div>
-                    <h3 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
-                      {cat.title}
-                    </h3>
-                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                      {cat.desc}
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-primary font-semibold">
-                    <span>{isSelected ? 'Selected' : 'Select category'}</span>
-                    <ArrowRight size={13} className={`transition-transform ${isSelected ? 'translate-x-1' : 'group-hover:translate-x-1'}`} />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+        <div className="relative z-10 mx-auto max-w-5xl px-5 text-center lg:px-8">
+          <span className="font-mono text-xs font-semibold text-primary uppercase tracking-wider block mb-2">
+            Support Desk
+          </span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
+            How can our team help you?
+          </h1>
+          <p className="mt-3 text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            Select a topic below to jumpstart your request, or send a message directly to our desk.
+          </p>
         </div>
       </section>
 
-      {/* 📬 2. MAIN CONTACT CONTENT GRID */}
-      <section className="mx-auto max-w-7xl px-5 py-14 lg:py-20 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.3fr] items-start">
+      {/* 📬 2. MAIN CONTENT CONTAINER */}
+      <section className="mx-auto max-w-6xl px-5 py-10 lg:py-16 lg:px-8 space-y-12">
+
+        {/* 4 Clean Topic Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {categories.map((cat) => {
+            const IconComp = cat.icon;
+            const isSelected = selectedTopic === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => {
+                  setSelectedTopic(cat.id);
+                  document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`group rounded-2xl border p-5 text-left transition-all duration-200 backdrop-blur-xl flex flex-col justify-between ${
+                  isSelected
+                    ? 'border-primary bg-primary/10 shadow-[0_0_20px_rgba(232,185,73,0.15)] ring-1 ring-primary/40'
+                    : 'border-border/70 bg-card/40 hover:border-primary/50 hover:bg-card/80'
+                }`}
+              >
+                <div>
+                  <div className={`w-9 h-9 rounded-xl border flex items-center justify-center mb-3 transition-colors ${
+                    isSelected ? 'border-primary/40 bg-primary/20 text-primary' : 'border-border/60 bg-secondary text-muted-foreground group-hover:text-primary group-hover:border-primary/40'
+                  }`}>
+                    <IconComp size={18} />
+                  </div>
+                  <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+                    {cat.title}
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                    {cat.desc}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-primary font-medium">
+                  <span>{isSelected ? 'Selected' : 'Select topic'}</span>
+                  <ArrowRight size={13} className={`transition-transform ${isSelected ? 'translate-x-0.5' : 'group-hover:translate-x-1'}`} />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Grid Layout: Left Channels + Right Form */}
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
           
-          {/* Left Column: Channels & Office Info */}
-          <div className="space-y-6">
+          {/* Left Column: Direct Info */}
+          <div className="space-y-6 font-sans">
             <div>
-              <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest block mb-1">
-                COMMUNICATION CHANNELS
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
-                Get in Touch with Our Desk
-              </h2>
-              <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Whether you need technical guidance, package clarification, or compliance information, our team responds swiftly.
+              <h3 className="text-xl font-bold text-foreground">Get in touch</h3>
+              <p className="mt-1 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Our support team is available Monday through Friday. Reach out directly or send us a note.
               </p>
             </div>
 
-            <div className="space-y-4 font-sans">
+            <div className="space-y-3 font-sans">
               {/* Customer Support Email Card */}
-              <div className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl transition-all hover:border-primary/40 hover:bg-white/[0.04]">
-                <div className="flex items-start justify-between">
+              <div className="group rounded-2xl border border-border/70 bg-card/40 p-4.5 transition-all hover:border-primary/50 hover:bg-card/80">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3.5">
-                    <div className="rounded-xl border border-primary/30 bg-primary/10 p-2.5 text-primary shrink-0">
-                      <Mail size={20} />
+                    <div className="rounded-xl bg-primary/10 p-2.5 text-primary shrink-0">
+                      <Mail size={19} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-foreground">Customer Support</h4>
+                      <h4 className="text-xs font-bold text-foreground">Customer Support</h4>
                       <a href="mailto:support@nexatraders.com" className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors block mt-0.5" data-testid="link-contact-email">
                         support@nexatraders.com
                       </a>
@@ -2434,7 +2409,7 @@ function ContactPage() {
                   </div>
                   <button
                     onClick={() => handleCopy('support@nexatraders.com')}
-                    className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[11px] font-mono text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all flex items-center gap-1 shrink-0"
+                    className="rounded-lg border border-border/70 bg-secondary/80 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all flex items-center gap-1.5 shrink-0"
                     title="Copy Email"
                   >
                     {copiedEmail === 'support@nexatraders.com' ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
@@ -2444,22 +2419,22 @@ function ContactPage() {
               </div>
 
               {/* Compliance Email Card */}
-              <div className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl transition-all hover:border-emerald-500/40 hover:bg-white/[0.04]">
-                <div className="flex items-start justify-between">
+              <div className="group rounded-2xl border border-border/70 bg-card/40 p-4.5 transition-all hover:border-primary/50 hover:bg-card/80">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3.5">
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-emerald-400 shrink-0">
-                      <ShieldCheck size={20} />
+                    <div className="rounded-xl bg-primary/10 p-2.5 text-primary shrink-0">
+                      <ShieldCheck size={19} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-foreground">Legal & Compliance</h4>
-                      <a href="mailto:compliance@nexatraders.com" className="text-xs font-mono text-muted-foreground hover:text-emerald-400 transition-colors block mt-0.5" data-testid="link-contact-compliance">
+                      <h4 className="text-xs font-bold text-foreground">Legal & Compliance</h4>
+                      <a href="mailto:compliance@nexatraders.com" className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors block mt-0.5" data-testid="link-contact-compliance">
                         compliance@nexatraders.com
                       </a>
                     </div>
                   </div>
                   <button
                     onClick={() => handleCopy('compliance@nexatraders.com')}
-                    className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[11px] font-mono text-muted-foreground hover:text-foreground hover:border-emerald-500/50 transition-all flex items-center gap-1 shrink-0"
+                    className="rounded-lg border border-border/70 bg-secondary/80 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all flex items-center gap-1.5 shrink-0"
                     title="Copy Email"
                   >
                     {copiedEmail === 'compliance@nexatraders.com' ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
@@ -2468,144 +2443,116 @@ function ContactPage() {
                 </div>
               </div>
 
-              {/* Live Status & Operating Hours */}
-              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-xl space-y-4">
-                <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <Clock3 size={18} className="text-primary" />
-                    <span className="text-xs font-bold text-foreground">Desk Operating Hours</span>
-                  </div>
-                  <span className="font-mono text-[11px] text-emerald-400 font-bold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    LIVE NOW
-                  </span>
+              {/* Working Hours */}
+              <div className="rounded-2xl border border-border/70 bg-card/40 p-4.5 flex items-center gap-3.5">
+                <div className="rounded-xl bg-secondary p-2.5 text-muted-foreground shrink-0">
+                  <Clock3 size={19} />
                 </div>
-
-                <div className="grid sm:grid-cols-2 gap-3 font-mono text-xs">
-                  <div className="rounded-xl border border-white/5 bg-black/40 p-3">
-                    <span className="text-[10px] text-muted-foreground block uppercase">Support Schedule</span>
-                    <strong className="text-foreground text-xs block mt-0.5">Mon–Fri / 09:00–18:00 UTC</strong>
-                  </div>
-                  <div className="rounded-xl border border-white/5 bg-black/40 p-3">
-                    <span className="text-[10px] text-muted-foreground block uppercase">Response Latency</span>
-                    <strong className="text-emerald-400 text-xs block mt-0.5">&lt; 15 Mins Avg</strong>
-                  </div>
+                <div>
+                  <h4 className="text-xs font-bold text-foreground">Working Hours</h4>
+                  <span className="text-xs text-muted-foreground font-mono mt-0.5 block">Mon–Fri • 09:00–18:00 UTC</span>
                 </div>
               </div>
 
-              {/* Corporate Jurisdiction Locations */}
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-[#0d1411] to-[#0a0f0d] p-5 font-mono text-xs">
-                <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-wider mb-2">
-                  <Globe2 size={16} /> Global Operational Hubs
+              {/* Location */}
+              <div className="rounded-2xl border border-border/70 bg-card/40 p-4.5 flex items-center gap-3.5">
+                <div className="rounded-xl bg-secondary p-2.5 text-muted-foreground shrink-0">
+                  <Globe2 size={19} />
                 </div>
-                <div className="grid sm:grid-cols-2 gap-3 text-muted-foreground mt-3">
-                  <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-black/50 p-2.5">
-                    <span className="text-lg">🇵🇦</span>
-                    <div>
-                      <strong className="text-foreground block text-xs">Panama City</strong>
-                      <span className="text-[10px] text-muted-foreground">Primary Registration</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-black/50 p-2.5">
-                    <span className="text-lg">🇸🇰</span>
-                    <div>
-                      <strong className="text-foreground block text-xs">Slovakia</strong>
-                      <span className="text-[10px] text-muted-foreground">European Tech Hub</span>
-                    </div>
-                  </div>
+                <div>
+                  <h4 className="text-xs font-bold text-foreground">Official Hubs</h4>
+                  <span className="text-xs text-muted-foreground mt-0.5 block">Panama City 🇵🇦 • Slovakia 🇸🇰</span>
                 </div>
               </div>
+            </div>
+
+            {/* Response Time Badge */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-sans pt-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span>Average response time: <strong className="text-foreground font-semibold">Under 2 hours</strong></span>
             </div>
           </div>
 
           {/* Right Column: Contact Form */}
-          <div id="contact-form" className="rounded-3xl border border-white/15 bg-gradient-to-b from-[#0d1310] via-[#090d0b] to-[#070908] p-6 sm:p-8 lg:p-10 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] pointer-events-none rounded-full" />
-
+          <div id="contact-form" className="rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-8 backdrop-blur-xl shadow-xl">
             {sent ? (
-              <div className="py-16 text-center flex flex-col items-center justify-center">
-                <div className="w-16 h-16 rounded-full border border-emerald-500/40 bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.35)] mb-5">
-                  <Check size={32} />
+              <div className="py-12 text-center flex flex-col items-center justify-center">
+                <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4 border border-emerald-500/30">
+                  <Check size={28} />
                 </div>
-                <h3 className="text-2xl font-black text-foreground">Message Dispatched!</h3>
-                <p className="mt-3 text-xs sm:text-sm text-muted-foreground max-w-md leading-relaxed">
-                  Thank you for contacting Nexa Traders. Your inquiry has been routed to our support desk team. Expect an email response shortly.
+                <h3 className="text-xl font-bold text-foreground">Message received</h3>
+                <p className="mt-2 text-xs text-muted-foreground max-w-sm leading-relaxed">
+                  Thank you for contacting Nexa Traders. A support representative will respond to your email shortly.
                 </p>
                 <button
                   onClick={() => setSent(false)}
-                  className="mt-8 rounded-full border border-primary/40 bg-primary/10 px-8 py-3 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all shadow-lg"
+                  className="mt-6 rounded-full border border-primary/40 bg-primary/10 px-6 py-2.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-all"
                   data-testid="button-send-another"
                 >
-                  Send Another Message
+                  Send another message
                 </button>
               </div>
             ) : (
-              <form onSubmit={submit} className="space-y-5 relative z-10 font-sans">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-                  <div>
-                    <h3 className="text-xl font-extrabold text-foreground">Send Us a Direct Message</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">Fill in your details to open a support ticket.</p>
-                  </div>
-                  <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 font-mono text-[10px] font-bold text-emerald-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    ONLINE
-                  </span>
+              <form onSubmit={submit} className="space-y-4 font-sans">
+                <div className="border-b border-border/60 pb-4 mb-5">
+                  <h3 className="text-lg font-bold text-foreground">Send us a message</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Fill out the form below and our desk will get back to you.</p>
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-bold text-foreground mb-2 font-mono uppercase tracking-wider">
-                      Your Full Name *
+                    <label className="block text-xs font-semibold text-foreground/90 mb-1.5">
+                      Your full name
                     </label>
                     <input
                       required
-                      placeholder="e.g. Alex Vance"
-                      className="w-full rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/40 font-mono"
+                      placeholder="Alex Vance"
+                      className="w-full rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors placeholder:text-muted-foreground/40 font-sans"
                       data-testid="input-contact-name"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-foreground mb-2 font-mono uppercase tracking-wider">
-                      Email Address *
+                    <label className="block text-xs font-semibold text-foreground/90 mb-1.5">
+                      Email address
                     </label>
                     <input
                       required
                       type="email"
                       placeholder="alex@domain.com"
-                      className="w-full rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/40 font-mono"
+                      className="w-full rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors placeholder:text-muted-foreground/40 font-sans"
                       data-testid="input-contact-email"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-2 font-mono uppercase tracking-wider">
-                    Inquiry Topic / Category *
+                  <label className="block text-xs font-semibold text-foreground/90 mb-1.5">
+                    Inquiry topic
                   </label>
                   <select
                     value={selectedTopic}
                     onChange={(e) => setSelectedTopic(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-mono"
+                    className="w-full rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors font-sans"
                     data-testid="select-contact-topic"
                   >
                     <option value="Understanding Arbitrage Packages" className="bg-[#08090a]">Packages & Yield Strategy</option>
                     <option value="Deposit & Withdrawal Assistance" className="bg-[#08090a]">Deposit & Withdrawal Help</option>
                     <option value="Account & Security Inquiry" className="bg-[#08090a]">Account, Password & 2FA</option>
-                    <option value="API & Technical Questions" className="bg-[#08090a]">AI Live Trading & Technical</option>
+                    <option value="API & Technical Questions" className="bg-[#08090a]">AI Trading & Technical Questions</option>
                     <option value="Security and compliance" className="bg-[#08090a]">Legal & Compliance Desk</option>
-                    <option value="General Question" className="bg-[#08090a]">General Question</option>
+                    <option value="General Question" className="bg-[#08090a]">General Inquiry</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-2 font-mono uppercase tracking-wider">
-                    Your Message Details *
+                  <label className="block text-xs font-semibold text-foreground/90 mb-1.5">
+                    Message details
                   </label>
                   <textarea
                     required
-                    rows={5}
-                    placeholder="Describe your question or issue in detail..."
-                    className="w-full resize-none rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground/40 font-sans leading-relaxed"
+                    rows={4}
+                    placeholder="Provide details about your question..."
+                    className="w-full resize-none rounded-lg border border-border bg-secondary/50 px-3.5 py-2.5 text-xs text-foreground outline-none focus:border-primary/80 focus:bg-secondary/90 transition-colors placeholder:text-muted-foreground/40 font-sans leading-relaxed"
                     data-testid="textarea-contact-message"
                   />
                 </div>
@@ -2613,55 +2560,20 @@ function ContactPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.35)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                  className="w-full rounded-lg bg-primary py-3 text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-colors flex items-center justify-center gap-2 shadow-md"
                   data-testid="button-submit-contact"
                 >
                   {loading ? (
-                    'Dispatching Message...'
+                    'Sending...'
                   ) : (
                     <>
-                      Submit Support Ticket <Send size={15} />
+                      Send message <ArrowRight size={14} />
                     </>
                   )}
                 </button>
               </form>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* ❓ 3. QUICK FAQ & HELP ACCORDIONS */}
-      <section className="mx-auto max-w-5xl px-5 pt-8 border-t border-white/10">
-        <div className="text-center mb-8">
-          <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest block mb-1">
-            FREQUENTLY ASKED
-          </span>
-          <h3 className="text-xl font-bold text-foreground">Need a Quick Answer?</h3>
-        </div>
-
-        <div className="space-y-3 font-sans max-w-3xl mx-auto">
-          {faqs.map((faq, idx) => {
-            const isOpen = activeFaq === idx;
-            return (
-              <div
-                key={idx}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden backdrop-blur-xl transition-all"
-              >
-                <button
-                  onClick={() => setActiveFaq(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between p-4.5 text-left text-xs font-bold text-foreground hover:text-primary transition-colors"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown size={16} className={`text-muted-foreground transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-primary' : ''}`} />
-                </button>
-                {isOpen && (
-                  <div className="px-4.5 pb-4 pt-1 border-t border-white/5 text-xs text-muted-foreground leading-relaxed">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
         </div>
       </section>
 
