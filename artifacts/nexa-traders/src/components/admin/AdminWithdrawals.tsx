@@ -22,10 +22,14 @@ export function AdminWithdrawals({
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Extract all Withdrawal Transactions
-  const withdrawalTxs = transactions.filter(t => t.type === 'WITHDRAWAL');
-  const pendingWithdrawals = withdrawalTxs.filter(t => t.status === 'PENDING');
-  const processedWithdrawals = withdrawalTxs.filter(t => t.status !== 'PENDING');
+  // Extract all Withdrawal Transactions (case-insensitive & desc fallback)
+  const withdrawalTxs = transactions.filter(t => {
+    const typeStr = (t.type || '').toUpperCase();
+    const descStr = (t.description || t.title || '').toUpperCase();
+    return typeStr.includes('WITHDRAW') || descStr.includes('WITHDRAW');
+  });
+  const pendingWithdrawals = withdrawalTxs.filter(t => (t.status || '').toUpperCase() === 'PENDING');
+  const processedWithdrawals = withdrawalTxs.filter(t => (t.status || '').toUpperCase() !== 'PENDING');
 
   const handleExecuteAction = async () => {
     if (!selectedTxForAction || !actionType) return;

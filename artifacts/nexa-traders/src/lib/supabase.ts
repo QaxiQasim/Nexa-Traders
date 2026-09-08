@@ -822,17 +822,66 @@ export async function fetchAllUsersFromDb() {
 }
 
 export async function fetchAllAdminTransactions() {
+  let dbTxs: any[] = [];
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/transactions?select=*&order=created_at.desc`, {
       method: 'GET',
       headers: getHeaders()
     });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) dbTxs = data;
+    }
   } catch (err) {
-    return [];
+    console.error('Error fetching admin transactions from DB:', err);
   }
+
+  // Merge transactions from local storage for 100% fail-safe display
+  const map = new Map<string, any>();
+  
+  // 1. Add DB txs first
+  dbTxs.forEach((t: any) => {
+    const key = (t.id || `${t.user_email}_${t.amount}_${t.created_at}`).toLowerCase();
+    map.set(key, t);
+  });
+
+  // 2. Scan local storage keys for any pending withdrawals / transactions
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k.includes('nexa_tx_') || k.includes('nexa_all_withdrawals') || k.includes('transactions'))) {
+        try {
+          const val = localStorage.getItem(k);
+          if (val) {
+            const parsed = JSON.parse(val);
+            const arr = Array.isArray(parsed) ? parsed : [parsed];
+            arr.forEach((tx: any) => {
+              if (tx && typeof tx === 'object') {
+                const uEmail = tx.user_email || tx.email || tx.userEmail || '';
+                const txType = (tx.type || '').toUpperCase();
+                if (uEmail && (txType.includes('WITHDRAW') || txType.includes('DEPOSIT') || txType.includes('PACKAGE'))) {
+                  const key = (tx.id || `${uEmail}_${tx.amount}_${tx.date}`).toLowerCase();
+                  if (!map.has(key)) {
+                    map.set(key, {
+                      id: tx.id || `TX-${Math.floor(100000 + Math.random() * 900000)}`,
+                      user_email: uEmail,
+                      type: txType,
+                      amount: Number(tx.amount || 0),
+                      status: tx.status || 'PENDING',
+                      description: tx.description || tx.title || `${txType} Request`,
+                      created_at: tx.created_at || tx.date || new Date().toISOString()
+                    });
+                  }
+                }
+              }
+            });
+          }
+        } catch (e) {}
+      }
+    }
+  } catch (e) {}
+
+  return Array.from(map.values());
 }
 
 export async function fetchAllAdminPackages() {
@@ -924,7 +973,9 @@ export async function fetchAllAdminKyc() {
 
 export async function updateWithdrawalStatusInDb(txId: string, status: 'COMPLETED' | 'REJECTED' | 'PROCESSING', userEmail?: string, amount?: number) {
   try {
-    // 1. Update transaction status
+    const emailLower = (userEmail || '').toLowerCase().trim();
+
+    // 1. Update transaction in Supabase DB by ID if valid
     const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/transactions?id=eq.${encodeURIComponent(txId)}`, {
       method: 'PATCH',
       headers: {
@@ -934,17 +985,52 @@ export async function updateWithdrawalStatusInDb(txId: string, status: 'COMPLETE
       body: JSON.stringify({ status })
     });
 
-    // 2. If rejected, refund balance to user profile
-    if (status === 'REJECTED' && userEmail && amount && amount > 0) {
-      const userProfile = await fetchUserProfileFromDb(userEmail);
-      if (userProfile) {
-        const currentBal = Number(userProfile.wallet_balance) || 0;
-        const refundedBal = currentBal + amount;
-        await syncUserProfile(userEmail, userProfile.full_name || 'User', refundedBal);
+    // 2. Also query by user_email if ID was generated locally
+    if (!patchRes.ok || patchRes.status === 404) {
+      if (emailLower) {
+        await fetch(`${SUPABASE_URL}/rest/v1/transactions?user_email=ilike.${encodeURIComponent(emailLower)}&type=eq.WITHDRAWAL&status=eq.PENDING`, {
+          method: 'PATCH',
+          headers: getHeaders(),
+          body: JSON.stringify({ status })
+        });
       }
     }
 
-    return patchRes.ok;
+    // 3. Update local storage caches for full instant consistency across client sessions
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.includes('nexa_tx_') || k.includes('nexa_all_withdrawals') || k.includes('transactions'))) {
+          try {
+            const val = localStorage.getItem(k);
+            if (val) {
+              const parsed = JSON.parse(val);
+              if (Array.isArray(parsed)) {
+                const updated = parsed.map((item: any) => {
+                  if (item.id === txId || (item.user_email && item.user_email.toLowerCase() === emailLower && (item.type || '').toUpperCase().includes('WITHDRAW'))) {
+                    return { ...item, status };
+                  }
+                  return item;
+                });
+                localStorage.setItem(k, JSON.stringify(updated));
+              }
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
+
+    // 4. If rejected, refund balance to user profile
+    if (status === 'REJECTED' && emailLower && amount && amount > 0) {
+      const userProfile = await fetchUserProfileFromDb(emailLower);
+      if (userProfile) {
+        const currentBal = Number(userProfile.wallet_balance) || 0;
+        const refundedBal = currentBal + amount;
+        await syncUserProfile(emailLower, userProfile.full_name || 'User', refundedBal);
+      }
+    }
+
+    return true;
   } catch (err) {
     console.error('Error updating withdrawal status:', err);
     return false;

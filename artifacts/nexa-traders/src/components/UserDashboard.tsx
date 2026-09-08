@@ -527,17 +527,31 @@ export function UserDashboard() {
     try {
       // Deduct balance locally and in DB
       const newBal = Math.max(0, walletBalance - num);
+      const txId = `TX-W-${Math.floor(100000 + Math.random() * 900000)}`;
 
       // Record transaction in Supabase DB
       const txPayload = {
+        id: txId,
         user_email: userEmail,
         type: 'WITHDRAWAL',
         amount: -num,
         status: 'PENDING',
-        description: `Withdrawal request to BEP20 Address: ${cleanWallet}`,
+        description: `USDT BEP20 Withdrawal Request to ${cleanWallet} [Address: ${cleanWallet}]`,
         created_at: new Date().toISOString()
       };
       await insertTransactionToDb(txPayload);
+
+      // Save to global persistent withdrawal cache for instant admin visibility
+      try {
+        const allWJson = localStorage.getItem('nexa_all_withdrawals');
+        let allWList: any[] = [];
+        if (allWJson) {
+          try { allWList = JSON.parse(allWJson); } catch (e) {}
+        }
+        if (!Array.isArray(allWList)) allWList = [];
+        allWList.unshift(txPayload);
+        localStorage.setItem('nexa_all_withdrawals', JSON.stringify(allWList));
+      } catch (e) {}
 
       // Update Profile Balance in DB
       await syncUserProfile(userEmail, userName || userEmail.split('@')[0], newBal);
@@ -548,7 +562,7 @@ export function UserDashboard() {
 
       // Update Local Transactions
       const newTx: Transaction = {
-        id: `TX-W-${Math.floor(100000 + Math.random() * 900000)}`,
+        id: txId,
         date: new Date().toISOString().replace('T', ' ').substring(0, 16),
         type: 'WITHDRAWAL',
         title: `USDT BEP20 Withdrawal Request (${cleanWallet.substring(0, 6)}...${cleanWallet.substring(cleanWallet.length - 4)})`,
