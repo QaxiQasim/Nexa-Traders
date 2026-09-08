@@ -568,154 +568,156 @@ export function AboutPage() {
 
 
       {/* 📱 12. MOBILE APP ECOSYSTEM */}
-      <section className="relative overflow-hidden py-24 lg:py-32 bg-[#090d0b] border-b border-white/10 font-sans">
-        {/* Background Ambient Spotlights */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.12)_0%,rgba(16,185,129,0.06)_50%,transparent_75%)] blur-[120px] pointer-events-none rounded-full" />
+      <section className="relative overflow-hidden py-14 lg:py-20 bg-[#090d0b] border-b border-white/10 font-sans">
+        {/* Background Ambient Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[380px] bg-[radial-gradient(ellipse_at_center,rgba(232,185,73,0.10)_0%,rgba(16,185,129,0.05)_50%,transparent_75%)] blur-[90px] pointer-events-none rounded-full" />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-xs font-bold text-primary uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(232,185,73,0.15)]">
-              <Smartphone size={14} className="text-primary animate-pulse" />
+        <div className="relative z-10 mx-auto max-w-6xl px-5 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[11px] font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_12px_rgba(232,185,73,0.15)]">
+              <Smartphone size={13} className="text-primary animate-pulse" />
               MOBILE ECOSYSTEM
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-foreground">
               Nexa Traders. Wherever You Trade.
             </h2>
-            <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
+            <p className="mt-2 text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
               Institutional AI trading infrastructure, mobile portfolio management, and real-time execution alerts.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 max-w-5xl mx-auto items-center justify-items-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-10 max-w-4xl mx-auto">
             {/* 🤖 ANDROID SMARTPHONE DEVICE */}
-            <div className="group relative w-full max-w-[360px] aspect-[9/18.5] rounded-[48px] border-[7px] border-[#1e2722] bg-[#090c0a] p-4 shadow-[0_0_60px_rgba(16,185,129,0.2)] hover:shadow-[0_0_80px_rgba(16,185,129,0.35)] hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between overflow-hidden">
+            <div className="group relative w-full max-w-[280px] sm:max-w-[300px] rounded-[36px] border-[4px] border-[#1e2722] bg-[#090c0a] p-3.5 shadow-[0_0_40px_rgba(16,185,129,0.15)] hover:shadow-[0_0_60px_rgba(16,185,129,0.3)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden">
               {/* Android Punch Hole Camera Notch */}
-              <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#1e2722] z-30 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#050706]" />
+              <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[#1e2722] z-30 flex items-center justify-center">
+                <div className="w-1 h-1 rounded-full bg-[#050706]" />
               </div>
 
               {/* Mobile Status Bar */}
-              <div className="flex items-center justify-between font-mono text-[11px] text-muted-foreground pt-1.5 px-3 z-20">
+              <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground pt-0.5 px-2 z-20">
                 <span className="font-bold text-foreground">17:50</span>
+                <span className="text-[9px] text-emerald-400 font-bold">5G</span>
               </div>
 
               {/* Mobile Screen Header with Official Logo */}
-              <div className="mt-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-500/15 via-white/[0.03] to-transparent p-4 backdrop-blur-xl text-center relative z-20 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+              <div className="mt-2 rounded-xl border border-emerald-500/30 bg-gradient-to-b from-emerald-500/15 via-white/[0.02] to-transparent p-3 backdrop-blur-xl text-center relative z-20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
                 <img
                   src="/logo.png"
                   alt="Nexa Trades Logo"
-                  className="h-10 w-auto object-contain mx-auto drop-shadow-[0_0_15px_rgba(232,185,73,0.4)]"
+                  className="h-8 w-auto object-contain mx-auto drop-shadow-[0_0_12px_rgba(232,185,73,0.4)]"
                 />
-                <div className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-[10px] text-emerald-400 font-bold uppercase tracking-widest">
+                <div className="mt-1.5 inline-flex items-center gap-1 font-mono text-[9px] text-emerald-400 font-bold uppercase tracking-widest">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   ANDROID OS NATIVE APP
                 </div>
               </div>
 
               {/* Live Interactive App Screen View */}
-              <div className="my-auto space-y-3 z-20 px-1 font-sans">
+              <div className="my-3 space-y-2.5 z-20 font-sans">
                 {/* Live Arbitrage Card Mockup */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 text-left backdrop-blur-md">
-                  <div className="flex items-center justify-between font-mono text-[10px]">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left backdrop-blur-md">
+                  <div className="flex items-center justify-between font-mono text-[9px]">
                     <span className="text-emerald-400 font-bold flex items-center gap-1">
-                      <Zap size={12} /> AI ROUTER ACTIVE
+                      <Zap size={11} /> AI ROUTER ACTIVE
                     </span>
                     <span className="text-muted-foreground">8.4ms</span>
                   </div>
-                  <div className="mt-2 flex items-center justify-between font-mono">
+                  <div className="mt-1.5 flex items-center justify-between font-mono">
                     <div>
-                      <span className="text-[10px] text-muted-foreground block">BINANCE</span>
-                      <strong className="text-xs text-foreground">$94,180</strong>
+                      <span className="text-[9px] text-muted-foreground block">BINANCE</span>
+                      <strong className="text-[11px] text-foreground">$94,180</strong>
                     </div>
-                    <span className="text-xs text-emerald-400 font-bold">➜ +1.96%</span>
+                    <span className="text-[11px] text-emerald-400 font-bold">➜ +1.96%</span>
                     <div className="text-right">
-                      <span className="text-[10px] text-muted-foreground block">OKX</span>
-                      <strong className="text-xs text-foreground">$94,364</strong>
+                      <span className="text-[9px] text-muted-foreground block">OKX</span>
+                      <strong className="text-[11px] text-foreground">$94,364</strong>
                     </div>
                   </div>
                 </div>
 
                 {/* Launch & Description Info */}
-                <div className="text-center pt-1">
-                  <div className="inline-block rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1 font-mono text-[11px] font-extrabold text-emerald-400">
-                    Launching November 2026
+                <div className="text-center">
+                  <div className="inline-block rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 font-mono text-[10px] font-extrabold text-emerald-400">
+                    Launching Nov 2026
                   </div>
-                  <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed px-1">
-                    Native Android app optimized for real-time notifications and mobile portfolio management.
+                  <p className="mt-1.5 text-[11px] text-muted-foreground leading-snug px-1">
+                    Native Android app optimized for real-time notifications & portfolio management.
                   </p>
                 </div>
               </div>
 
               {/* Phone Bottom Action Button */}
-              <div className="mb-1 z-20">
-                <button disabled className="w-full rounded-2xl border border-emerald-500/40 bg-emerald-500/20 py-3.5 font-mono text-xs font-black uppercase tracking-wider text-emerald-400 cursor-not-allowed shadow-[0_0_25px_rgba(16,185,129,0.25)]">
+              <div className="z-20">
+                <button disabled className="w-full rounded-xl border border-emerald-500/40 bg-emerald-500/20 py-2.5 font-mono text-[11px] font-black uppercase tracking-wider text-emerald-400 cursor-not-allowed">
                   Android — Coming Soon
                 </button>
               </div>
             </div>
 
             {/* 🍎 iOS SMARTPHONE DEVICE */}
-            <div className="group relative w-full max-w-[360px] aspect-[9/18.5] rounded-[48px] border-[7px] border-[#26241e] bg-[#0c0a07] p-4 shadow-[0_0_60px_rgba(232,185,73,0.2)] hover:shadow-[0_0_80px_rgba(232,185,73,0.35)] hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between overflow-hidden">
+            <div className="group relative w-full max-w-[280px] sm:max-w-[300px] rounded-[36px] border-[4px] border-[#26241e] bg-[#0c0a07] p-3.5 shadow-[0_0_40px_rgba(232,185,73,0.15)] hover:shadow-[0_0_60px_rgba(232,185,73,0.3)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden">
               {/* iPhone Dynamic Island Notch */}
-              <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-24 h-4.5 rounded-full bg-[#26241e] z-30 flex items-center justify-end px-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#050403]" />
+              <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 h-3 rounded-full bg-[#26241e] z-30 flex items-center justify-end px-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#050403]" />
               </div>
 
               {/* Mobile Status Bar */}
-              <div className="flex items-center justify-between font-mono text-[11px] text-muted-foreground pt-1.5 px-3 z-20">
+              <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground pt-0.5 px-2 z-20">
                 <span className="font-bold text-foreground">17:50</span>
+                <span className="text-[9px] text-primary font-bold">5G</span>
               </div>
 
               {/* Mobile Screen Header with Official Logo */}
-              <div className="mt-3 rounded-2xl border border-primary/30 bg-gradient-to-b from-primary/15 via-white/[0.03] to-transparent p-4 backdrop-blur-xl text-center relative z-20 shadow-[0_0_20px_rgba(232,185,73,0.1)]">
+              <div className="mt-2 rounded-xl border border-primary/30 bg-gradient-to-b from-primary/15 via-white/[0.02] to-transparent p-3 backdrop-blur-xl text-center relative z-20 shadow-[0_0_15px_rgba(232,185,73,0.1)]">
                 <img
                   src="/logo.png"
                   alt="Nexa Trades Logo"
-                  className="h-10 w-auto object-contain mx-auto drop-shadow-[0_0_15px_rgba(232,185,73,0.4)]"
+                  className="h-8 w-auto object-contain mx-auto drop-shadow-[0_0_12px_rgba(232,185,73,0.4)]"
                 />
-                <div className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-[10px] text-primary font-bold uppercase tracking-widest">
+                <div className="mt-1.5 inline-flex items-center gap-1 font-mono text-[9px] text-primary font-bold uppercase tracking-widest">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   iOS NATIVE APPLICATION
                 </div>
               </div>
 
               {/* Live Interactive App Screen View */}
-              <div className="my-auto space-y-3 z-20 px-1 font-sans">
+              <div className="my-3 space-y-2.5 z-20 font-sans">
                 {/* Live Arbitrage Card Mockup */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 text-left backdrop-blur-md">
-                  <div className="flex items-center justify-between font-mono text-[10px]">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left backdrop-blur-md">
+                  <div className="flex items-center justify-between font-mono text-[9px]">
                     <span className="text-primary font-bold flex items-center gap-1">
-                      <ShieldCheck size={12} /> FACEID ENCRYPTED
+                      <ShieldCheck size={11} /> FACEID ENCRYPTED
                     </span>
                     <span className="text-muted-foreground">PRO V1</span>
                   </div>
-                  <div className="mt-2 flex items-center justify-between font-mono">
+                  <div className="mt-1.5 flex items-center justify-between font-mono">
                     <div>
-                      <span className="text-[10px] text-muted-foreground block">YIELD ROUTE</span>
-                      <strong className="text-xs text-foreground">BTC / USDT</strong>
+                      <span className="text-[9px] text-muted-foreground block">YIELD ROUTE</span>
+                      <strong className="text-[11px] text-foreground">BTC / USDT</strong>
                     </div>
-                    <span className="text-xs text-primary font-bold">➜ 99.8% ACC</span>
+                    <span className="text-[11px] text-primary font-bold">➜ 99.8%</span>
                     <div className="text-right">
-                      <span className="text-[10px] text-muted-foreground block">EST YIELD</span>
-                      <strong className="text-xs text-primary">+$184.20</strong>
+                      <span className="text-[9px] text-muted-foreground block">EST YIELD</span>
+                      <strong className="text-[11px] text-primary">+$184.20</strong>
                     </div>
                   </div>
                 </div>
 
                 {/* Launch & Description Info */}
-                <div className="text-center pt-1">
-                  <div className="inline-block rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1 font-mono text-[11px] font-extrabold text-primary">
-                    Launching February 2027
+                <div className="text-center">
+                  <div className="inline-block rounded-full border border-primary/40 bg-primary/10 px-3 py-0.5 font-mono text-[10px] font-extrabold text-primary">
+                    Launching Feb 2027
                   </div>
-                  <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed px-1">
-                    Sleek iOS application with FaceID biometric authentication, live widgets, and real-time push alerts.
+                  <p className="mt-1.5 text-[11px] text-muted-foreground leading-snug px-1">
+                    Sleek iOS application with FaceID, live widgets & real-time push alerts.
                   </p>
                 </div>
               </div>
 
               {/* Phone Bottom Action Button */}
-              <div className="mb-1 z-20">
-                <button disabled className="w-full rounded-2xl border border-primary/40 bg-primary/20 py-3.5 font-mono text-xs font-black uppercase tracking-wider text-primary cursor-not-allowed shadow-[0_0_25px_rgba(232,185,73,0.25)]">
+              <div className="z-20">
+                <button disabled className="w-full rounded-xl border border-primary/40 bg-primary/20 py-2.5 font-mono text-[11px] font-black uppercase tracking-wider text-primary cursor-not-allowed">
                   iOS — Coming Soon
                 </button>
               </div>
