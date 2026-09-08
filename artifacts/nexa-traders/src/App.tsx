@@ -70,6 +70,7 @@ import { fetchUserProfileFromDb, syncUserProfile, fetchProfileByReferralCode } f
 import { generateOtpCode, sendOtpEmail } from '@/lib/otpService';
 import { AdminLoginPage } from '@/components/admin/AdminLoginPage';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { SeoHead } from '@/components/SeoHead';
 
 const queryClient = new QueryClient();
 
@@ -3736,6 +3737,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          <SeoHead />
           {!isAdminRoute && <Navbar />}
           <Router />
           {!isAdminRoute && <Footer />}
