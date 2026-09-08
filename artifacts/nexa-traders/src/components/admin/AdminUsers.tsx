@@ -343,10 +343,50 @@ export function AdminUsers({
               )}
             </div>
 
+            {/* Verified Deposit TxHash Proofs Section */}
+            <div className="space-y-3 border-t border-white/10 pt-4">
+              <h4 className="text-sm font-bold text-foreground font-sans flex items-center gap-2">
+                <ShieldCheck size={16} className="text-accent" /> Verified Deposit TxHash Proofs ({displayTxs.filter((t: any) => (t.description || '').includes('0x')).length})
+              </h4>
+              {displayTxs.filter((t: any) => (t.description || '').includes('0x')).length === 0 ? (
+                <div className="p-3 rounded-xl border border-white/5 bg-white/[0.01] text-muted-foreground text-center text-xs">
+                  No verified deposit TxHashes recorded for this account.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {displayTxs.filter((t: any) => (t.description || '').includes('0x')).map((tx: any) => {
+                    const hashMatch = (tx.description || '').match(/0x[a-fA-F0-9]{64}/);
+                    const hashStr = hashMatch ? hashMatch[0] : '';
+                    return (
+                      <div key={tx.id} className="p-3 rounded-xl border border-accent/20 bg-accent/5 flex flex-col gap-1.5">
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-accent text-xs">${Number(tx.amount || 0).toFixed(2)} USDT Verified Deposit</span>
+                          <span className="text-[10px] text-muted-foreground">{tx.created_at ? new Date(tx.created_at).toLocaleString() : (tx.date || 'Recent')}</span>
+                        </div>
+                        {hashStr && (
+                          <div className="flex items-center justify-between gap-2 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/10 font-mono text-[11px]">
+                            <span className="text-primary truncate font-bold">{hashStr}</span>
+                            <a
+                              href={`https://bscscan.com/tx/${hashStr}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-accent hover:underline flex items-center gap-1 shrink-0 font-bold"
+                            >
+                              Verify BscScan <ExternalLink size={12} />
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* Financial Transactions Ledger */}
             <div className="space-y-3 border-t border-white/10 pt-4">
               <h4 className="text-sm font-bold text-foreground font-sans flex items-center gap-2">
-                <DollarSign size={16} className="text-accent" /> Transaction Audit History ({displayTxs.length})
+                <DollarSign size={16} className="text-accent" /> Full Transaction Audit History ({displayTxs.length})
               </h4>
               {displayTxs.length === 0 ? (
                 <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] text-muted-foreground text-center">

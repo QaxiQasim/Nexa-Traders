@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, Search, Filter, ArrowDownRight, ArrowUpRight, Package, Clock } from 'lucide-react';
+import { DollarSign, Search, Filter, ArrowDownRight, ArrowUpRight, Package, Clock, ExternalLink } from 'lucide-react';
 
 interface AdminTransactionsProps {
   transactions: any[];
@@ -83,7 +83,7 @@ export function AdminTransactions({ transactions }: AdminTransactionsProps) {
               <th className="pb-3 px-4">User Email</th>
               <th className="pb-3 px-4">Date & Time</th>
               <th className="pb-3 px-4">Type</th>
-              <th className="pb-3 px-4">Description</th>
+              <th className="pb-3 px-4">Description & TxHash Proof</th>
               <th className="pb-3 px-4">Amount</th>
               <th className="pb-3 px-4">Status</th>
             </tr>
@@ -96,38 +96,55 @@ export function AdminTransactions({ transactions }: AdminTransactionsProps) {
                 </td>
               </tr>
             ) : (
-              filteredTxs.map(tx => (
-                <tr key={tx.id} className="hover:bg-white/[0.02] transition-all">
-                  <td className="py-3.5 px-4 font-bold text-primary">{tx.id ? tx.id.substring(0, 10) : 'N/A'}</td>
-                  <td className="py-3.5 px-4 text-foreground font-bold">{tx.user_email}</td>
-                  <td className="py-3.5 px-4 text-muted-foreground">
-                    {tx.created_at ? new Date(tx.created_at).toLocaleString() : 'Recent'}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase border ${
-                      tx.type === 'DEPOSIT' ? 'bg-accent/15 text-accent border-accent/30' :
-                      tx.type === 'WITHDRAWAL' ? 'bg-rose-500/15 text-rose-400 border-rose-500/30' :
-                      tx.type === 'PACKAGE_PURCHASE' ? 'bg-purple-500/15 text-purple-400 border-purple-500/30' :
-                      'bg-blue-500/15 text-blue-400 border-blue-500/30'
-                    }`}>
-                      {tx.type}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-foreground">{tx.description || tx.type}</td>
-                  <td className={`py-3.5 px-4 font-bold text-sm ${Number(tx.amount) > 0 ? 'text-accent' : 'text-rose-400'}`}>
-                    {Number(tx.amount) > 0 ? `+$${Number(tx.amount).toFixed(2)}` : `-$${Math.abs(Number(tx.amount)).toFixed(2)}`}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase border ${
-                      tx.status === 'COMPLETED' || tx.status === 'APPROVED' ? 'bg-accent/15 text-accent border-accent/30' :
-                      tx.status === 'PENDING' ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30' :
-                      'bg-rose-500/15 text-rose-400 border-rose-500/30'
-                    }`}>
-                      {tx.status}
-                    </span>
-                  </td>
-                </tr>
-              ))
+              filteredTxs.map(tx => {
+                const hashMatch = (tx.description || '').match(/0x[a-fA-F0-9]{64}/);
+                const txHashStr = hashMatch ? hashMatch[0] : null;
+
+                return (
+                  <tr key={tx.id} className="hover:bg-white/[0.02] transition-all">
+                    <td className="py-3.5 px-4 font-bold text-primary">{tx.id ? tx.id.substring(0, 10) : 'N/A'}</td>
+                    <td className="py-3.5 px-4 text-foreground font-bold">{tx.user_email}</td>
+                    <td className="py-3.5 px-4 text-muted-foreground">
+                      {tx.created_at ? new Date(tx.created_at).toLocaleString() : 'Recent'}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase border ${
+                        tx.type === 'DEPOSIT' ? 'bg-accent/15 text-accent border-accent/30' :
+                        tx.type === 'WITHDRAWAL' ? 'bg-rose-500/15 text-rose-400 border-rose-500/30' :
+                        tx.type === 'PACKAGE_PURCHASE' ? 'bg-purple-500/15 text-purple-400 border-purple-500/30' :
+                        'bg-blue-500/15 text-blue-400 border-blue-500/30'
+                      }`}>
+                        {tx.type}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-foreground max-w-xs">
+                      <div>{tx.description || tx.type}</div>
+                      {txHashStr && (
+                        <a
+                          href={`https://bscscan.com/tx/${txHashStr}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 mt-1 text-[10px] font-mono text-accent hover:underline bg-accent/10 border border-accent/30 px-2 py-0.5 rounded"
+                        >
+                          BscScan Proof <ExternalLink size={10} />
+                        </a>
+                      )}
+                    </td>
+                    <td className={`py-3.5 px-4 font-bold text-sm ${Number(tx.amount) > 0 ? 'text-accent' : 'text-rose-400'}`}>
+                      {Number(tx.amount) > 0 ? `+$${Number(tx.amount).toFixed(2)}` : `-$${Math.abs(Number(tx.amount)).toFixed(2)}`}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase border ${
+                        tx.status === 'COMPLETED' || tx.status === 'APPROVED' ? 'bg-accent/15 text-accent border-accent/30' :
+                        tx.status === 'PENDING' ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30' :
+                        'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                      }`}>
+                        {tx.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
