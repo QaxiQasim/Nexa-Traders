@@ -12,20 +12,13 @@ export function initializeSecurityGuard() {
     return false;
   }, { capture: true });
 
-  // 2. Disable DevTools & Source Code Keyboard Shortcuts
+  // 2. Disable DevTools & Source Code Keyboard Shortcuts (Inspect Ctrl+Shift+I is Allowed)
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
     // F12 key
     if (e.key === 'F12' || e.keyCode === 123) {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    }
-
-    // Ctrl+Shift+I / Cmd+Opt+I (Inspect Element)
-    if (ctrlOrCmd && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
       e.preventDefault();
       e.stopPropagation();
       return false;
@@ -59,34 +52,4 @@ export function initializeSecurityGuard() {
       return false;
     }
   }, { capture: true });
-
-  // 3. Disable Console Output in Production
-  if (import.meta.env.PROD || process.env.NODE_ENV === 'production') {
-    const noop = () => {};
-    try {
-      console.log = noop;
-      console.warn = noop;
-      console.error = noop;
-      console.info = noop;
-      console.debug = noop;
-      console.table = noop;
-      console.trace = noop;
-    } catch (err) {}
-  }
-
-  // 4. DevTools Opened Countermeasure
-  const detectDevTools = () => {
-    const threshold = 160;
-    const widthDiff = window.outerWidth - window.innerWidth;
-    const heightDiff = window.outerHeight - window.innerHeight;
-
-    if (widthDiff > threshold || heightDiff > threshold) {
-      try {
-        console.clear();
-      } catch (err) {}
-    }
-  };
-
-  window.addEventListener('resize', detectDevTools);
-  setInterval(detectDevTools, 1500);
 }
