@@ -1218,17 +1218,6 @@ function Home() {
             <motion.p variants={reveal} className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground/90 sm:text-lg">
               NexaTraders continuously scans cross-exchange liquidity, detects micro price gaps between 18+ venues, and routes trades automatically with sub-14ms precision.
             </motion.p>
-            <motion.div variants={reveal} className="mt-5 flex flex-wrap gap-2 font-mono text-[10px]">
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary shadow-[0_0_12px_rgba(232,185,73,0.15)]">
-                <Zap size={11} /> Sub-14ms Execution Speed
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 text-accent">
-                <Globe2 size={11} /> 18 Venues Connected
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card/80 px-2.5 py-1 text-muted-foreground">
-                <ShieldCheck size={11} /> Bounded Risk Gate
-              </span>
-            </motion.div>
             <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
               <ButtonLink href="/packages">
                 Explore packages <ArrowRight size={15} />
