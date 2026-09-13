@@ -976,11 +976,7 @@ function WhatIsCryptoArbitrageSection() {
       <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
         <Reveal>
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
-              <Sparkles size={13} className="animate-spin-slow text-primary" />
-              Automated Market Intelligence
-            </div>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-foreground sm:text-5xl">
+            <h2 className="text-3xl font-extrabold tracking-[-0.04em] text-foreground sm:text-5xl">
               What Is Crypto Arbitrage?
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -1167,14 +1163,6 @@ function WhatIsCryptoArbitrageSection() {
                 )}
               </div>
 
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-border/60 flex items-center justify-center gap-2 font-mono text-[10px] text-muted-foreground uppercase tracking-widest flex-wrap">
-              <span className="text-primary font-bold">BINANCE (MARKET A)</span>
-              <span className="text-accent font-mono">━━ ⚡ MARKET DATA ━━▶</span>
-              <span className="text-primary font-bold">ARBITRAGE ENGINE</span>
-              <span className="text-accent font-mono">━━ ⚡ QUALIFICATION ━━▶</span>
-              <span className="text-primary font-bold">BYBIT (MARKET B)</span>
             </div>
           </div>
         </Reveal>
