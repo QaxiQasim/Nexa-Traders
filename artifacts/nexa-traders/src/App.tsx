@@ -461,22 +461,6 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
     <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-[#0d1010] p-4 shadow-[0_0_90px_rgba(232,185,73,.18)] sm:p-6" data-testid="panel-live-scanner">
       <div className="absolute inset-0 grid-fade opacity-60" />
       <div className="relative">
-        <div className="flex items-center justify-between border-b border-border/70 pb-4">
-          <div className="flex items-center gap-2">
-            <span className={`h-2.5 w-2.5 rounded-full bg-accent ${scanning ? 'animate-pulse-signal' : ''}`} />
-            <span className="font-mono text-[10px] uppercase tracking-[.16em] text-primary">Arbitrage Engine / Live</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1 font-mono text-[10px] text-primary transition hover:bg-primary/20"
-              onClick={() => setScanning(true)}
-              data-testid="button-rescan"
-            >
-              Rescan <RefreshCw size={11} className={scanning ? 'animate-spin' : ''} />
-            </button>
-          </div>
-        </div>
-
         {/* Pair Selector Tabs */}
         <div className="mt-4 flex items-center justify-between border-b border-border/60 pb-3">
           <div className="flex flex-wrap gap-1.5">
