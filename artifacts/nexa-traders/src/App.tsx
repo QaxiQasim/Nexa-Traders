@@ -463,25 +463,21 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
       <div className="relative">
         {/* Pair Selector Tabs */}
         <div className="mt-4 flex items-center justify-between border-b border-border/60 pb-3">
-          <div className="flex flex-wrap gap-1.5">
+          <div className="inline-flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-secondary/50 border border-white/10 backdrop-blur-md">
             {Object.keys(pairData).map((pair) => (
               <button
                 key={pair}
                 onClick={() => setActivePair(pair)}
-                className={`rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider transition ${
-                  activePair === pair ? 'bg-primary text-primary-foreground font-semibold shadow-[0_0_10px_rgba(232,185,73,0.3)]' : 'border border-border/80 bg-secondary/50 text-muted-foreground hover:text-foreground'
+                className={`rounded-lg px-3 py-1 font-sans text-xs uppercase tracking-wider transition-all duration-200 ${
+                  activePair === pair
+                    ? 'bg-primary text-primary-foreground font-semibold shadow-md shadow-primary/20'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 }`}
                 data-testid={`button-pair-${pair.replace('/', '-')}`}
               >
                 {pair}
               </button>
             ))}
-          </div>
-
-          {/* Mode Switcher */}
-          <div className="hidden sm:flex gap-1 font-mono text-[9px]">
-            <button onClick={() => setActiveTab('chart')} className={`px-2 py-0.5 rounded ${activeTab === 'chart' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Chart</button>
-            <button onClick={() => setActiveTab('orderbook')} className={`px-2 py-0.5 rounded ${activeTab === 'orderbook' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Depth</button>
           </div>
         </div>
 
@@ -987,17 +983,17 @@ function WhatIsCryptoArbitrageSection() {
 
         <Reveal delay={0.08}>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs text-muted-foreground uppercase tracking-wider">Select Market Pair:</span>
-              <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-3">
+              <span className="font-sans text-xs font-medium text-muted-foreground uppercase tracking-wider">Select Market Pair:</span>
+              <div className="inline-flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-secondary/50 border border-white/10 backdrop-blur-md">
                 {['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT'].map((pair) => (
                   <button
                     key={pair}
                     onClick={() => setSelectedPair(pair)}
-                    className={`rounded-lg border px-3 py-1.5 font-mono text-xs font-semibold transition-all ${
+                    className={`rounded-lg px-3.5 py-1.5 font-sans text-xs font-semibold transition-all duration-200 ${
                       selectedPair === pair
-                        ? 'border-primary bg-primary/15 text-primary shadow-[0_0_15px_rgba(232,185,73,0.25)]'
-                        : 'border-border bg-card/60 text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                     }`}
                     data-testid={`button-pair-${pair.replace('/', '-')}`}
                   >
@@ -1005,11 +1001,6 @@ function WhatIsCryptoArbitrageSection() {
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div className="inline-flex items-center gap-2 rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-[10px] text-accent font-bold">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-signal" />
-              ● LIVE BINANCE SPOT STREAM · REAL TIME
             </div>
           </div>
         </Reveal>
@@ -1233,7 +1224,7 @@ function Home() {
         {/* Interactive "What Is Crypto Arbitrage?" Section */}
         <WhatIsCryptoArbitrageSection />
 
-        <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-28"><Reveal><SectionHeading eyebrow="The readout" title="See the market thinking in real time." copy="The dashboard is designed to answer the useful questions: what moved, what changed, and why did the engine choose this route?" /><div className="mt-8 flex gap-3"><Link href="/trades" className="inline-flex items-center gap-2 rounded-md border border-accent/25 bg-accent/5 px-3 py-2 font-mono text-[10px] text-accent hover:border-accent/60 hover:bg-accent/15 transition-all cursor-pointer"><Radio size={13} /> live system telemetry</Link></div></Reveal><Reveal delay={.12}><div className="overflow-hidden rounded-2xl border border-primary/30 bg-[#0d1011] p-2 sm:p-3 shadow-[0_0_50px_rgba(232,185,73,0.22)] backdrop-blur-xl"><div className="relative overflow-hidden rounded-xl border border-border/80 bg-black aspect-video"><video src="/trade-recording.mp4" autoPlay loop muted playsInline className="h-full w-full object-cover rounded-xl shadow-2xl pointer-events-none" data-testid="video-trade-recording" /></div></div></Reveal></div></section>
+        <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-28"><Reveal><SectionHeading eyebrow="The readout" title="See the market thinking in real time." copy="The dashboard is designed to answer the useful questions: what moved, what changed, and why did the engine choose this route?" /></Reveal><Reveal delay={.12}><div className="overflow-hidden rounded-2xl border border-primary/30 bg-[#0d1011] p-2 sm:p-3 shadow-[0_0_50px_rgba(232,185,73,0.22)] backdrop-blur-xl"><div className="relative overflow-hidden rounded-xl border border-border/80 bg-black aspect-video"><video src="/trade-recording.mp4" autoPlay loop muted playsInline className="h-full w-full object-cover rounded-xl shadow-2xl pointer-events-none" data-testid="video-trade-recording" /></div></div></Reveal></div></section>
 
         <section className="relative overflow-hidden w-full py-20 lg:py-28" data-testid="section-built-underneath"><AiArbitrageInteractiveFullBg /><div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8"><Reveal><SectionHeading eyebrow="Built underneath" title="Fast where it matters. Quiet where it should be." copy="The infrastructure is purpose-built for a market that changes between one refresh and the next." /></Reveal><div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-4"><Reveal delay={.04}><Feature icon={Network} title="18 venues" copy="One connected view across the exchanges that matter." /></Reveal><Reveal delay={.1}><Feature icon={Cpu} title="42ms decisions" copy="Low-latency scoring from raw tick to clear action." /></Reveal><Reveal delay={.16}><Feature icon={LockKeyhole} title="Bounded access" copy="Permissions and limits are part of every strategy." /></Reveal><Reveal delay={.22}><Feature icon={FileCheck2} title="Readable audit" copy="A reason attached to every meaningful decision." /></Reveal></div></div></section>
 
@@ -3397,16 +3388,16 @@ function TradesPage() {
         </div>
 
         {/* Filter & Live Ticker Controls */}
-        <div className="mt-10 flex flex-col gap-4 rounded-xl border border-border bg-card/60 p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap gap-1.5 font-mono text-xs">
+        <div className="mt-10 flex flex-col gap-4 rounded-2xl border border-border bg-card/60 p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="inline-flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-secondary/50 border border-white/10 backdrop-blur-md">
             {['All', 'BTC/USDT', 'ETH/USDT', 'SOL/USDC', 'BNB/USDT', 'XRP/USDT'].map((p) => (
               <button
                 key={p}
                 onClick={() => setSelectedPair(p)}
-                className={`rounded-lg px-3 py-1.5 uppercase transition ${
+                className={`rounded-lg px-3.5 py-1.5 font-sans text-xs font-semibold uppercase transition-all duration-200 ${
                   selectedPair === p
-                    ? 'bg-primary text-primary-foreground font-bold'
-                    : 'border border-border bg-secondary/50 text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 }`}
                 data-testid={`filter-pair-${p.toLowerCase().replace('/', '-')}`}
               >
@@ -3422,15 +3413,15 @@ function TradesPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search trade ID or exchange..."
-                className="w-full rounded-lg border border-border bg-secondary py-2 pl-9 pr-3 text-xs outline-none focus:border-primary font-mono"
+                className="w-full rounded-xl border border-border bg-secondary py-2 pl-9 pr-3 text-xs outline-none focus:border-primary font-sans"
                 data-testid="input-search-trades"
               />
             </div>
 
             <button
               onClick={() => setAutoStream((v) => !v)}
-              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 font-mono text-xs font-semibold transition ${
-                autoStream ? 'border-accent/40 bg-accent/10 text-accent' : 'border-border bg-secondary text-muted-foreground'
+              className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 font-sans text-xs font-semibold transition-all ${
+                autoStream ? 'border-accent/40 bg-accent/10 text-accent shadow-sm' : 'border-border bg-secondary/60 text-muted-foreground hover:text-foreground'
               }`}
               data-testid="button-toggle-autostream"
             >
