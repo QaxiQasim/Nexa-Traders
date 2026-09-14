@@ -531,7 +531,7 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
             <button
               onClick={triggerExecution}
               disabled={executing}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 font-mono text-xs font-bold text-primary-foreground transition hover:bg-[#f3cc68] active:scale-95 disabled:opacity-50 shadow-[0_0_20px_rgba(232,185,73,0.3)]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-sans text-xs font-bold text-primary-foreground transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 shadow-md shadow-primary/20"
               data-testid="button-simulate-route"
             >
               <Zap size={14} className={executing ? 'animate-bounce text-primary-foreground' : ''} />
@@ -1471,19 +1471,19 @@ function PackagesPage() {
             </p>
 
             {/* Hero CTAs */}
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-4 font-sans">
               <button
                 onClick={() => {
                   document.getElementById('package-cards')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-8 py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.45)] transition-all hover:scale-105 hover:shadow-[0_0_50px_rgba(232,185,73,0.65)] flex items-center gap-2"
+                className="rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-8 py-4 font-sans text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/40 flex items-center gap-2"
                 data-testid="button-hero-view-packages"
               >
                 View Packages <ArrowRight size={16} />
               </button>
               <button
                 onClick={() => setLocation('/register')}
-                className="rounded-full border border-primary/50 bg-primary/10 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider text-primary backdrop-blur-md transition-all hover:bg-primary/20 hover:border-primary flex items-center gap-1.5"
+                className="rounded-2xl border border-white/20 bg-white/[0.05] px-8 py-4 font-sans text-sm font-semibold text-foreground backdrop-blur-md transition-all hover:bg-white/10 hover:border-primary/60 flex items-center gap-2"
                 data-testid="button-hero-open-account"
               >
                 Open an account <ArrowUpRight size={15} />
@@ -1605,15 +1605,15 @@ function PackagesPage() {
                     </div>
 
                     {/* CTA Button */}
-                    <div className="mt-7">
+                    <div className="mt-7 font-sans">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           openTerminalModal(tier.name);
                         }}
-                        className={`w-full rounded-2xl py-3.5 px-4 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${
+                        className={`w-full rounded-2xl py-3.5 px-4 font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-1.5 ${
                           isSupreme || isRise
-                            ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_35px_rgba(232,185,73,0.6)]'
+                            ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-md shadow-primary/25 hover:brightness-110 hover:shadow-lg'
                             : 'border border-white/15 bg-white/[0.05] text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary backdrop-blur-md'
                         }`}
                         data-testid={`button-choose-plan-${tier.name.toLowerCase()}`}
