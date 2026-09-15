@@ -195,10 +195,6 @@ export function AboutPage() {
             <div className="grid gap-10 lg:grid-cols-2 items-center">
               {/* Left Side */}
               <div>
-                <span className="font-sans text-xs font-bold text-primary uppercase tracking-widest block mb-3">
-                  OUR ORIGINS
-                </span>
-
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-[1.15]">
                   From an Idea to an Intelligent <span className="text-primary">Trading Infrastructure</span>
                 </h2>
@@ -320,8 +316,7 @@ export function AboutPage() {
       <section className="relative overflow-hidden py-24 lg:py-32 bg-[#0a0d0c] border-b border-white/10 font-sans">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">EDUCATIONAL OVERVIEW</span>
-            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
               What Is AI Arbitrage Trading?
             </h2>
             <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -361,9 +356,6 @@ export function AboutPage() {
       <section className="relative overflow-hidden py-20 lg:py-28 font-sans border-b border-white/10">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold block mb-2">
-              PLATFORM TELEMETRY
-            </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
               Nexa By The Numbers
             </h2>
@@ -457,8 +449,7 @@ export function AboutPage() {
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 items-center">
             <div>
-              <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">GLOBAL INITIATIVE</span>
-              <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
                 Built Globally. Designed for Digital Markets.
               </h2>
               <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -510,8 +501,7 @@ export function AboutPage() {
       <section className="relative overflow-hidden py-24 lg:py-32 font-sans border-b border-white/10">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">NEXT GENERATION PRODUCTS</span>
-            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
               Upcoming Products
             </h2>
           </div>
