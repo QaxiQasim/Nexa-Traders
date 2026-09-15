@@ -133,8 +133,8 @@ export function AdminLayout() {
             <div className="flex items-center gap-3">
               <img src="/logo.png" alt="Nexa Trades Logo" className="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(232,185,73,0.4)]" />
               <div>
-                <span className="text-[10px] font-mono font-black text-primary uppercase tracking-widest block">ADMIN PORTAL</span>
-                <span className="text-xs font-bold text-foreground font-mono">Control Center</span>
+                <span className="text-[10px] font-sans font-black text-primary uppercase tracking-widest block">ADMIN PORTAL</span>
+                <span className="text-xs font-bold text-foreground font-sans">Control Center</span>
               </div>
             </div>
             {/* Mobile Close Button */}
@@ -146,7 +146,7 @@ export function AdminLayout() {
             </button>
           </div>
 
-          <nav className="space-y-2 font-mono text-xs">
+          <nav className="space-y-2 font-sans text-xs">
             {[
               { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard, badge: null },
               { id: 'users', label: 'User Directory', icon: Users, badge: users.length },
@@ -188,7 +188,7 @@ export function AdminLayout() {
                   </div>
 
                   {item.badge !== null && item.badge !== undefined && (
-                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold shadow-sm ${
+                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-sans font-bold shadow-sm ${
                       item.highlight 
                         ? 'bg-rose-500 text-white animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.5)]' 
                         : isActive 
@@ -205,7 +205,7 @@ export function AdminLayout() {
         </div>
 
         {/* Sidebar Footer & System Status Widget */}
-        <div className="p-6 border-t border-white/10 font-mono text-xs space-y-4">
+        <div className="p-6 border-t border-white/10 font-sans text-xs space-y-4">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 space-y-2">
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-muted-foreground flex items-center gap-1.5">
@@ -241,7 +241,7 @@ export function AdminLayout() {
       {/* MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* TOP BAR */}
-        <header className="sticky top-0 z-20 h-16 border-b border-white/10 bg-[#070a09]/90 backdrop-blur-2xl px-6 flex items-center justify-between gap-4 font-mono">
+        <header className="sticky top-0 z-20 h-16 border-b border-white/10 bg-[#070a09]/90 backdrop-blur-2xl px-6 flex items-center justify-between gap-4 font-sans">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(prev => !prev)}

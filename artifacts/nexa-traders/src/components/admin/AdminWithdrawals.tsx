@@ -69,7 +69,7 @@ export function AdminWithdrawals({
   };
 
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 font-sans text-xs">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
@@ -83,7 +83,7 @@ export function AdminWithdrawals({
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Review institutional payout requests, verify on-chain balances, and execute secure transaction settlements.
           </p>
         </div>
@@ -217,7 +217,7 @@ export function AdminWithdrawals({
       {/* CONFIRMATION MODAL BEFORE APPROVAL / REJECTION */}
       {selectedTxForAction && actionType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0c100e] p-6 sm:p-8 shadow-2xl space-y-6 relative font-mono">
+          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0c100e] p-6 sm:p-8 shadow-2xl space-y-6 relative font-sans">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <h3 className="text-lg font-black text-foreground font-sans">
                 Confirm Withdrawal {actionType}

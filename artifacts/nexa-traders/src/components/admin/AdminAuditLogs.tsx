@@ -7,14 +7,14 @@ interface AdminAuditLogsProps {
 
 export function AdminAuditLogs({ auditLogs }: AdminAuditLogsProps) {
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 font-sans text-xs">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <h2 className="text-2xl font-black font-sans tracking-tight text-foreground flex items-center gap-2">
             <ShieldCheck className="text-primary" size={24} /> Administrative Audit Logs
           </h2>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Cryptographic audit trail recording all administrative approvals, rejections, and financial adjustments.
           </p>
         </div>

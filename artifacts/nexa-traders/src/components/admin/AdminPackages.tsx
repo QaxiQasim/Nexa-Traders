@@ -19,14 +19,14 @@ export function AdminPackages({ packages }: AdminPackagesProps) {
   });
 
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 font-sans text-xs">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <h2 className="text-2xl font-black font-sans tracking-tight text-foreground flex items-center gap-2">
             <Package className="text-purple-400" size={24} /> Quantitative Package Sales Analytics
           </h2>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Performance breakdown across AI trading strategy subscription tiers.
           </p>
         </div>
@@ -36,17 +36,17 @@ export function AdminPackages({ packages }: AdminPackagesProps) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="rounded-3xl border border-purple-500/30 bg-purple-500/5 p-5 backdrop-blur-2xl">
           <span className="text-[11px] uppercase font-bold text-purple-400 block">Total Active Subscriptions</span>
-          <strong className="text-3xl font-black text-foreground font-mono mt-2 block">{activeCount} Subscriptions</strong>
+          <strong className="text-3xl font-black text-foreground font-sans mt-2 block">{activeCount} Subscriptions</strong>
         </div>
 
         <div className="rounded-3xl border border-primary/30 bg-primary/5 p-5 backdrop-blur-2xl">
           <span className="text-[11px] uppercase font-bold text-primary block">Total Investment Volume</span>
-          <strong className="text-3xl font-black text-primary font-mono mt-2 block">${totalVolume.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</strong>
+          <strong className="text-3xl font-black text-primary font-sans mt-2 block">${totalVolume.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</strong>
         </div>
 
         <div className="rounded-3xl border border-accent/30 bg-accent/5 p-5 backdrop-blur-2xl">
           <span className="text-[11px] uppercase font-bold text-accent block">Average Ticket Size</span>
-          <strong className="text-3xl font-black text-accent font-mono mt-2 block">
+          <strong className="text-3xl font-black text-accent font-sans mt-2 block">
             ${packages.length > 0 ? (totalVolume / packages.length).toFixed(2) : '0.00'} USDT
           </strong>
         </div>
@@ -57,7 +57,7 @@ export function AdminPackages({ packages }: AdminPackagesProps) {
         {tierStats.map(tier => (
           <div key={tier.name} className="rounded-2xl border border-white/10 bg-[#0c100e] p-4 text-center space-y-1 hover:border-primary/50 transition-all">
             <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{tier.name} Tier</span>
-            <strong className="text-xl font-black text-foreground font-mono block">${tier.vol.toLocaleString()}</strong>
+            <strong className="text-xl font-black text-foreground font-sans block">${tier.vol.toLocaleString()}</strong>
             <span className="text-[10px] text-primary font-bold block">{tier.count} User Purchases</span>
           </div>
         ))}

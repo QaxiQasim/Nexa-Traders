@@ -43,29 +43,29 @@ export function AdminLoginPage() {
 
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-mono font-bold text-primary mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-sans font-bold text-primary mb-4">
             <ShieldCheck size={14} /> SECURE INSTITUTIONAL PORTAL
           </div>
           <div className="flex justify-center mb-4">
             <img src="/logo.png" alt="Nexa Trades Logo" className="h-9 w-auto object-contain" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight font-mono text-foreground">
+          <h1 className="text-2xl font-black tracking-tight font-sans text-foreground">
             Nexa Trader Control Center
           </h1>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Enter authorized administrator credentials to manage platform operations.
           </p>
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-[#0c100e]/90 p-8 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] space-y-6">
           {error && (
-            <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs text-rose-400 font-mono flex items-center gap-3">
+            <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs text-rose-400 font-sans flex items-center gap-3">
               <AlertCircle size={18} className="flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleAdminLogin} className="space-y-4 font-mono text-xs">
+          <form onSubmit={handleAdminLogin} className="space-y-4 font-sans text-xs">
             <div>
               <label className="block text-muted-foreground mb-2 font-bold uppercase text-[10px]">
                 Admin Email Address
@@ -103,7 +103,7 @@ export function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 mt-4"
+              className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-sans text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
                 <span>Authenticating Admin...</span>
@@ -116,7 +116,7 @@ export function AdminLoginPage() {
           </form>
 
           <div className="border-t border-white/5 pt-4 text-center">
-            <span className="text-[10px] text-muted-foreground font-mono">
+            <span className="text-[10px] text-muted-foreground font-sans">
               Protected by Nexa Trader Cryptographic Audit Governance
             </span>
           </div>

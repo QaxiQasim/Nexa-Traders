@@ -111,14 +111,14 @@ export function AdminUsers({
   const kycDetail = live360Data?.kycDetail;
 
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 font-sans text-xs">
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <h2 className="text-2xl font-black font-sans tracking-tight text-foreground flex items-center gap-2">
             <Users className="text-primary" size={24} /> Registered User Directory
           </h2>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Comprehensive account governance, balances, KYC verification states, and transaction histories.
           </p>
         </div>
@@ -179,7 +179,7 @@ export function AdminUsers({
                   <tr key={user.id || user.email} className="hover:bg-white/[0.02] transition-all">
                     <td className="py-4 px-4">
                       <strong className="block text-foreground text-xs">{user.email}</strong>
-                      <span className="text-[10px] text-muted-foreground font-mono">ID: {user.id ? user.id.substring(0, 8) : 'N/A'}</span>
+                      <span className="text-[10px] text-muted-foreground font-sans">ID: {user.id ? user.id.substring(0, 8) : 'N/A'}</span>
                     </td>
                     <td className="py-4 px-4 font-bold text-foreground">
                       {user.full_name || user.email.split('@')[0]}
@@ -223,7 +223,7 @@ export function AdminUsers({
       {/* 360° USER DETAILS DRAWER / MODAL */}
       {selectedUserObj && (
         <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-2xl h-full max-h-[92vh] overflow-y-auto rounded-3xl border border-white/15 bg-[#0c100e] p-6 sm:p-8 shadow-2xl space-y-6 relative font-mono">
+          <div className="w-full max-w-2xl h-full max-h-[92vh] overflow-y-auto rounded-3xl border border-white/15 bg-[#0c100e] p-6 sm:p-8 shadow-2xl space-y-6 relative font-sans">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
@@ -301,8 +301,8 @@ export function AdminUsers({
                     <strong className="text-foreground">{kycDetail.document_type || 'PASSPORT'}</strong>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block font-mono">ID / Serial Number</span>
-                    <strong className="text-primary font-mono">{kycDetail.document_number || 'N/A'}</strong>
+                    <span className="text-muted-foreground block font-sans">ID / Serial Number</span>
+                    <strong className="text-primary font-sans">{kycDetail.document_number || 'N/A'}</strong>
                   </div>
                   <div>
                     <span className="text-muted-foreground block">Submission Date</span>
@@ -364,7 +364,7 @@ export function AdminUsers({
                           <span className="text-[10px] text-muted-foreground">{tx.created_at ? new Date(tx.created_at).toLocaleString() : (tx.date || 'Recent')}</span>
                         </div>
                         {hashStr && (
-                          <div className="flex items-center justify-between gap-2 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/10 font-mono text-[11px]">
+                          <div className="flex items-center justify-between gap-2 bg-black/40 px-2.5 py-1.5 rounded-lg border border-white/10 font-sans text-[11px]">
                             <span className="text-primary truncate font-bold">{hashStr}</span>
                             <a
                               href={`https://bscscan.com/tx/${hashStr}`}

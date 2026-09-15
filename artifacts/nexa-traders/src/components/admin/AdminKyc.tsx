@@ -73,7 +73,7 @@ export function AdminKyc({
   };
 
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 font-sans text-xs">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
@@ -87,7 +87,7 @@ export function AdminKyc({
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Inspect submitted user identification documents, verify authenticity, inspect passport photos, and approve/reject compliance files.
           </p>
         </div>
@@ -152,7 +152,7 @@ export function AdminKyc({
                       </div>
                       <div className="flex justify-between text-muted-foreground">
                         <span className="flex items-center gap-1"><ShieldCheck size={12} /> Serial Number:</span>
-                        <strong className="text-foreground font-mono">{kyc.document_number || 'N849102948'}</strong>
+                        <strong className="text-foreground font-sans">{kyc.document_number || 'N849102948'}</strong>
                       </div>
                       <div className="flex justify-between text-muted-foreground pt-1 border-t border-white/5">
                         <span>Submitted Date:</span>
@@ -175,7 +175,7 @@ export function AdminKyc({
                           <div className="h-36 flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-primary/10 via-black to-primary/5 space-y-1">
                             <FileText size={32} className="text-primary/60" />
                             <span className="font-bold text-foreground text-xs font-sans">Official Identification Document</span>
-                            <span className="text-[10px] text-muted-foreground font-mono">Serial: {kyc.document_number || 'N849102948'} ({kyc.document_type || 'PASSPORT'})</span>
+                            <span className="text-[10px] text-muted-foreground font-sans">Serial: {kyc.document_number || 'N849102948'} ({kyc.document_type || 'PASSPORT'})</span>
                           </div>
                         )}
 
@@ -191,7 +191,7 @@ export function AdminKyc({
                       <button
                         type="button"
                         onClick={() => setPreviewImageModal({ ...kyc, fullName, docImage })}
-                        className="w-full rounded-xl border border-primary/40 bg-primary/10 py-2 font-mono text-[11px] font-bold text-primary hover:bg-primary/20 transition-all flex items-center justify-center gap-1.5"
+                        className="w-full rounded-xl border border-primary/40 bg-primary/10 py-2 font-sans text-[11px] font-bold text-primary hover:bg-primary/20 transition-all flex items-center justify-center gap-1.5"
                       >
                         <Eye size={14} /> 🔍 Zoom / Inspect Document Photo
                       </button>
@@ -261,7 +261,7 @@ export function AdminKyc({
                         <div className="text-[10px] text-muted-foreground">{kyc.user_email}</div>
                       </td>
                       <td className="py-3.5 px-4 text-primary font-bold">{kyc.document_type || 'PASSPORT'}</td>
-                      <td className="py-3.5 px-4 text-muted-foreground font-mono">{kyc.document_number || 'N849102948'}</td>
+                      <td className="py-3.5 px-4 text-muted-foreground font-sans">{kyc.document_number || 'N849102948'}</td>
                       <td className="py-3.5 px-4 text-muted-foreground">{kyc.submitted_at ? kyc.submitted_at.substring(0, 10) : 'Recent'}</td>
                       <td className="py-3.5 px-4">
                         <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase border ${
@@ -316,7 +316,7 @@ export function AdminKyc({
       {/* FULLSCREEN PASSPORT / DOCUMENT IMAGE LIGHTBOX MODAL */}
       {previewImageModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-lg animate-fadeIn">
-          <div className="w-full max-w-3xl rounded-3xl border border-primary/40 bg-[#0a0e0c] p-6 shadow-2xl space-y-5 font-mono text-xs max-h-[95vh] overflow-y-auto">
+          <div className="w-full max-w-3xl rounded-3xl border border-primary/40 bg-[#0a0e0c] p-6 shadow-2xl space-y-5 font-sans text-xs max-h-[95vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-3">
                 <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/20 text-primary border border-primary/40 font-bold">
@@ -423,7 +423,7 @@ export function AdminKyc({
       {/* KYC ACTION CONFIRMATION MODAL */}
       {selectedKyc && actionType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0c100e] p-6 sm:p-8 shadow-2xl space-y-6 relative font-mono">
+          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0c100e] p-6 sm:p-8 shadow-2xl space-y-6 relative font-sans">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <h3 className="text-lg font-black text-foreground font-sans">
                 Confirm KYC {actionType}

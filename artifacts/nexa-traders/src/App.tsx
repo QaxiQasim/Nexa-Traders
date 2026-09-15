@@ -151,7 +151,7 @@ function Navbar() {
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
           {nav.map(([href, label]) => <Link key={href} href={href} className={`rounded-md px-3 py-2 text-sm transition-colors ${location === href || (href === '/blog' && location.startsWith('/blog/')) ? 'text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`} data-testid={`link-nav-${label.toLowerCase().replace(' ', '-')}`}>{label}</Link>)}
         </nav>
-        <div className="hidden items-center gap-3 md:flex font-mono text-xs">
+        <div className="hidden items-center gap-3 md:flex font-sans text-xs">
           {user ? (
             <div className="flex items-center gap-2">
               <ButtonLink href="/dashboard" className="px-4 bg-primary text-primary-foreground font-bold shadow-md flex items-center gap-1.5">
@@ -181,7 +181,7 @@ function Navbar() {
           <div className="flex flex-col gap-1 pt-3">
             {nav.map(([href, label]) => <Link key={href} href={href} onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground" data-testid={`link-mobile-${label.toLowerCase().replace(' ', '-')}`}>{label}</Link>)}
             {user ? (
-              <div className="mt-2 flex gap-2 border-t border-border/60 pt-4 font-mono text-xs">
+              <div className="mt-2 flex gap-2 border-t border-border/60 pt-4 font-sans text-xs">
                 <ButtonLink href="/dashboard" className="flex-1">Dashboard ({user.name.split(' ')[0]})</ButtonLink>
                 <button
                   onClick={handleLogout}
@@ -208,11 +208,11 @@ function Footer() {
     <footer className="border-t border-border bg-[#0a0b0c]">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[1.2fr_.8fr_.8fr_1.5fr] lg:px-8">
         <div><Logo /><p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">Market intelligence for people who want their capital to think in probabilities.</p><div className="mt-6 flex gap-2"><a href="https://twitter.com" target="_blank" rel="noreferrer" className="rounded-md border border-border p-2 text-muted-foreground hover:border-primary/50 hover:text-primary" data-testid="link-social-twitter"><Twitter size={15} /></a><a href="https://linkedin.com" target="_blank" rel="noreferrer" className="rounded-md border border-border p-2 text-muted-foreground hover:border-primary/50 hover:text-primary" data-testid="link-social-linkedin"><Linkedin size={15} /></a><a href="https://instagram.com" target="_blank" rel="noreferrer" className="rounded-md border border-border p-2 text-muted-foreground hover:border-primary/50 hover:text-primary" data-testid="link-social-instagram"><Instagram size={15} /></a></div></div>
-        <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-primary">Explore</p><div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground"><Link href="/about" className="hover:text-foreground" data-testid="link-footer-about">About Us</Link><Link href="/packages" className="hover:text-foreground" data-testid="link-footer-packages">Packages</Link><Link href="/contact" className="hover:text-foreground" data-testid="link-footer-contact">Support</Link></div></div>
-        <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-primary">Legal</p><div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground"><Link href="/privacy" className="hover:text-foreground" data-testid="link-footer-privacy">Privacy policy</Link><a href="mailto:legal@nexatraders.com" className="hover:text-foreground" data-testid="link-footer-legal">Legal desk</a><a href="mailto:hello@nexatraders.com" className="hover:text-foreground" data-testid="link-footer-email">hello@nexatraders.com</a></div></div>
-        <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-primary">Signal letter</p><p className="mt-4 text-sm leading-6 text-muted-foreground">One considered market note each week. No noise, no referral bait.</p>{subscribed ? <div className="mt-5 flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 p-3 text-sm text-accent"><Check size={16} />You’re on the list.</div> : <form onSubmit={submit} className="mt-5 flex gap-2"><input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="you@domain.com" className="min-w-0 flex-1 rounded-lg border border-border bg-secondary px-3 py-2 text-sm outline-none placeholder:text-muted-foreground/60 focus:border-primary" aria-label="Email address" data-testid="input-footer-email" /><button type="submit" className="rounded-lg bg-primary px-3 text-primary-foreground hover:bg-[#f3cc68]" aria-label="Subscribe" data-testid="button-footer-subscribe"><Send size={16} /></button></form>}</div>
+        <div><p className="font-sans text-[10px] uppercase tracking-[.2em] text-primary">Explore</p><div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground"><Link href="/about" className="hover:text-foreground" data-testid="link-footer-about">About Us</Link><Link href="/packages" className="hover:text-foreground" data-testid="link-footer-packages">Packages</Link><Link href="/contact" className="hover:text-foreground" data-testid="link-footer-contact">Support</Link></div></div>
+        <div><p className="font-sans text-[10px] uppercase tracking-[.2em] text-primary">Legal</p><div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground"><Link href="/privacy" className="hover:text-foreground" data-testid="link-footer-privacy">Privacy policy</Link><a href="mailto:legal@nexatraders.com" className="hover:text-foreground" data-testid="link-footer-legal">Legal desk</a><a href="mailto:hello@nexatraders.com" className="hover:text-foreground" data-testid="link-footer-email">hello@nexatraders.com</a></div></div>
+        <div><p className="font-sans text-[10px] uppercase tracking-[.2em] text-primary">Signal letter</p><p className="mt-4 text-sm leading-6 text-muted-foreground">One considered market note each week. No noise, no referral bait.</p>{subscribed ? <div className="mt-5 flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 p-3 text-sm text-accent"><Check size={16} />You’re on the list.</div> : <form onSubmit={submit} className="mt-5 flex gap-2"><input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="you@domain.com" className="min-w-0 flex-1 rounded-lg border border-border bg-secondary px-3 py-2 text-sm outline-none placeholder:text-muted-foreground/60 focus:border-primary" aria-label="Email address" data-testid="input-footer-email" /><button type="submit" className="rounded-lg bg-primary px-3 text-primary-foreground hover:bg-[#f3cc68]" aria-label="Subscribe" data-testid="button-footer-subscribe"><Send size={16} /></button></form>}</div>
       </div>
-      <div className="mx-auto flex max-w-7xl flex-col gap-2 border-t border-border/70 px-5 py-5 text-[11px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between lg:px-8"><span>© 2024 NexaTraders. Built for the signal, not the spectacle.</span><span className="font-mono">Not financial advice. Digital assets carry risk.</span></div>
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 border-t border-border/70 px-5 py-5 text-[11px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between lg:px-8"><span>© 2024 NexaTraders. Built for the signal, not the spectacle.</span><span className="font-sans">Not financial advice. Digital assets carry risk.</span></div>
     </footer>
   );
 }
@@ -249,9 +249,9 @@ function LiveChart({ compact = false, currentPrice }: { compact?: boolean; curre
       </svg>
       {!compact && (
         <>
-          <span className="absolute left-0 top-[26%] font-mono text-[10px] text-muted-foreground">{highAxis}</span>
-          <span className="absolute bottom-[4%] left-0 font-mono text-[10px] text-muted-foreground">{lowAxis}</span>
-          <span className="absolute right-0 top-[8%] font-mono text-[11px] font-bold text-primary animate-pulse-signal">
+          <span className="absolute left-0 top-[26%] font-sans text-[10px] text-muted-foreground">{highAxis}</span>
+          <span className="absolute bottom-[4%] left-0 font-sans text-[10px] text-muted-foreground">{lowAxis}</span>
+          <span className="absolute right-0 top-[8%] font-sans text-[11px] font-bold text-primary animate-pulse-signal">
             {displayPrice}
           </span>
         </>
@@ -336,7 +336,7 @@ function ExchangeTicker() {
           const priceVal = livePrices[item.rawPair];
           const formatted = priceVal ? formatPrice(priceVal) : '$0.00';
           return (
-            <div key={`${item.pair}-${index}`} className="flex items-center gap-4 border-r border-border/70 px-6 py-3 font-mono text-[11px]">
+            <div key={`${item.pair}-${index}`} className="flex items-center gap-4 border-r border-border/70 px-6 py-3 font-sans text-[11px]">
               <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />
               <span className="font-bold text-foreground">{item.pair}</span>
               <span className="font-bold text-primary">{formatted}</span>
@@ -483,7 +483,7 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
 
         <div className="mt-4 grid grid-cols-[1fr_auto] items-end">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[.15em] text-muted-foreground">Arbitrage Spread Edge</p>
+            <p className="font-sans text-[10px] uppercase tracking-[.15em] text-muted-foreground">Arbitrage Spread Edge</p>
             <p className="mt-1.5 text-4xl font-extrabold tracking-[-.06em] text-foreground sm:text-5xl">
               {currentInfo.spread.split('%')[0]}<span className="text-xl text-primary">%</span>
             </p>
@@ -493,8 +493,8 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
             </p>
           </div>
           <div className="rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-right">
-            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Execution Prob</span>
-            <span className="font-mono text-base font-bold text-accent">{currentInfo.confidence}</span>
+            <span className="block font-sans text-[9px] uppercase text-muted-foreground">Execution Prob</span>
+            <span className="font-sans text-base font-bold text-accent">{currentInfo.confidence}</span>
           </div>
         </div>
 
@@ -502,7 +502,7 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
         <div className="mt-5">
           {activeTab === 'chart' && <LiveChart currentPrice={currentPrice} />}
           {activeTab === 'orderbook' && (
-            <div className="h-64 rounded-lg border border-border/80 bg-secondary/30 p-3 font-mono text-[10px]">
+            <div className="h-64 rounded-lg border border-border/80 bg-secondary/30 p-3 font-sans text-[10px]">
               <div className="flex justify-between border-b border-border/60 pb-1.5 text-muted-foreground font-bold">
                 <span>BUY SIDE ({currentInfo.from})</span>
                 <span>SELL SIDE ({currentInfo.to})</span>
@@ -539,11 +539,11 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
             </button>
 
             {executing ? (
-              <span className="animate-pulse font-mono text-[10px] text-accent font-semibold">
+              <span className="animate-pulse font-sans text-[10px] text-accent font-semibold">
                 ⚡ Locking Orderbook @ {formatPrice(currentPrice)}
               </span>
             ) : lastRouteResult ? (
-              <span className="font-mono text-[10px] text-accent font-bold">
+              <span className="font-sans text-[10px] text-accent font-bold">
                 ✓ Executed @ {lastRouteResult.bPrice} → {lastRouteResult.sPrice} ({lastRouteResult.profit} Net Profit)
               </span>
             ) : null}
@@ -551,7 +551,7 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
 
           {/* Interactive Micro-Step Telemetry Bar */}
           {executing && (
-            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 rounded-lg border border-accent/40 bg-accent/10 p-2.5 font-mono text-[10px]">
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 rounded-lg border border-accent/40 bg-accent/10 p-2.5 font-sans text-[10px]">
               <div className="flex items-center justify-between text-accent font-bold">
                 <span>{execStep === 1 ? 'Step 01: Orderbook Lock' : execStep === 2 ? 'Step 02: 14ms Route Match' : 'Step 03: Yield Settled'}</span>
                 <span>{execStep * 33}%</span>
@@ -565,15 +565,15 @@ function ScanPanel({ activePair, setActivePair }: { activePair: string; setActiv
 
         <div className="mt-4 grid grid-cols-3 gap-2 border-t border-border/70 pt-4">
           <div>
-            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Exchanges</span>
+            <span className="block font-sans text-[9px] uppercase text-muted-foreground">Exchanges</span>
             <span className="mt-1 block text-sm font-semibold text-foreground">18 connected</span>
           </div>
           <div>
-            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Scanned</span>
+            <span className="block font-sans text-[9px] uppercase text-muted-foreground">Scanned</span>
             <span className="mt-1 block text-sm font-semibold text-foreground">{scans.toLocaleString()} routes</span>
           </div>
           <div>
-            <span className="block font-mono text-[9px] uppercase text-muted-foreground">Avg Latency</span>
+            <span className="block font-sans text-[9px] uppercase text-muted-foreground">Avg Latency</span>
             <span className="mt-1 block text-sm font-semibold text-primary">14 ms</span>
           </div>
         </div>
@@ -665,7 +665,7 @@ function AiTradingBotHeroBg({ activePair }: { activePair: string }) {
         {/* Interactive Hover Card Tooltip overlay for Exchange Nodes */}
         {hoveredData && (
           <div
-            className="pointer-events-none absolute rounded-xl border border-primary/60 bg-[#0d1010]/95 p-3 font-mono shadow-[0_10px_30px_rgba(232,185,73,0.3)] backdrop-blur-md transition-all duration-200 z-20"
+            className="pointer-events-none absolute rounded-xl border border-primary/60 bg-[#0d1010]/95 p-3 font-sans shadow-[0_10px_30px_rgba(232,185,73,0.3)] backdrop-blur-md transition-all duration-200 z-20"
             style={{ left: `${(hoveredData.x / 1920) * 100}%`, top: `${(hoveredData.y / 1080) * 100 - 10}%` }}
           >
             <div className="flex items-center justify-between gap-3 text-xs">
@@ -844,7 +844,7 @@ function ExchangesIntegratedSection() {
                 <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
                   1,500<span className="text-primary">+</span>
                 </p>
-                <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Market Pairs</p>
+                <p className="mt-1 font-sans text-[11px] uppercase tracking-wider text-muted-foreground">Market Pairs</p>
               </div>
 
               <div className="h-10 w-px bg-border/80" />
@@ -853,7 +853,7 @@ function ExchangesIntegratedSection() {
                 <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
                   1,100<span className="text-accent">+</span>
                 </p>
-                <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Cryptocurrencies</p>
+                <p className="mt-1 font-sans text-[11px] uppercase tracking-wider text-muted-foreground">Cryptocurrencies</p>
               </div>
 
               <div className="h-10 w-px bg-border/80" />
@@ -862,7 +862,7 @@ function ExchangesIntegratedSection() {
                 <p className="text-3xl font-extrabold tracking-[-.06em] text-foreground sm:text-4xl">
                   18<span className="text-primary">+</span>
                 </p>
-                <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Exchanges</p>
+                <p className="mt-1 font-sans text-[11px] uppercase tracking-wider text-muted-foreground">Exchanges</p>
               </div>
             </div>
           </div>
@@ -1022,26 +1022,26 @@ function WhatIsCryptoArbitrageSection() {
                 <div className="flex items-center justify-between border-b border-border/60 pb-3">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse-signal" />
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-accent">MARKET A</span>
+                    <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-accent">MARKET A</span>
                   </div>
-                  <span className="font-mono text-xs text-muted-foreground font-semibold">BINANCE</span>
+                  <span className="font-sans text-xs text-muted-foreground font-semibold">BINANCE</span>
                 </div>
 
                 <div className="mt-4">
-                  <span className="font-mono text-xs text-muted-foreground">{selectedPair}</span>
-                  <div className="mt-1 font-mono text-3xl font-extrabold text-foreground tracking-tight">
+                  <span className="font-sans text-xs text-muted-foreground">{selectedPair}</span>
+                  <div className="mt-1 font-sans text-3xl font-extrabold text-foreground tracking-tight">
                     {current.exA.price}
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/60 pt-3 font-mono text-[10px] text-muted-foreground">
+                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/60 pt-3 font-sans text-[10px] text-muted-foreground">
                   <div>Bid: <strong className="text-foreground">{current.exA.bid}</strong></div>
                   <div>Ask: <strong className="text-foreground">{current.exA.ask}</strong></div>
                   <div className="col-span-2">Liquidity: <strong className="text-accent">High</strong></div>
                 </div>
 
                 {hoveredTarget === 'exA' && (
-                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 rounded-lg border border-primary bg-[#121616] p-2.5 font-mono text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
+                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 rounded-lg border border-primary bg-[#121616] p-2.5 font-sans text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
                     <div className="font-bold text-primary">BINANCE CONNECTED</div>
                     <div>Pair: {selectedPair}</div>
                     <div>Price: {current.exA.price}</div>
@@ -1063,12 +1063,12 @@ function WhatIsCryptoArbitrageSection() {
               >
                 <div className="relative grid h-24 w-24 place-items-center rounded-full border-2 border-primary/60 bg-gradient-to-b from-[#1a201d] to-[#0e1211] shadow-[0_0_30px_rgba(232,185,73,0.25)]">
                   <div className="absolute inset-0 rounded-full border border-primary/40 animate-spin-slow stroke-dasharray-4" />
-                  <div className="text-center font-mono text-[10px] font-black uppercase tracking-widest text-primary leading-tight">
+                  <div className="text-center font-sans text-[10px] font-black uppercase tracking-widest text-primary leading-tight">
                     ARBITRAGE<br /><span className="text-foreground">ENGINE</span>
                   </div>
                 </div>
 
-                <div className="mt-4 font-mono text-xs font-bold tracking-wider uppercase">
+                <div className="mt-4 font-sans text-xs font-bold tracking-wider uppercase">
                   {status === 'scanning' ? (
                     <span className="inline-flex items-center gap-2 text-muted-foreground animate-pulse">
                       <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
@@ -1082,7 +1082,7 @@ function WhatIsCryptoArbitrageSection() {
                   )}
                 </div>
 
-                <div className="mt-5 w-full rounded-xl border border-primary/30 bg-[#121616]/90 p-4 font-mono text-xs shadow-inner">
+                <div className="mt-5 w-full rounded-xl border border-primary/30 bg-[#121616]/90 p-4 font-sans text-xs shadow-inner">
                   <div className="flex justify-between items-center text-muted-foreground text-[10px] uppercase">
                     <span>PRICE DIFFERENCE</span>
                     <strong className="text-sm font-bold text-foreground">{status === 'scanning' ? '+$0.00' : current.spread}</strong>
@@ -1097,12 +1097,12 @@ function WhatIsCryptoArbitrageSection() {
                   </div>
                   <div className="mt-1.5 flex justify-between items-center text-xs font-bold text-primary border-t border-primary/20 pt-1.5">
                     <span>Net Potential Edge</span>
-                    <span className="text-sm text-primary font-mono">{status === 'scanning' ? '0.00%' : current.net}</span>
+                    <span className="text-sm text-primary font-sans">{status === 'scanning' ? '0.00%' : current.net}</span>
                   </div>
                 </div>
 
                 {hoveredTarget === 'engine' && (
-                  <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-52 rounded-lg border border-primary bg-[#121616] p-2.5 font-mono text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
+                  <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-52 rounded-lg border border-primary bg-[#121616] p-2.5 font-sans text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
                     <div className="font-bold text-primary">HFT ENGINE ACTIVE</div>
                     <div>• Monitoring 30+ exchanges</div>
                     <div>• Comparing tick orderbooks</div>
@@ -1125,26 +1125,26 @@ function WhatIsCryptoArbitrageSection() {
                 <div className="flex items-center justify-between border-b border-border/60 pb-3">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse-signal" />
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary">MARKET B</span>
+                    <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-primary">MARKET B</span>
                   </div>
-                  <span className="font-mono text-xs text-muted-foreground font-semibold">BYBIT</span>
+                  <span className="font-sans text-xs text-muted-foreground font-semibold">BYBIT</span>
                 </div>
 
                 <div className="mt-4">
-                  <span className="font-mono text-xs text-muted-foreground">{selectedPair}</span>
-                  <div className="mt-1 font-mono text-3xl font-extrabold text-foreground tracking-tight">
+                  <span className="font-sans text-xs text-muted-foreground">{selectedPair}</span>
+                  <div className="mt-1 font-sans text-3xl font-extrabold text-foreground tracking-tight">
                     {current.exB.price}
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/60 pt-3 font-mono text-[10px] text-muted-foreground">
+                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/60 pt-3 font-sans text-[10px] text-muted-foreground">
                   <div>Bid: <strong className="text-foreground">{current.exB.bid}</strong></div>
                   <div>Ask: <strong className="text-foreground">{current.exB.ask}</strong></div>
                   <div className="col-span-2">Liquidity: <strong className="text-accent">High</strong></div>
                 </div>
 
                 {hoveredTarget === 'exB' && (
-                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 rounded-lg border border-primary bg-[#121616] p-2.5 font-mono text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
+                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 rounded-lg border border-primary bg-[#121616] p-2.5 font-sans text-[9px] text-foreground shadow-2xl z-30 pointer-events-none animate-in fade-in zoom-in-95">
                     <div className="font-bold text-primary">BYBIT CONNECTED</div>
                     <div>Pair: {selectedPair}</div>
                     <div>Price: {current.exB.price}</div>
@@ -1214,9 +1214,9 @@ function Home() {
       </section>
 
       <main>
-        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28"><div className="grid gap-10 border-b border-border pb-16 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"><Reveal className="sm:px-8 sm:first:pl-0"><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Capital routed</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">$1.5M</p><p className="mt-2 text-sm text-accent">↑ 18.6% this quarter</p></Reveal><Reveal className="sm:px-8" delay={.08}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Decision latency</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">42<span className="text-xl text-primary">ms</span></p><p className="mt-2 text-sm text-muted-foreground">from tick to signal</p></Reveal><Reveal className="sm:px-8 sm:pr-0" delay={.16}><p className="font-mono text-[10px] uppercase tracking-[.18em] text-muted-foreground">Markets mapped</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">18</p><p className="mt-2 text-sm text-muted-foreground">venues / 24 hours a day</p></Reveal></div></section>
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28"><div className="grid gap-10 border-b border-border pb-16 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"><Reveal className="sm:px-8 sm:first:pl-0"><p className="font-sans text-[10px] uppercase tracking-[.18em] text-muted-foreground">Capital routed</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">$1.5M</p><p className="mt-2 text-sm text-accent">↑ 18.6% this quarter</p></Reveal><Reveal className="sm:px-8" delay={.08}><p className="font-sans text-[10px] uppercase tracking-[.18em] text-muted-foreground">Decision latency</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">42<span className="text-xl text-primary">ms</span></p><p className="mt-2 text-sm text-muted-foreground">from tick to signal</p></Reveal><Reveal className="sm:px-8 sm:pr-0" delay={.16}><p className="font-sans text-[10px] uppercase tracking-[.18em] text-muted-foreground">Markets mapped</p><p className="mt-3 text-4xl font-semibold tracking-[-.06em]">18</p><p className="mt-2 text-sm text-muted-foreground">venues / 24 hours a day</p></Reveal></div></section>
 
-        <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8 lg:pb-32"><div className="grid gap-14 lg:grid-cols-[.8fr_1.2fr]"><Reveal><SectionHeading title="Turn Market Price Differences Into Automated Opportunities." copy="Our automated crypto arbitrage technology continuously monitors market differences across supported exchanges and identifies potential arbitrage opportunities." /><div className="mt-8"><ButtonLink href="/about" variant="outline">Our operating principles <ArrowRight size={15} /></ButtonLink></div></Reveal><motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={stagger} className="grid gap-3">{processSteps.map(({ number, title, copy, icon: Icon }) => <motion.div key={number} variants={reveal} className="group flex gap-5 rounded-xl border border-border bg-card/60 p-5 hover-lift"><span className="font-mono text-xs text-primary">{number}</span><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon size={19} /></span><div><h3 className="text-lg font-semibold tracking-[-.03em]">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p></div><ArrowUpRight size={15} className="ml-auto shrink-0 text-muted-foreground/40 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary" /></motion.div>)}</motion.div></div></section>
+        <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8 lg:pb-32"><div className="grid gap-14 lg:grid-cols-[.8fr_1.2fr]"><Reveal><SectionHeading title="Turn Market Price Differences Into Automated Opportunities." copy="Our automated crypto arbitrage technology continuously monitors market differences across supported exchanges and identifies potential arbitrage opportunities." /><div className="mt-8"><ButtonLink href="/about" variant="outline">Our operating principles <ArrowRight size={15} /></ButtonLink></div></Reveal><motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={stagger} className="grid gap-3">{processSteps.map(({ number, title, copy, icon: Icon }) => <motion.div key={number} variants={reveal} className="group flex gap-5 rounded-xl border border-border bg-card/60 p-5 hover-lift"><span className="font-sans text-xs text-primary">{number}</span><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon size={19} /></span><div><h3 className="text-lg font-semibold tracking-[-.03em]">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p></div><ArrowUpRight size={15} className="ml-auto shrink-0 text-muted-foreground/40 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary" /></motion.div>)}</motion.div></div></section>
 
         {/* New Exchanges Integrated Section (Placed directly below The Loop section) */}
         <ExchangesIntegratedSection />
@@ -1228,7 +1228,7 @@ function Home() {
 
         <section className="relative overflow-hidden w-full py-20 lg:py-28" data-testid="section-built-underneath"><AiArbitrageInteractiveFullBg /><div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8"><Reveal><SectionHeading title="Fast where it matters. Quiet where it should be." copy="The infrastructure is purpose-built for a market that changes between one refresh and the next." /></Reveal><div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-4"><Reveal delay={.04}><Feature icon={Network} title="18 venues" copy="One connected view across the exchanges that matter." /></Reveal><Reveal delay={.1}><Feature icon={Cpu} title="42ms decisions" copy="Low-latency scoring from raw tick to clear action." /></Reveal><Reveal delay={.16}><Feature icon={LockKeyhole} title="Bounded access" copy="Permissions and limits are part of every strategy." /></Reveal><Reveal delay={.22}><Feature icon={FileCheck2} title="Readable audit" copy="A reason attached to every meaningful decision." /></Reveal></div></div></section>
 
-        <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:px-8 lg:py-28"><Reveal><div className="relative rounded-3xl border border-primary/40 bg-gradient-to-br from-[#131816] via-[#0c0f0f] to-[#121614] p-8 sm:p-10 shadow-[0_0_50px_rgba(232,185,73,0.22)] backdrop-blur-xl overflow-hidden group"><div className="absolute top-0 right-0 w-60 h-60 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" /><h3 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl leading-tight">One Asset. Multiple Markets.<br /><span className="text-primary font-black">One Intelligent Engine.</span></h3><p className="mt-4 text-xs leading-relaxed text-muted-foreground sm:text-sm max-w-xl">Crypto markets operate across multiple venues, creating temporary price differences. Arbitrage technology monitors these differences and evaluates whether an opportunity meets defined trading conditions.</p><div className="my-8 h-px bg-gradient-to-r from-primary/40 via-primary/10 to-transparent" /><div className="flex flex-wrap items-center gap-4"><ButtonLink href="/register" variant="outline" className="font-mono text-xs border-primary/40 bg-card/80 backdrop-blur-md hover:border-primary hover:bg-primary/10 hover:text-primary transition-all shadow-lg">Open an Account →</ButtonLink></div></div></Reveal><Reveal delay={.12}><SectionHeading eyebrow="Security, not theatre" title="Your controls are part of the strategy." copy="We believe the most trustworthy automation is legible. Every package is built around clear permissions, visible boundaries, and a human-readable history." /></Reveal></div></section>
+        <section className="border-y border-border bg-[#0c0f0f]"><div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:px-8 lg:py-28"><Reveal><div className="relative rounded-3xl border border-primary/40 bg-gradient-to-br from-[#131816] via-[#0c0f0f] to-[#121614] p-8 sm:p-10 shadow-[0_0_50px_rgba(232,185,73,0.22)] backdrop-blur-xl overflow-hidden group"><div className="absolute top-0 right-0 w-60 h-60 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" /><h3 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl leading-tight">One Asset. Multiple Markets.<br /><span className="text-primary font-black">One Intelligent Engine.</span></h3><p className="mt-4 text-xs leading-relaxed text-muted-foreground sm:text-sm max-w-xl">Crypto markets operate across multiple venues, creating temporary price differences. Arbitrage technology monitors these differences and evaluates whether an opportunity meets defined trading conditions.</p><div className="my-8 h-px bg-gradient-to-r from-primary/40 via-primary/10 to-transparent" /><div className="flex flex-wrap items-center gap-4"><ButtonLink href="/register" variant="outline" className="font-sans text-xs border-primary/40 bg-card/80 backdrop-blur-md hover:border-primary hover:bg-primary/10 hover:text-primary transition-all shadow-lg">Open an Account →</ButtonLink></div></div></Reveal><Reveal delay={.12}><SectionHeading eyebrow="Security, not theatre" title="Your controls are part of the strategy." copy="We believe the most trustworthy automation is legible. Every package is built around clear permissions, visible boundaries, and a human-readable history." /></Reveal></div></section>
 
         <section className="mx-auto max-w-4xl px-5 py-20 lg:py-28"><Reveal><SectionHeading eyebrow="Questions, answered" title="The short version." align="center" /></Reveal><div className="mt-10 divide-y divide-border border-y border-border">{faqs.map(([question, answer], index) => <Reveal key={question} delay={index * .04}><div><button onClick={() => setActiveFaq(activeFaq === index ? -1 : index)} className="flex w-full items-center justify-between gap-6 py-5 text-left" data-testid={`button-faq-${index}`}><span className="text-base font-medium">{question}</span><ChevronDown size={17} className={`shrink-0 text-muted-foreground transition-transform ${activeFaq === index ? 'rotate-180 text-primary' : ''}`} /></button><AnimatePresence initial={false}>{activeFaq === index && <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden"><p className="max-w-2xl pb-5 text-sm leading-6 text-muted-foreground">{answer}</p></motion.div>}</AnimatePresence></div></Reveal>)}</div><div className="mt-8 text-center"><ButtonLink href="/contact" variant="outline">Ask a different question <MessageCircle size={15} /></ButtonLink></div></section>
 
@@ -1304,7 +1304,7 @@ function AiArbitrageInteractiveFullBg() {
               isActive ? 'scale-110 z-30' : 'hover:scale-105 z-20'
             }`}
           >
-            <div className={`rounded-xl border p-3 font-mono text-[10px] backdrop-blur-xl transition-all shadow-xl ${
+            <div className={`rounded-xl border p-3 font-sans text-[10px] backdrop-blur-xl transition-all shadow-xl ${
               isActive
                 ? 'border-primary bg-[#0d1010]/95 text-primary shadow-[0_0_30px_rgba(232,185,73,0.4)]'
                 : 'border-primary/40 bg-[#0d1010]/80 text-muted-foreground hover:border-primary/70 hover:text-foreground'
@@ -1536,12 +1536,12 @@ function PackagesPage() {
                     
                     {/* Top Badges */}
                     {isSupreme && (
-                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.6)] flex items-center gap-1">
+                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3 py-1 font-sans text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.6)] flex items-center gap-1">
                         <Crown size={11} /> VIP TIER
                       </div>
                     )}
                     {isRise && !isSupreme && (
-                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3 py-1 font-mono text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.5)]">
+                      <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3 py-1 font-sans text-[9px] font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.5)]">
                         MOST SELECTED
                       </div>
                     )}
@@ -1549,7 +1549,7 @@ function PackagesPage() {
                     <div>
                       {/* Header info */}
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                        <span className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
                           {tier.name}
                         </span>
                         <div className={`grid h-9 w-9 place-items-center rounded-xl border backdrop-blur-md ${
@@ -1571,7 +1571,7 @@ function PackagesPage() {
                       <div className="my-5 h-px bg-gradient-to-r from-primary/50 via-white/10 to-transparent" />
 
                       {/* Stats Breakdown */}
-                      <div className="space-y-3 font-mono text-xs">
+                      <div className="space-y-3 font-sans text-xs">
                         {/* Highlighted ROI in Gold */}
                         <div className="rounded-2xl border border-primary/40 bg-primary/15 px-4 py-2.5 backdrop-blur-md">
                           <div className="flex justify-between items-center">
@@ -1671,7 +1671,7 @@ function PackagesPage() {
                     </p>
                   </div>
 
-                  <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400">
+                  <div className="mt-6 flex items-center gap-1.5 text-xs font-sans font-bold text-emerald-400">
                     <Check size={14} className="text-emerald-400" />
                     Instant automated Wallet Payout
                   </div>
@@ -1692,7 +1692,7 @@ function PackagesPage() {
                     </p>
                   </div>
 
-                  <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400">
+                  <div className="mt-6 flex items-center gap-1.5 text-xs font-sans font-bold text-amber-400">
                     <AlertCircle size={14} className="text-amber-400" />
                     Active Package & Available Cap Required
                   </div>
@@ -1710,7 +1710,7 @@ function PackagesPage() {
           <div>
             <Reveal>
               <div className="text-center max-w-3xl mx-auto mb-16">
-                <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">TECHNOLOGY INFRASTRUCTURE</span>
+                <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">TECHNOLOGY INFRASTRUCTURE</span>
                 <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                   Flagship Solutions
                 </h2>
@@ -1725,7 +1725,7 @@ function PackagesPage() {
 
                     <div>
                       {/* Numbered Indicator Badge */}
-                      <div className="inline-grid h-9 w-9 place-items-center rounded-xl border border-primary bg-primary/20 font-mono text-sm font-bold text-primary shadow-[0_0_15px_rgba(232,185,73,0.3)]">
+                      <div className="inline-grid h-9 w-9 place-items-center rounded-xl border border-primary bg-primary/20 font-sans text-sm font-bold text-primary shadow-[0_0_15px_rgba(232,185,73,0.3)]">
                         {sol.num}
                       </div>
 
@@ -1734,7 +1734,7 @@ function PackagesPage() {
                       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{sol.desc2}</p>
                     </div>
 
-                    <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-primary font-bold">
+                    <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-sans text-primary font-bold">
                       <span>NEXATRADES CORE</span>
                       <span>ACTIVE ⚡</span>
                     </div>
@@ -1787,7 +1787,7 @@ function PackagesPage() {
                     </p>
                   </div>
 
-                  <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between font-mono text-[10px] text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
+                  <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between font-sans text-[10px] text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
                     <span>RULE {item.num}</span>
                     <span className="font-bold">COMPLIANCE</span>
                   </div>
@@ -1819,7 +1819,7 @@ function PackagesPage() {
         <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-sans text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
                 <Coins size={14} className="text-primary animate-pulse" />
                 FINANCIAL GATEWAY
               </div>
@@ -1841,10 +1841,10 @@ function PackagesPage() {
 
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3.5 py-1.5 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.4)]">
+                    <span className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-3.5 py-1.5 font-sans text-xs font-black uppercase text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.4)]">
                       Supported Asset
                     </span>
-                    <span className="flex items-center gap-1 font-mono text-[10px] text-accent font-bold uppercase tracking-wider">
+                    <span className="flex items-center gap-1 font-sans text-[10px] text-accent font-bold uppercase tracking-wider">
                       <span className="h-2 w-2 rounded-full bg-accent animate-ping" /> Instant Auto-Credit
                     </span>
                   </div>
@@ -1858,18 +1858,18 @@ function PackagesPage() {
                       </div>
                       <div>
                         <h3 className="text-2xl font-extrabold text-foreground tracking-tight">USDT Tether</h3>
-                        <p className="text-xs text-muted-foreground font-mono">Multichain Stablecoin</p>
+                        <p className="text-xs text-muted-foreground font-sans">Multichain Stablecoin</p>
                       </div>
                     </div>
 
-                    <div className="text-right font-mono">
+                    <div className="text-right font-sans">
                       <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Selected Protocol</span>
                       <div className="text-sm font-black text-primary">{depositToken}</div>
                     </div>
                   </div>
 
                   {/* Interactive Token Protocol Tabs */}
-                  <div className="mt-5 grid grid-cols-3 gap-2 font-mono text-xs">
+                  <div className="mt-5 grid grid-cols-3 gap-2 font-sans text-xs">
                     {(['BEP20', 'TRC20', 'ERC20'] as const).map((token) => (
                       <button
                         key={token}
@@ -1887,8 +1887,8 @@ function PackagesPage() {
 
                   {/* Interactive Deposit Address & Copy Box */}
                   <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider block mb-2">Deposit Destination Address</span>
-                    <div className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 font-mono text-xs text-foreground">
+                    <span className="text-[10px] font-sans uppercase text-muted-foreground tracking-wider block mb-2">Deposit Destination Address</span>
+                    <div className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 font-sans text-xs text-foreground">
                       <span className="truncate font-bold text-primary">
                         {depositToken === 'BEP20' ? '0x71C839F4a9...BSC90' : depositToken === 'TRC20' ? 'TX9aK28M4pL...TRC77' : '0x992B14e8c1...ETH01'}
                       </span>
@@ -1906,7 +1906,7 @@ function PackagesPage() {
                 <div className="mt-8">
                   <button
                     onClick={() => setLocation('/register')}
-                    className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_45px_rgba(232,185,73,0.6)] transition-all"
+                    className="w-full rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-sans text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_30px_rgba(232,185,73,0.4)] hover:brightness-110 hover:shadow-[0_0_45px_rgba(232,185,73,0.6)] transition-all"
                     data-testid="button-deposit-usdt-now"
                   >
                     Deposit USDT ({depositToken}) Now →
@@ -1926,7 +1926,7 @@ function PackagesPage() {
                     <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-3.5 py-1.5 text-xs font-bold uppercase text-foreground">
                       Withdrawal Details
                     </div>
-                    <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <span className="font-sans text-[10px] text-muted-foreground uppercase tracking-wider">
                       24/7 AUTO PAYOUT
                     </span>
                   </div>
@@ -1953,7 +1953,7 @@ function PackagesPage() {
                           <strong className="text-base font-black block tracking-wider">
                             {net}
                           </strong>
-                          <span className="text-[10px] font-mono mt-0.5 block opacity-80">
+                          <span className="text-[10px] font-sans mt-0.5 block opacity-80">
                             {net === 'BSC' ? 'Binance Smart' : net === 'ETH' ? 'Ethereum' : 'Tron Chain'}
                           </span>
                         </button>
@@ -1965,26 +1965,26 @@ function PackagesPage() {
                   <div className="mt-6 grid sm:grid-cols-2 gap-4">
                     {/* Processing Time Card */}
                     <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-5 text-center shadow-inner relative overflow-hidden">
-                      <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+                      <span className="text-[10px] font-sans text-muted-foreground uppercase tracking-widest block font-bold">
                         PROCESSING TIME ({withdrawNetwork})
                       </span>
                       <div className="text-2xl font-black text-primary mt-2">
                         {withdrawNetwork === 'BSC' ? 'Up to 15 Minutes' : withdrawNetwork === 'ETH' ? 'Up to 12 Minutes' : 'Up to 5 Minutes'}
                       </div>
-                      <span className="mt-1 inline-block text-[10px] font-mono text-accent font-semibold">
+                      <span className="mt-1 inline-block text-[10px] font-sans text-accent font-semibold">
                         ● Live Automation Active
                       </span>
                     </div>
 
                     {/* Minimum Withdrawal Card */}
                     <div className="rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/20 via-accent/10 to-transparent p-5 text-center shadow-inner relative overflow-hidden">
-                      <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+                      <span className="text-[10px] font-sans text-muted-foreground uppercase tracking-widest block font-bold">
                         MINIMUM WITHDRAWAL
                       </span>
                       <div className="text-2xl font-black text-accent mt-2">
                         {withdrawNetwork === 'ETH' ? '$25 USD' : '$15 USD'}
                       </div>
-                      <span className="mt-1 inline-block text-[10px] font-mono text-muted-foreground">
+                      <span className="mt-1 inline-block text-[10px] font-sans text-muted-foreground">
                         Estimated Fee: {withdrawNetwork === 'BSC' ? '~$0.20' : withdrawNetwork === 'ETH' ? '~$2.50' : '~$1.00'}
                       </span>
                     </div>
@@ -1994,7 +1994,7 @@ function PackagesPage() {
                 <div className="mt-8">
                   <button
                     onClick={() => setLocation('/register')}
-                    className="w-full rounded-2xl border border-white/20 bg-white/[0.05] py-4 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary backdrop-blur-md transition-all text-center"
+                    className="w-full rounded-2xl border border-white/20 bg-white/[0.05] py-4 font-sans text-xs font-bold uppercase tracking-wider text-foreground hover:border-primary/60 hover:bg-primary/15 hover:text-primary backdrop-blur-md transition-all text-center"
                   >
                     Initiate {withdrawNetwork} Payout Request →
                   </button>
@@ -2010,7 +2010,7 @@ function PackagesPage() {
         <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">SIMPLE ONBOARDING</span>
+              <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">SIMPLE ONBOARDING</span>
               <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                 Transaction Flow
               </h2>
@@ -2022,7 +2022,7 @@ function PackagesPage() {
             {/* Connecting Line */}
             <div className="hidden lg:block absolute top-1/2 left-10 right-10 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-accent -translate-y-1/2 z-0" />
 
-            <div className="relative z-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5 font-mono">
+            <div className="relative z-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5 font-sans">
               {transactionFlowSteps.map((s) => (
                 <Reveal key={s.step}>
                   <div className="rounded-3xl border border-white/15 bg-gradient-to-b from-[#121715] to-[#090b0a] p-6 text-center shadow-xl backdrop-blur-xl hover:border-primary/50 transition-all">
@@ -2045,7 +2045,7 @@ function PackagesPage() {
 
         <div className="relative z-10 mx-auto max-w-4xl px-5 text-center lg:px-8">
           <Reveal>
-            <span className="font-mono text-xs font-black uppercase tracking-widest text-primary">
+            <span className="font-sans text-xs font-black uppercase tracking-widest text-primary">
               ENTER THE FUTURE OF CRYPTO
             </span>
             <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
@@ -2060,7 +2060,7 @@ function PackagesPage() {
                 onClick={() => {
                   document.getElementById('package-cards')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-9 py-4 font-mono text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.45)] hover:scale-105 transition-all"
+                className="rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-9 py-4 font-sans text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.45)] hover:scale-105 transition-all"
                 data-testid="button-final-choose-plan"
               >
                 Choose Your Plan →
@@ -2069,7 +2069,7 @@ function PackagesPage() {
                 onClick={() => {
                   document.getElementById('deposit-section')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="rounded-full border border-white/20 bg-white/[0.05] px-9 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary backdrop-blur-md"
+                className="rounded-full border border-white/20 bg-white/[0.05] px-9 py-4 font-sans text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary backdrop-blur-md"
                 data-testid="button-final-deposit-usdt"
               >
                 Deposit USDT
@@ -2095,7 +2095,7 @@ function PackagesPage() {
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-primary/50 bg-[#0d1110] p-6 sm:p-8 shadow-[0_0_60px_rgba(232,185,73,0.3)] font-mono"
+              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-primary/50 bg-[#0d1110] p-6 sm:p-8 shadow-[0_0_60px_rgba(232,185,73,0.3)] font-sans"
             >
               {/* Close Button */}
               <button
@@ -2201,7 +2201,7 @@ function PackagesPage() {
 
 
 function BlogCard({ article }: { article: Article }) {
-  return <Link href={`/blog/${article.slug}`} className="group flex h-full flex-col rounded-xl border border-border bg-card/60 p-5 hover-lift" data-testid={`link-article-${article.slug}`}><div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[.15em]"><span className="text-primary">{article.category}</span><span className="text-muted-foreground">{article.readTime}</span></div><div className="mt-12 flex-1"><h2 className="text-xl font-semibold leading-tight tracking-[-.045em] group-hover:text-primary">{article.title}</h2><p className="mt-3 text-sm leading-6 text-muted-foreground">{article.excerpt}</p></div><div className="mt-8 flex items-center justify-between border-t border-border pt-4 text-xs text-muted-foreground"><span>{article.date}</span><ArrowUpRight size={15} className="text-primary transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" /></div></Link>;
+  return <Link href={`/blog/${article.slug}`} className="group flex h-full flex-col rounded-xl border border-border bg-card/60 p-5 hover-lift" data-testid={`link-article-${article.slug}`}><div className="flex items-center justify-between font-sans text-[10px] uppercase tracking-[.15em]"><span className="text-primary">{article.category}</span><span className="text-muted-foreground">{article.readTime}</span></div><div className="mt-12 flex-1"><h2 className="text-xl font-semibold leading-tight tracking-[-.045em] group-hover:text-primary">{article.title}</h2><p className="mt-3 text-sm leading-6 text-muted-foreground">{article.excerpt}</p></div><div className="mt-8 flex items-center justify-between border-t border-border pt-4 text-xs text-muted-foreground"><span>{article.date}</span><ArrowUpRight size={15} className="text-primary transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" /></div></Link>;
 }
 
 function BlogPage() {
@@ -2215,7 +2215,7 @@ function ArticlePage() {
   const [, params] = useRoute('/blog/:slug');
   const article = articles.find((item) => item.slug === params?.slug);
   if (!article) return <NotFound />;
-  return <div><section className="border-b border-border"><div className="mx-auto max-w-3xl px-5 pb-14 pt-14 lg:pb-20 lg:pt-20"><Link href="/blog" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[.18em] text-primary hover:underline" data-testid="link-back-blog"><ArrowDownRight size={13} className="rotate-45" />Back to insights</Link><p className="mt-12 font-mono text-[10px] uppercase tracking-[.18em] text-primary">{article.category} / {article.readTime}</p><h1 className="mt-5 text-balance text-4xl font-semibold leading-[1.02] tracking-[-.065em] sm:text-6xl">{article.title}</h1><p className="mt-6 text-lg leading-8 text-muted-foreground">{article.excerpt}</p><div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground"><span className="grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-primary/10 font-mono text-[10px] text-primary">{article.author.split(' ').map((name) => name[0]).join('')}</span>{article.author}<span className="h-3 w-px bg-border" />{article.date}</div></div></section><article className="mx-auto max-w-3xl px-5 py-14 lg:py-20"><div className="mb-10 h-px gold-rule opacity-50" />{article.body.map((paragraph, index) => <Reveal key={paragraph} delay={index * .06}><p className="mb-7 text-lg leading-9 text-foreground/85">{paragraph}</p></Reveal>)}<div className="mt-14 rounded-xl border border-border bg-card p-6"><p className="font-mono text-[10px] uppercase tracking-[.16em] text-primary">Keep reading</p><p className="mt-2 text-sm text-muted-foreground">New notes on market structure and system design land in the signal letter.</p><ButtonLink href="/#newsletter" variant="outline" className="mt-4">Join the letter <ArrowRight size={14} /></ButtonLink></div></article></div>;
+  return <div><section className="border-b border-border"><div className="mx-auto max-w-3xl px-5 pb-14 pt-14 lg:pb-20 lg:pt-20"><Link href="/blog" className="inline-flex items-center gap-2 font-sans text-[10px] uppercase tracking-[.18em] text-primary hover:underline" data-testid="link-back-blog"><ArrowDownRight size={13} className="rotate-45" />Back to insights</Link><p className="mt-12 font-sans text-[10px] uppercase tracking-[.18em] text-primary">{article.category} / {article.readTime}</p><h1 className="mt-5 text-balance text-4xl font-semibold leading-[1.02] tracking-[-.065em] sm:text-6xl">{article.title}</h1><p className="mt-6 text-lg leading-8 text-muted-foreground">{article.excerpt}</p><div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground"><span className="grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-primary/10 font-sans text-[10px] text-primary">{article.author.split(' ').map((name) => name[0]).join('')}</span>{article.author}<span className="h-3 w-px bg-border" />{article.date}</div></div></section><article className="mx-auto max-w-3xl px-5 py-14 lg:py-20"><div className="mb-10 h-px gold-rule opacity-50" />{article.body.map((paragraph, index) => <Reveal key={paragraph} delay={index * .06}><p className="mb-7 text-lg leading-9 text-foreground/85">{paragraph}</p></Reveal>)}<div className="mt-14 rounded-xl border border-border bg-card p-6"><p className="font-sans text-[10px] uppercase tracking-[.16em] text-primary">Keep reading</p><p className="mt-2 text-sm text-muted-foreground">New notes on market structure and system design land in the signal letter.</p><ButtonLink href="/#newsletter" variant="outline" className="mt-4">Join the letter <ArrowRight size={14} /></ButtonLink></div></article></div>;
 }
 
 function ContactPage() {
@@ -2276,7 +2276,7 @@ function ContactPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-primary/10 blur-[100px] pointer-events-none rounded-full" />
 
         <div className="relative z-10 mx-auto max-w-5xl px-5 text-center lg:px-8">
-          <span className="font-mono text-xs font-semibold text-primary uppercase tracking-wider block mb-2">
+          <span className="font-sans text-xs font-semibold text-primary uppercase tracking-wider block mb-2">
             Support Desk
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
@@ -2355,7 +2355,7 @@ function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-foreground">Customer Support</h4>
-                      <a href="mailto:support@nexatraders.com" className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors block mt-0.5" data-testid="link-contact-email">
+                      <a href="mailto:support@nexatraders.com" className="text-xs font-sans text-muted-foreground hover:text-primary transition-colors block mt-0.5" data-testid="link-contact-email">
                         support@nexatraders.com
                       </a>
                     </div>
@@ -2380,7 +2380,7 @@ function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-foreground">Legal & Compliance</h4>
-                      <a href="mailto:compliance@nexatraders.com" className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors block mt-0.5" data-testid="link-contact-compliance">
+                      <a href="mailto:compliance@nexatraders.com" className="text-xs font-sans text-muted-foreground hover:text-primary transition-colors block mt-0.5" data-testid="link-contact-compliance">
                         compliance@nexatraders.com
                       </a>
                     </div>
@@ -2403,7 +2403,7 @@ function ContactPage() {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">Working Hours</h4>
-                  <span className="text-xs text-muted-foreground font-mono mt-0.5 block">Mon–Fri • 09:00–18:00 UTC</span>
+                  <span className="text-xs text-muted-foreground font-sans mt-0.5 block">Mon–Fri • 09:00–18:00 UTC</span>
                 </div>
               </div>
 
@@ -2536,7 +2536,7 @@ function ContactPage() {
 
 function PrivacyPage() {
   const sections = [['01', 'What we collect', 'When you contact us, we may collect the details you choose to share, such as your name, email address, and message. We also receive basic technical information needed to keep this website reliable, such as browser type and approximate usage events.'], ['02', 'How we use it', 'We use information to respond to support requests, improve the website, send the signal letter when you opt in, and maintain security. We do not sell personal information.'], ['03', 'Retention and access', 'We keep information only for as long as it serves the purpose it was collected for or as required by law. You can ask us what information we hold about you, request correction, or request deletion by writing to privacy@nexatraders.com.'], ['04', 'Cookies and analytics', 'NexaTraders may use essential cookies and privacy-conscious analytics to understand site performance. Your browser can be configured to limit or remove cookies, although some site functions may change.'], ['05', 'Third-party services', 'Some site functions rely on carefully selected providers for hosting, email delivery, and analytics. Those providers process information under their own security and privacy commitments.'], ['06', 'Changes to this policy', 'We may update this policy as the website or applicable requirements change. The effective date at the top of this page will always reflect the latest version.']]; 
-  return <div><PageIntro eyebrow="Legal / plain language" title="Privacy policy" copy="We keep this readable because privacy notices should help you make decisions, not hide them." /><section className="mx-auto max-w-4xl px-5 py-14 lg:px-8 lg:py-20"><div className="mb-12 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5 font-mono text-[10px] uppercase tracking-[.16em] text-muted-foreground"><span>Effective date / May 28, 2024</span><span>Version 1.4</span></div><div className="space-y-10">{sections.map(([number, title, copy]) => <Reveal key={number}><section className="grid gap-4 sm:grid-cols-[72px_1fr]"><span className="font-mono text-sm text-primary">{number}</span><div><h2 className="text-xl font-semibold tracking-[-.03em]">{title}</h2><p className="mt-3 text-base leading-8 text-muted-foreground">{copy}</p></div></section></Reveal>)}</div><div className="mt-14 rounded-xl border border-border bg-card p-5 text-sm leading-6 text-muted-foreground">Questions about this policy? Contact <a href="mailto:privacy@nexatraders.com" className="text-primary hover:underline" data-testid="link-privacy-email">privacy@nexatraders.com</a>.</div></section></div>;
+  return <div><PageIntro eyebrow="Legal / plain language" title="Privacy policy" copy="We keep this readable because privacy notices should help you make decisions, not hide them." /><section className="mx-auto max-w-4xl px-5 py-14 lg:px-8 lg:py-20"><div className="mb-12 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5 font-sans text-[10px] uppercase tracking-[.16em] text-muted-foreground"><span>Effective date / May 28, 2024</span><span>Version 1.4</span></div><div className="space-y-10">{sections.map(([number, title, copy]) => <Reveal key={number}><section className="grid gap-4 sm:grid-cols-[72px_1fr]"><span className="font-sans text-sm text-primary">{number}</span><div><h2 className="text-xl font-semibold tracking-[-.03em]">{title}</h2><p className="mt-3 text-base leading-8 text-muted-foreground">{copy}</p></div></section></Reveal>)}</div><div className="mt-14 rounded-xl border border-border bg-card p-5 text-sm leading-6 text-muted-foreground">Questions about this policy? Contact <a href="mailto:privacy@nexatraders.com" className="text-primary hover:underline" data-testid="link-privacy-email">privacy@nexatraders.com</a>.</div></section></div>;
 }
 
 function AuthPage({ mode }: { mode: 'login' | 'register' }) {
@@ -2832,7 +2832,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           {/* OTP STEP UI */}
           {otpStep ? (
             <div className="space-y-5">
-              <div className="rounded-xl border border-primary/40 bg-primary/10 p-3.5 font-mono text-xs text-primary flex items-center gap-2.5">
+              <div className="rounded-xl border border-primary/40 bg-primary/10 p-3.5 font-sans text-xs text-primary flex items-center gap-2.5">
                 <LockKeyhole size={18} className="text-primary shrink-0 animate-pulse" />
                 <div>
                   <span className="font-bold block text-foreground">2-Factor Security Auth</span>
@@ -2841,20 +2841,20 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
               </div>
 
               {otpSuccessNotice && (
-                <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs font-mono text-emerald-400 flex items-center gap-2">
+                <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs font-sans text-emerald-400 flex items-center gap-2">
                   <CheckCircle2 size={16} /> {otpSuccessNotice}
                 </div>
               )}
 
               {authError && (
-                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs font-mono text-rose-400 flex items-center gap-2">
+                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs font-sans text-rose-400 flex items-center gap-2">
                   <AlertCircle size={16} /> {authError}
                 </div>
               )}
 
               <form onSubmit={handleVerifyOtp} className="space-y-6">
                 <div>
-                  <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-3 text-center">
+                  <label className="block text-xs font-sans text-muted-foreground uppercase tracking-wider mb-3 text-center">
                     Enter 6-Digit OTP Code
                   </label>
                   
@@ -2870,7 +2870,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                         value={digit}
                         onChange={e => handleDigitChange(idx, e.target.value)}
                         onKeyDown={e => handleDigitKeyDown(idx, e)}
-                        className="w-11 h-13 text-center text-xl font-mono font-bold rounded-lg border border-border bg-secondary text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        className="w-11 h-13 text-center text-xl font-sans font-bold rounded-lg border border-border bg-secondary text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                       />
                     ))}
                   </div>
@@ -2898,7 +2898,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                     setOtpStep(false);
                     setAuthError('');
                   }}
-                  className="text-muted-foreground hover:text-foreground transition-colors font-mono"
+                  className="text-muted-foreground hover:text-foreground transition-colors font-sans"
                 >
                   ← Back to Email
                 </button>
@@ -2907,7 +2907,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                   type="button"
                   onClick={handleResendOtp}
                   disabled={resendCooldown > 0 || sendingOtp}
-                  className="font-mono text-primary font-bold hover:underline disabled:opacity-50 disabled:no-underline"
+                  className="font-sans text-primary font-bold hover:underline disabled:opacity-50 disabled:no-underline"
                 >
                   {sendingOtp
                     ? 'Sending...'
@@ -2921,7 +2921,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
             <>
               {/* Sponsor Identification Banner */}
               {isRegister && sponsorInfo && (
-                <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 font-mono text-xs text-primary flex items-center justify-between shadow-sm">
+                <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 font-sans text-xs text-primary flex items-center justify-between shadow-sm">
                   <div className="flex items-center gap-2">
                     <Users size={16} className="text-primary animate-pulse" />
                     <span>Referred By: <strong className="text-foreground">{sponsorInfo.name}</strong> ({sponsorInfo.code})</span>
@@ -2931,13 +2931,13 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
               )}
 
               {isRegister && refCodeNotice && (
-                <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 p-3 font-mono text-xs text-yellow-400 flex items-center gap-2">
+                <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 p-3 font-sans text-xs text-yellow-400 flex items-center gap-2">
                   <AlertCircle size={16} /> {refCodeNotice}
                 </div>
               )}
 
               {authError && (
-                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 space-y-2">
+                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-sans text-rose-400 space-y-2">
                   <div className="flex items-center gap-2 font-bold">
                     <AlertCircle size={16} /> {authError}
                   </div>
@@ -2975,14 +2975,14 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                   <label className="block text-sm">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-muted-foreground">Referral Code</span>
-                      <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-wider">(Optional)</span>
+                      <span className="text-[10px] font-sans text-primary font-bold uppercase tracking-wider">(Optional)</span>
                     </div>
                     <input
                       type="text"
                       value={refCodeInput}
                       onChange={e => handleRefCodeInputChange(e.target.value)}
                       placeholder="e.g. NEXA7K42"
-                      className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm uppercase tracking-wider"
+                      className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-sans text-sm uppercase tracking-wider"
                       data-testid="input-auth-refcode"
                     />
                   </label>
@@ -2996,7 +2996,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     placeholder="you@domain.com"
-                    className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-mono text-sm"
+                    className="w-full rounded-lg border border-border bg-secondary px-3 py-3 outline-none focus:border-primary font-sans text-sm"
                     data-testid="input-auth-email"
                   />
                 </label>
@@ -3010,7 +3010,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full rounded-lg border border-border bg-secondary px-3 py-3 pr-10 outline-none focus:border-primary font-mono text-sm"
+                      className="w-full rounded-lg border border-border bg-secondary px-3 py-3 pr-10 outline-none focus:border-primary font-sans text-sm"
                       data-testid="input-auth-password"
                     />
                     <button
@@ -3275,7 +3275,7 @@ function TradesPage() {
           <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
             {/* Left Column: Heading & System Telemetry Status */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[10px] uppercase tracking-widest text-primary mb-4 shadow-[0_0_20px_rgba(232,185,73,0.2)]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-sans text-[10px] uppercase tracking-widest text-primary mb-4 shadow-[0_0_20px_rgba(232,185,73,0.2)]">
                 <Sparkles size={13} className="animate-spin-slow text-primary" />
                 NEURAL ARBITRAGE SYSTEM V4 · REAL TIME ENGINE
               </div>
@@ -3287,7 +3287,7 @@ function TradesPage() {
               </p>
 
               {/* Live Bot Execution Highlights */}
-              <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono text-xs">
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans text-xs">
                 <div className="rounded-xl border border-primary/30 bg-[#121614]/80 p-3 backdrop-blur-md">
                   <div className="text-[10px] text-muted-foreground uppercase">Bot Status</div>
                   <div className="mt-1 flex items-center gap-1.5 font-bold text-accent">
@@ -3318,7 +3318,7 @@ function TradesPage() {
                     data-testid="img-ai-bot-trades"
                   />
                   {/* Floating Overlay Badge */}
-                  <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 rounded-lg border border-primary/50 bg-[#0d1010]/90 px-3 py-1.5 font-mono text-[10px] text-primary backdrop-blur-md shadow-xl">
+                  <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 rounded-lg border border-primary/50 bg-[#0d1010]/90 px-3 py-1.5 font-sans text-[10px] text-primary backdrop-blur-md shadow-xl">
                     <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
                     AI ENGINE ACTIVE · SCANNING TICK ORDERBOOKS
                   </div>
@@ -3331,7 +3331,7 @@ function TradesPage() {
 
       <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8 lg:py-16">
         {/* Real-time Ticker Feed Banner */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 font-mono text-xs text-accent backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 font-sans text-xs text-accent backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)]">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse-signal" />
             <span className="font-bold">● LIVE MARKET PRICE FEED CONNECTED</span>
@@ -3348,42 +3348,42 @@ function TradesPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-primary/40 bg-card/70 p-5 shadow-[0_0_30px_rgba(232,185,73,0.1)]">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase text-muted-foreground">24h Total Volume</span>
+              <span className="font-sans text-[10px] uppercase text-muted-foreground">24h Total Volume</span>
               <span className="h-2 w-2 rounded-full bg-accent animate-pulse-signal" />
             </div>
             <p className="mt-3 text-3xl font-extrabold text-foreground">
               ${kpiStats.volume.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
-            <p className="mt-1 font-mono text-xs text-accent">↑ +18.4% 24h routed</p>
+            <p className="mt-1 font-sans text-xs text-accent">↑ +18.4% 24h routed</p>
           </div>
 
           <div className="rounded-xl border border-accent/40 bg-card/70 p-5">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase text-muted-foreground">24h Net Profit</span>
+              <span className="font-sans text-[10px] uppercase text-muted-foreground">24h Net Profit</span>
               <Sparkles size={16} className="text-accent" />
             </div>
             <p className="mt-3 text-3xl font-extrabold text-accent">
               +${kpiStats.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">99.84% win rate</p>
+            <p className="mt-1 font-sans text-xs text-muted-foreground">99.84% win rate</p>
           </div>
 
           <div className="rounded-xl border border-border bg-card/70 p-5">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase text-muted-foreground">Active Executions</span>
-              <span className="font-mono text-xs text-primary">● Live</span>
+              <span className="font-sans text-[10px] uppercase text-muted-foreground">Active Executions</span>
+              <span className="font-sans text-xs text-primary">● Live</span>
             </div>
             <p className="mt-3 text-3xl font-extrabold text-foreground">1,842</p>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">Routes active</p>
+            <p className="mt-1 font-sans text-xs text-muted-foreground">Routes active</p>
           </div>
 
           <div className="rounded-xl border border-border bg-card/70 p-5">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase text-muted-foreground">Avg Latency</span>
+              <span className="font-sans text-[10px] uppercase text-muted-foreground">Avg Latency</span>
               <Zap size={16} className="text-primary" />
             </div>
             <p className="mt-3 text-3xl font-extrabold text-primary">{kpiStats.avgLatency} ms</p>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">Sub-14ms HFT speed</p>
+            <p className="mt-1 font-sans text-xs text-muted-foreground">Sub-14ms HFT speed</p>
           </div>
         </div>
 
@@ -3434,7 +3434,7 @@ function TradesPage() {
         {/* Live Trades Table */}
         <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card/70 shadow-2xl">
           <div className="overflow-x-auto">
-            <table className="w-full text-left font-mono text-xs" data-testid="table-live-trades">
+            <table className="w-full text-left font-sans text-xs" data-testid="table-live-trades">
               <thead className="border-b border-border/80 bg-secondary/80 text-[10px] uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="p-4">Trade ID / Time</th>
@@ -3502,7 +3502,7 @@ function TradesPage() {
           </div>
 
           {/* 50-Page Pagination Bar */}
-          <div className="flex flex-col gap-4 border-t border-border/80 bg-secondary/40 p-4 sm:flex-row sm:items-center sm:justify-between font-mono text-xs">
+          <div className="flex flex-col gap-4 border-t border-border/80 bg-secondary/40 p-4 sm:flex-row sm:items-center sm:justify-between font-sans text-xs">
             <div className="text-muted-foreground">
               Showing <strong className="text-foreground">{((currentPage - 1) * itemsPerPage) + 1}</strong>–
               <strong className="text-foreground">{Math.min(currentPage * itemsPerPage, filteredTrades.length)}</strong> of{' '}
@@ -3574,7 +3574,7 @@ function TradesPage() {
       {/* Trade Inspector Modal */}
       {selectedTrade && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-primary/40 bg-[#0d1010] p-6 shadow-2xl font-mono text-xs">
+          <div className="w-full max-w-lg rounded-2xl border border-primary/40 bg-[#0d1010] p-6 shadow-2xl font-sans text-xs">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse-signal" />

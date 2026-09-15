@@ -91,7 +91,7 @@ export function AdminReferrals({ users }: AdminReferralsProps) {
               Direct Referral & Sponsor Manager
             </h1>
           </div>
-          <p className="text-xs text-muted-foreground font-mono mt-1">
+          <p className="text-xs text-muted-foreground font-sans mt-1">
             Real-time Database Direct Referrals & Direct Sponsor Attribution
           </p>
         </div>
@@ -104,7 +104,7 @@ export function AdminReferrals({ users }: AdminReferralsProps) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search email, ref code, sponsor..."
-            className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-9 pr-4 text-xs font-mono outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-9 pr-4 text-xs font-sans outline-none focus:border-primary focus:ring-1 focus:ring-primary"
           />
         </div>
       </div>
@@ -113,40 +113,40 @@ export function AdminReferrals({ users }: AdminReferralsProps) {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-white/10 bg-[#0d1310] p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">Total Registered</span>
+            <span className="text-[11px] font-sans text-muted-foreground uppercase tracking-wider">Total Registered</span>
             <Users size={18} className="text-primary" />
           </div>
-          <div className="mt-3 text-3xl font-bold font-mono text-foreground">{users.length}</div>
-          <p className="mt-1 text-[10px] text-muted-foreground font-mono">Platform Accounts</p>
+          <div className="mt-3 text-3xl font-bold font-sans text-foreground">{users.length}</div>
+          <p className="mt-1 text-[10px] text-muted-foreground font-sans">Platform Accounts</p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-[#0d1310] p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">Active Ref Codes</span>
+            <span className="text-[11px] font-sans text-muted-foreground uppercase tracking-wider">Active Ref Codes</span>
             <Sparkles size={18} className="text-accent" />
           </div>
-          <div className="mt-3 text-3xl font-bold font-mono text-accent">{usersWithRefCodes.length}</div>
-          <p className="mt-1 text-[10px] text-accent/80 font-mono">Unique Codes Generated</p>
+          <div className="mt-3 text-3xl font-bold font-sans text-accent">{usersWithRefCodes.length}</div>
+          <p className="mt-1 text-[10px] text-accent/80 font-sans">Unique Codes Generated</p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-[#0d1310] p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">Referred Members</span>
+            <span className="text-[11px] font-sans text-muted-foreground uppercase tracking-wider">Referred Members</span>
             <Network size={18} className="text-emerald-400" />
           </div>
-          <div className="mt-3 text-3xl font-bold font-mono text-emerald-400">{usersWithSponsors.length}</div>
-          <p className="mt-1 text-[10px] text-emerald-400/80 font-mono">Registered via Sponsor Link</p>
+          <div className="mt-3 text-3xl font-bold font-sans text-emerald-400">{usersWithSponsors.length}</div>
+          <p className="mt-1 text-[10px] text-emerald-400/80 font-sans">Registered via Sponsor Link</p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-[#0d1310] p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">Network Ratio</span>
+            <span className="text-[11px] font-sans text-muted-foreground uppercase tracking-wider">Network Ratio</span>
             <GitBranch size={18} className="text-purple-400" />
           </div>
-          <div className="mt-3 text-3xl font-bold font-mono text-purple-400">
+          <div className="mt-3 text-3xl font-bold font-sans text-purple-400">
             {users.length > 0 ? `${((usersWithSponsors.length / users.length) * 100).toFixed(0)}%` : '0%'}
           </div>
-          <p className="mt-1 text-[10px] text-purple-400/80 font-mono">Referral Adoption Rate</p>
+          <p className="mt-1 text-[10px] text-purple-400/80 font-sans">Referral Adoption Rate</p>
         </div>
       </div>
 
@@ -155,13 +155,13 @@ export function AdminReferrals({ users }: AdminReferralsProps) {
         <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Database size={16} className="text-primary" />
-            <h3 className="text-sm font-bold font-mono text-foreground">User Referral Directory</h3>
+            <h3 className="text-sm font-bold font-sans text-foreground">User Referral Directory</h3>
           </div>
-          <span className="text-xs font-mono text-muted-foreground">Showing {filteredUsers.length} Users</span>
+          <span className="text-xs font-sans text-muted-foreground">Showing {filteredUsers.length} Users</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left font-mono text-xs">
+          <table className="w-full text-left font-sans text-xs">
             <thead className="bg-white/5 border-b border-white/10 text-muted-foreground uppercase text-[10px]">
               <tr>
                 <th className="px-6 py-4">User</th>
@@ -260,7 +260,7 @@ export function AdminReferrals({ users }: AdminReferralsProps) {
       {/* REFERRAL HIERARCHY TREE MODAL DRAWER */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-3xl rounded-2xl border border-primary/40 bg-[#0b100d] p-6 shadow-2xl space-y-6 font-mono text-xs max-h-[85vh] overflow-y-auto">
+          <div className="w-full max-w-3xl rounded-2xl border border-primary/40 bg-[#0b100d] p-6 shadow-2xl space-y-6 font-sans text-xs max-h-[85vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-3">

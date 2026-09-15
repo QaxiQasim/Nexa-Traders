@@ -1482,7 +1482,7 @@ export function UserDashboard() {
           </div>
           <div>
             <h2 className="text-sm font-bold text-foreground">{userName || 'User'}</h2>
-            <span className="text-[10px] text-primary font-mono font-bold">$ {(walletBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
+            <span className="text-[10px] text-primary font-sans font-bold">$ {(walletBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
           </div>
         </div>
 
@@ -1534,12 +1534,12 @@ export function UserDashboard() {
                   <h2 className="text-sm font-extrabold text-foreground truncate">{userName || 'User'}</h2>
                   <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
                 </div>
-                <p className="text-[11px] text-muted-foreground font-mono truncate">{userEmail || ''}</p>
+                <p className="text-[11px] text-muted-foreground font-sans truncate">{userEmail || ''}</p>
               </div>
             </div>
 
             {/* Quick Wallet Balance Widget in Sidebar */}
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between font-sans text-xs">
               <div>
                 <span className="text-[10px] text-muted-foreground block uppercase">Available Balance</span>
                 <span className="text-base font-black text-primary">
@@ -1550,7 +1550,7 @@ export function UserDashboard() {
           </div>
 
           {/* SIDEBAR NAVIGATION ITEMS MENU */}
-          <nav className="space-y-1.5 font-mono text-xs">
+          <nav className="space-y-1.5 font-sans text-xs">
             <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               Dashboard Navigation
             </div>
@@ -1605,7 +1605,7 @@ export function UserDashboard() {
         </div>
 
         {/* SIDEBAR FOOTER TELEMETRY CARD */}
-        <div className="mt-6 pt-4 border-t border-white/10 font-mono text-[11px] space-y-3">
+        <div className="mt-6 pt-4 border-t border-white/10 font-sans text-[11px] space-y-3">
           <div className="space-y-2">
             <button
               onClick={handleLogout}
@@ -1629,7 +1629,7 @@ export function UserDashboard() {
         {/* TOP CONTENT HEADER BAR */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
           <div>
-            <div className="flex items-center gap-2 font-mono text-xs text-primary font-bold">
+            <div className="flex items-center gap-2 font-sans text-xs text-primary font-bold">
               <span>NEXATRADES</span>
               <ChevronRight size={12} />
               <span className="capitalize">{activeTab.replace('_', ' ')}</span>
@@ -1646,7 +1646,7 @@ export function UserDashboard() {
           </div>
 
           {/* Quick Header Actions */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-sans">
             <button
               onClick={() => setActiveTab('deposit')}
               className="rounded-xl border border-accent/60 bg-accent/15 px-4 py-2.5 text-xs font-bold text-accent hover:bg-accent/25 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
@@ -1676,64 +1676,64 @@ export function UserDashboard() {
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18] to-[#0c100e] p-6 backdrop-blur-xl shadow-xl relative overflow-hidden group">
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="font-mono text-xs font-bold uppercase">Total Capital Invested</span>
+                  <span className="font-sans text-xs font-bold uppercase">Total Capital Invested</span>
                   <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 text-primary border border-primary/20">
                     <DollarSign size={18} />
                   </div>
                 </div>
-                <div className="mt-4 text-3xl font-black font-mono text-foreground tracking-tight">
+                <div className="mt-4 text-3xl font-black font-sans text-foreground tracking-tight">
                   ${totalInvested.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-accent font-mono font-bold">
+                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-accent font-sans font-bold">
                   <TrendingUp size={13} /> Across {purchasedPackages.length} active trading plans
                 </div>
               </div>
 
               <div className="rounded-3xl border border-primary/40 bg-gradient-to-b from-[#1c241f] to-[#0e1311] p-6 backdrop-blur-xl shadow-[0_0_35px_rgba(232,185,73,0.15)] relative overflow-hidden group">
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="font-mono text-xs font-bold uppercase text-primary">Total Earned ROI</span>
+                  <span className="font-sans text-xs font-bold uppercase text-primary">Total Earned ROI</span>
                   <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary/20 text-primary border border-primary/40">
                     <TrendingUp size={18} />
                   </div>
                 </div>
-                <div className="mt-4 text-3xl font-black font-mono text-primary tracking-tight">
+                <div className="mt-4 text-3xl font-black font-sans text-primary tracking-tight">
                   ${totalEarnedRoi.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-accent font-mono font-bold">
+                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-accent font-sans font-bold">
                   <CheckCircle2 size={13} /> Direct credited to balance
                 </div>
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18] to-[#0c100e] p-6 backdrop-blur-xl shadow-xl relative overflow-hidden group">
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="font-mono text-xs font-bold uppercase">Remaining Pending ROI</span>
+                  <span className="font-sans text-xs font-bold uppercase">Remaining Pending ROI</span>
                   <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/5 text-muted-foreground border border-white/10">
                     <Clock size={18} />
                   </div>
                 </div>
-                <div className="mt-4 text-3xl font-black font-mono text-foreground tracking-tight">
+                <div className="mt-4 text-3xl font-black font-sans text-foreground tracking-tight">
                   ${totalRemainingRoi.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div className="mt-2 text-[11px] text-muted-foreground font-mono">
+                <div className="mt-2 text-[11px] text-muted-foreground font-sans">
                   Future payout cap from active plans
                 </div>
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#141b18] to-[#0c100e] p-6 backdrop-blur-xl shadow-xl relative overflow-hidden group">
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="font-mono text-xs font-bold uppercase">KYC Verification</span>
+                  <span className="font-sans text-xs font-bold uppercase">KYC Verification</span>
                   <div className={`grid h-9 w-9 place-items-center rounded-xl border ${
                     kycData.status === 'APPROVED' ? 'bg-accent/10 text-accent border-accent/30' : 'bg-primary/10 text-primary border-primary/30'
                   }`}>
                     <ShieldCheck size={18} />
                   </div>
                 </div>
-                <div className="mt-4 text-2xl font-black font-mono text-foreground tracking-tight uppercase flex items-center gap-2">
+                <div className="mt-4 text-2xl font-black font-sans text-foreground tracking-tight uppercase flex items-center gap-2">
                   {kycData.status}
                 </div>
                 <button
                   onClick={() => setActiveTab('kyc')}
-                  className="mt-2 text-[11px] text-primary hover:underline font-mono font-bold flex items-center gap-1"
+                  className="mt-2 text-[11px] text-primary hover:underline font-sans font-bold flex items-center gap-1"
                 >
                   View Verification Details <ChevronRight size={12} />
                 </button>
@@ -1749,11 +1749,11 @@ export function UserDashboard() {
                     <h3 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
                       <Sparkles size={18} className="text-primary" /> Live Daily Arbitrage Yield Growth
                     </h3>
-                    <p className="text-xs text-muted-foreground font-mono mt-1">
+                    <p className="text-xs text-muted-foreground font-sans mt-1">
                       Automated yield accrual curves from active quantitative trading clusters.
                     </p>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-xs text-accent font-bold">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-sans text-xs text-accent font-bold">
                     <span className="h-2 w-2 rounded-full bg-accent animate-pulse" /> Live Streaming
                   </span>
                 </div>
@@ -1786,12 +1786,12 @@ export function UserDashboard() {
               <div className="rounded-3xl border border-white/10 bg-[#0f1412]/90 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                    <h3 className="font-bold text-base text-foreground font-mono flex items-center gap-2">
+                    <h3 className="font-bold text-base text-foreground font-sans flex items-center gap-2">
                       <Package size={16} className="text-primary" /> Active Plans ({activePackagesCount})
                     </h3>
                     <button
                       onClick={() => setActiveTab('packages')}
-                      className="text-xs text-primary hover:underline font-mono font-bold"
+                      className="text-xs text-primary hover:underline font-sans font-bold"
                     >
                       View All
                     </button>
@@ -1806,7 +1806,7 @@ export function UserDashboard() {
                       const dailyRate = getDailyRoiAmountForPackage(pkg);
 
                       return (
-                        <div key={pkg.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 font-mono space-y-2.5">
+                        <div key={pkg.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 font-sans space-y-2.5">
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-foreground text-sm">{pkg.name} Plan</span>
                             <span className="text-xs font-bold text-primary">${amount.toLocaleString()} USDT</span>
@@ -1834,7 +1834,7 @@ export function UserDashboard() {
 
                 <button
                   onClick={() => setActiveTab('buy')}
-                  className="mt-6 w-full rounded-xl border border-primary/50 bg-primary/10 py-3 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
+                  className="mt-6 w-full rounded-xl border border-primary/50 bg-primary/10 py-3 font-sans text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
                 >
                   + Add Another Arbitrage Package
                 </button>
@@ -1847,19 +1847,19 @@ export function UserDashboard() {
         {activeTab === 'deposit' && (
           <div className="mt-8 space-y-8 max-w-5xl mx-auto font-sans">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-xs text-accent font-bold mb-2">
+              <div className="inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1 font-sans text-xs text-accent font-bold mb-2">
                 <span className="h-2 w-2 rounded-full bg-accent animate-pulse" /> AUTOMATED BEP20 DEPOSIT GATEWAY
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight font-mono">
+              <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight font-sans">
                 Deposit USDT (BNB Smart Chain BEP20)
               </h2>
-              <p className="text-xs text-muted-foreground font-mono mt-1">
+              <p className="text-xs text-muted-foreground font-sans mt-1">
                 Send USDT via BEP20 network to your personal deposit address below. Balance is credited automatically upon payment.
               </p>
             </div>
 
             {depositSuccessMsg && (
-              <div className="rounded-2xl border border-accent/40 bg-accent/15 p-5 text-sm font-mono text-accent flex items-center justify-between gap-4 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+              <div className="rounded-2xl border border-accent/40 bg-accent/15 p-5 text-sm font-sans text-accent flex items-center justify-between gap-4 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 size={24} className="flex-shrink-0" />
                   <div>
@@ -1877,7 +1877,7 @@ export function UserDashboard() {
             )}
 
             {depositErrorMsg && (
-              <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 flex items-center gap-2">
+              <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-sans text-rose-400 flex items-center gap-2">
                 <AlertCircle size={18} /> {depositErrorMsg}
               </div>
             )}
@@ -1885,7 +1885,7 @@ export function UserDashboard() {
             <div className="grid gap-8 lg:grid-cols-12 items-start">
               {/* Left Box: BEP20 Address & QR Code */}
               <div className="lg:col-span-5 rounded-3xl border border-primary/40 bg-gradient-to-b from-[#161f1a] via-[#101713] to-[#0a0e0c] p-6 backdrop-blur-2xl shadow-[0_0_35px_rgba(232,185,73,0.15)] space-y-6 text-center">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4 text-xs font-mono">
+                <div className="flex items-center justify-between border-b border-white/10 pb-4 text-xs font-sans">
                   <span className="font-bold text-primary flex items-center gap-1.5">
                     <Wallet size={16} /> Official Deposit Wallet
                   </span>
@@ -1903,13 +1903,13 @@ export function UserDashboard() {
                       className="w-48 h-48 rounded-xl object-contain transition-transform group-hover:scale-105"
                     />
                   </div>
-                  <span className="text-[11px] font-mono text-muted-foreground">
+                  <span className="text-[11px] font-sans text-muted-foreground">
                     Scan with TrustWallet, Metamask, Binance, or OKX App
                   </span>
                 </div>
 
                 {/* Wallet Address Display */}
-                <div className="space-y-2 text-left font-mono">
+                <div className="space-y-2 text-left font-sans">
                   <label className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
                     BEP20 Receiving Address (USDT)
                   </label>
@@ -1935,7 +1935,7 @@ export function UserDashboard() {
                 </div>
 
                 {/* Network Safety Note */}
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] font-mono text-amber-300 text-left space-y-1">
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] font-sans text-amber-300 text-left space-y-1">
                   <strong className="block font-bold">⚠️ Network Notice:</strong>
                   <p className="text-[10px] text-amber-300/80 leading-relaxed">
                     Only send <strong>USDT via BEP20 (BNB Smart Chain)</strong> to this address. Sending funds on other networks (ERC20/TRC20) may result in permanent loss.
@@ -1944,7 +1944,7 @@ export function UserDashboard() {
               </div>
 
               {/* Right Box: Deposit Verification Form */}
-              <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-[#0f1412] p-6 sm:p-8 backdrop-blur-2xl shadow-xl space-y-6 font-mono text-xs">
+              <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-[#0f1412] p-6 sm:p-8 backdrop-blur-2xl shadow-xl space-y-6 font-sans text-xs">
                 <div className="border-b border-white/10 pb-4">
                   <h3 className="text-lg font-bold text-foreground flex items-center gap-2 font-sans">
                     <Sparkles size={18} className="text-accent" /> Confirm Deposit & Credit Account
@@ -2003,7 +2003,7 @@ export function UserDashboard() {
                       value={depositTxHash}
                       onChange={e => setDepositTxHash(e.target.value)}
                       placeholder="Paste 66-character TxHash from your wallet (0x...)"
-                      className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3.5 text-foreground text-xs font-mono outline-none focus:border-accent"
+                      className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3.5 text-foreground text-xs font-sans outline-none focus:border-accent"
                     />
                     <span className="text-[10px] text-muted-foreground mt-1.5 block">
                       Found in your wallet app (TrustWallet, Metamask, Binance) after sending payment on BNB Smart Chain.
@@ -2049,17 +2049,17 @@ export function UserDashboard() {
           <div className="mt-8 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-black text-foreground tracking-tight font-mono">
+                <h2 className="text-2xl font-black text-foreground tracking-tight font-sans">
                   My Active Subscription Packages
                 </h2>
-                <p className="text-xs text-muted-foreground font-mono mt-1">
+                <p className="text-xs text-muted-foreground font-sans mt-1">
                   Individual tracking for all your purchased Quantitative Arbitrage plans.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2.5 self-start">
                 <button
                   onClick={() => setActiveTab('buy')}
-                  className="rounded-xl bg-primary px-5 py-2.5 font-mono text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5"
+                  className="rounded-xl bg-primary px-5 py-2.5 font-sans text-xs font-bold text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5"
                 >
                   <Plus size={15} /> Buy New Package
                 </button>
@@ -2084,20 +2084,20 @@ export function UserDashboard() {
                     <div>
                       <div className="flex items-start justify-between border-b border-white/10 pb-4">
                         <div>
-                          <span className="text-[10px] font-mono uppercase tracking-widest text-primary font-bold">{pkg.id}</span>
-                          <h3 className="text-2xl font-black text-foreground font-mono">{pkg.name} Plan</h3>
+                          <span className="text-[10px] font-sans uppercase tracking-widest text-primary font-bold">{pkg.id}</span>
+                          <h3 className="text-2xl font-black text-foreground font-sans">{pkg.name} Plan</h3>
                           {pkg.promoCodeUsed && (
-                            <span className="inline-flex items-center gap-1.5 mt-1.5 rounded-full border border-accent/50 bg-accent/15 px-2.5 py-0.5 font-mono text-[9px] font-black uppercase text-accent tracking-wider shadow-sm">
+                            <span className="inline-flex items-center gap-1.5 mt-1.5 rounded-full border border-accent/50 bg-accent/15 px-2.5 py-0.5 font-sans text-[9px] font-black uppercase text-accent tracking-wider shadow-sm">
                               🎁 {pkg.promoCodeUsed} (+5% EXTRA ROI)
                             </span>
                           )}
                         </div>
-                        <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-[10px] font-bold text-accent uppercase">
+                        <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-sans text-[10px] font-bold text-accent uppercase">
                           ● {pkg.status}
                         </span>
                       </div>
 
-                      <div className="mt-6 space-y-3 font-mono text-xs">
+                      <div className="mt-6 space-y-3 font-sans text-xs">
                         <div className="flex justify-between border-b border-white/5 pb-2">
                           <span className="text-muted-foreground">Investment Capital</span>
                           <strong className="text-foreground text-sm">${amount.toLocaleString()}.00</strong>
@@ -2122,7 +2122,7 @@ export function UserDashboard() {
 
                       {/* Progress Bar */}
                       <div className="mt-6">
-                        <div className="flex justify-between text-xs font-mono text-muted-foreground mb-1.5">
+                        <div className="flex justify-between text-xs font-sans text-muted-foreground mb-1.5">
                           <span>Total Yield Progress</span>
                           <span className="font-bold text-primary">{progressPct}%</span>
                         </div>
@@ -2144,7 +2144,7 @@ export function UserDashboard() {
                             setCustomInvestAmount(pkg.amount);
                           }
                         }}
-                        className="w-full rounded-xl border border-primary/50 bg-primary/10 py-3 font-mono text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
+                        className="w-full rounded-xl border border-primary/50 bg-primary/10 py-3 font-sans text-xs font-bold text-primary hover:bg-primary/20 transition-all text-center"
                       >
                         Top-Up Plan
                       </button>
@@ -2160,16 +2160,16 @@ export function UserDashboard() {
         {activeTab === 'buy' && (
           <div className="mt-8 space-y-8">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl font-black text-foreground tracking-tight font-mono">
+              <h2 className="text-3xl font-black text-foreground tracking-tight font-sans">
                 Select Your Arbitrage Package
               </h2>
-              <p className="mt-2 text-sm text-muted-foreground font-mono">
+              <p className="mt-2 text-sm text-muted-foreground font-sans">
                 Activate high-yield quantitative AI trading strategies with automated daily ROI payouts directly to your wallet.
               </p>
             </div>
 
             {/* EXCLUSIVE PROMO CODE BANNER */}
-            <div className="max-w-4xl mx-auto rounded-3xl border border-primary/40 bg-gradient-to-r from-[#17201b] via-[#221c0e] to-[#17201b] p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+            <div className="max-w-4xl mx-auto rounded-3xl border border-primary/40 bg-gradient-to-r from-[#17201b] via-[#221c0e] to-[#17201b] p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
               <div className="flex items-center gap-3 text-left">
                 <div className="rounded-2xl bg-primary/20 p-3 text-primary border border-primary/30 flex-shrink-0">
                   <Gift size={24} className="animate-bounce" />
@@ -2197,7 +2197,7 @@ export function UserDashboard() {
                   setPromoSuccessMsg('🎉 Code CRYPTOEXPODUBAI Applied! +5% Extra Total ROI unlocked!');
                   try { localStorage.setItem('nexa_promo_code', 'CRYPTOEXPODUBAI'); } catch(e){}
                 }}
-                className="rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-5 py-3 font-mono text-xs font-black uppercase text-primary-foreground shadow-lg hover:scale-105 transition-all flex-shrink-0"
+                className="rounded-2xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-5 py-3 font-sans text-xs font-black uppercase text-primary-foreground shadow-lg hover:scale-105 transition-all flex-shrink-0"
               >
                 Apply Code Now 🎁
               </button>
@@ -2218,29 +2218,29 @@ export function UserDashboard() {
                   <div>
                     {/* Badge */}
                     {plan.badgeText && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-primary/60 bg-primary px-3 py-0.5 font-mono text-[9px] font-black uppercase text-primary-foreground shadow-md whitespace-nowrap">
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-primary/60 bg-primary px-3 py-0.5 font-sans text-[9px] font-black uppercase text-primary-foreground shadow-md whitespace-nowrap">
                         {plan.badgeText}
                       </span>
                     )}
 
                     {/* Plan Header & Big Price */}
                     <div className="pb-4">
-                      <span className="text-[11px] font-black tracking-widest font-mono uppercase text-muted-foreground block">
+                      <span className="text-[11px] font-black tracking-widest font-sans uppercase text-muted-foreground block">
                         {plan.name}
                       </span>
-                      <div className="mt-2 text-4xl font-black text-foreground font-mono tracking-tight">
+                      <div className="mt-2 text-4xl font-black text-foreground font-sans tracking-tight">
                         {plan.price}
                       </div>
                     </div>
 
                     {/* Gold Total ROI Box */}
                     <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 p-3 text-center my-3">
-                      <span className="text-[10px] uppercase text-muted-foreground font-mono font-bold block">Total ROI</span>
-                      <span className="text-xl font-black text-primary font-mono">{plan.totalRoi}</span>
+                      <span className="text-[10px] uppercase text-muted-foreground font-sans font-bold block">Total ROI</span>
+                      <span className="text-xl font-black text-primary font-sans">{plan.totalRoi}</span>
                     </div>
 
                     {/* Plan Metrics List */}
-                    <div className="space-y-2.5 font-mono text-xs my-4">
+                    <div className="space-y-2.5 font-sans text-xs my-4">
                       <div className="flex justify-between border-b border-white/5 pb-1.5">
                         <span className="text-muted-foreground">Total Return</span>
                         <strong className="text-foreground">{plan.totalReturn}</strong>
@@ -2266,7 +2266,7 @@ export function UserDashboard() {
                       setCustomInvestAmount(plan.min);
                       setPaymentMethod('WALLET');
                     }}
-                    className={`mt-4 w-full rounded-xl py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                    className={`mt-4 w-full rounded-xl py-3.5 font-sans text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                       plan.supreme || plan.popular
                         ? 'bg-gradient-to-r from-primary via-[#f5c542] to-primary text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.4)] hover:scale-[1.02]'
                         : 'border border-primary/50 bg-primary/10 text-primary hover:bg-primary/20'
@@ -2316,7 +2316,7 @@ export function UserDashboard() {
                       </p>
                     </div>
 
-                    <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400">
+                    <div className="mt-6 flex items-center gap-1.5 text-xs font-sans font-bold text-emerald-400">
                       <Check size={14} className="text-emerald-400" />
                       Instant automated Wallet Payout
                     </div>
@@ -2337,7 +2337,7 @@ export function UserDashboard() {
                       </p>
                     </div>
 
-                    <div className="mt-6 flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400">
+                    <div className="mt-6 flex items-center gap-1.5 text-xs font-sans font-bold text-amber-400">
                       <AlertCircle size={14} className="text-amber-400" />
                       Active Package & Available Cap Required
                     </div>
@@ -2353,10 +2353,10 @@ export function UserDashboard() {
           <div className="mt-8 space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-black text-foreground tracking-tight font-mono flex items-center gap-2">
+                <h2 className="text-2xl font-black text-foreground tracking-tight font-sans flex items-center gap-2">
                   <Users className="text-primary" size={24} /> My Direct Referral Network
                 </h2>
-                <p className="text-xs text-muted-foreground font-mono mt-1">
+                <p className="text-xs text-muted-foreground font-sans mt-1">
                   Invite friends, track your direct referrals, and earn direct income on active package subscriptions.
                 </p>
               </div>
@@ -2372,7 +2372,7 @@ export function UserDashboard() {
                     setTimeout(() => setCopiedLink(false), 2500);
                   }
                 }}
-                className="rounded-xl border border-primary/50 bg-primary/10 px-4 py-2.5 text-xs font-bold font-mono text-primary hover:bg-primary/20 transition-all flex items-center gap-2"
+                className="rounded-xl border border-primary/50 bg-primary/10 px-4 py-2.5 text-xs font-bold font-sans text-primary hover:bg-primary/20 transition-all flex items-center gap-2"
               >
                 <Share2 size={16} /> Share Referral Link
               </button>
@@ -2384,11 +2384,11 @@ export function UserDashboard() {
               <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#131b17] to-[#0c110f] p-6 backdrop-blur-2xl shadow-xl relative overflow-hidden space-y-4">
                 <div className="absolute top-0 right-0 h-24 w-24 bg-primary/10 blur-2xl pointer-events-none" />
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">My Unique Referral Code</span>
-                  <span className="rounded-full bg-primary/20 border border-primary/30 px-3 py-0.5 text-[10px] font-mono text-primary font-bold">PERMANENT</span>
+                  <span className="text-xs font-sans text-muted-foreground uppercase tracking-wider">My Unique Referral Code</span>
+                  <span className="rounded-full bg-primary/20 border border-primary/30 px-3 py-0.5 text-[10px] font-sans text-primary font-bold">PERMANENT</span>
                 </div>
                 <div className="flex items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
-                  <span className="text-2xl font-black font-mono tracking-widest text-primary">
+                  <span className="text-2xl font-black font-sans tracking-widest text-primary">
                     {userRefCode || 'NEXA7K42'}
                   </span>
                   <button
@@ -2397,13 +2397,13 @@ export function UserDashboard() {
                       setCopiedCode(true);
                       setTimeout(() => setCopiedCode(false), 2500);
                     }}
-                    className="rounded-xl bg-primary px-4 py-2 text-xs font-bold font-mono text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5 shadow-md"
+                    className="rounded-xl bg-primary px-4 py-2 text-xs font-bold font-sans text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center gap-1.5 shadow-md"
                   >
                     {copiedCode ? <Check size={14} /> : <Copy size={14} />}
                     {copiedCode ? 'Copied Code!' : 'Copy Code'}
                   </button>
                 </div>
-                <p className="text-[11px] text-muted-foreground font-mono">
+                <p className="text-[11px] text-muted-foreground font-sans">
                   Share this code with your friends during Sign Up to add them directly as your direct referral.
                 </p>
               </div>
@@ -2412,15 +2412,15 @@ export function UserDashboard() {
               <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#131b17] to-[#0c110f] p-6 backdrop-blur-2xl shadow-xl relative overflow-hidden space-y-4">
                 <div className="absolute top-0 right-0 h-24 w-24 bg-accent/10 blur-2xl pointer-events-none" />
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">My Unique Referral Link</span>
-                  <span className="rounded-full bg-accent/20 border border-accent/30 px-3 py-0.5 text-[10px] font-mono text-accent font-bold">AUTO ATTRIBUTION</span>
+                  <span className="text-xs font-sans text-muted-foreground uppercase tracking-wider">My Unique Referral Link</span>
+                  <span className="rounded-full bg-accent/20 border border-accent/30 px-3 py-0.5 text-[10px] font-sans text-accent font-bold">AUTO ATTRIBUTION</span>
                 </div>
                 <div className="flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-2xl p-2.5">
                   <input
                     type="text"
                     readOnly
                     value={`${window.location.origin}/register?ref=${userRefCode || 'NEXA7K42'}`}
-                    className="w-full bg-transparent px-2 text-xs font-mono text-foreground outline-none truncate"
+                    className="w-full bg-transparent px-2 text-xs font-sans text-foreground outline-none truncate"
                   />
                   <button
                     onClick={() => {
@@ -2429,13 +2429,13 @@ export function UserDashboard() {
                       setCopiedLink(true);
                       setTimeout(() => setCopiedLink(false), 2500);
                     }}
-                    className="rounded-xl bg-accent px-4 py-2 text-xs font-bold font-mono text-accent-foreground hover:opacity-90 transition-all flex items-center gap-1.5 shadow-md flex-shrink-0"
+                    className="rounded-xl bg-accent px-4 py-2 text-xs font-bold font-sans text-accent-foreground hover:opacity-90 transition-all flex items-center gap-1.5 shadow-md flex-shrink-0"
                   >
                     {copiedLink ? <Check size={14} /> : <Copy size={14} />}
                     {copiedLink ? 'Copied!' : 'Copy Link'}
                   </button>
                 </div>
-                <p className="text-[11px] text-muted-foreground font-mono">
+                <p className="text-[11px] text-muted-foreground font-sans">
                   Anyone registering through this link will automatically be connected as your permanent direct referral.
                 </p>
               </div>
@@ -2454,7 +2454,7 @@ export function UserDashboard() {
 
               if (activeCapAvailable === 0 && hasActiveReferrals) {
                 return (
-                  <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-[#161208] to-amber-500/10 p-6 backdrop-blur-2xl shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+                  <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-[#161208] to-amber-500/10 p-6 backdrop-blur-2xl shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-xs">
                     <div className="flex items-center gap-4">
                       <div className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
                         <AlertCircle size={24} className="animate-pulse" />
@@ -2468,14 +2468,14 @@ export function UserDashboard() {
                             INACTIVE ACCOUNT
                           </span>
                         </div>
-                        <p className="text-muted-foreground text-xs font-mono">
+                        <p className="text-muted-foreground text-xs font-sans">
                           Your direct referral(s) have active package subscriptions, but you don't have an active subscription package cap to receive 10% direct commissions. Activate a package now so you don't miss future referral rewards!
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={() => setActiveTab('buy')}
-                      className="w-full sm:w-auto flex-shrink-0 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3.5 text-xs font-black font-mono uppercase text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:scale-105 transition-all flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto flex-shrink-0 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3.5 text-xs font-black font-sans uppercase text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:scale-105 transition-all flex items-center justify-center gap-2"
                     >
                       <Zap size={16} /> Activate Package Now
                     </button>
@@ -2486,7 +2486,7 @@ export function UserDashboard() {
             })()}
 
             {/* TEAM STATISTICS KPI CARDS */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-sans">
               <div className="rounded-2xl border border-white/10 bg-[#0c110f] p-5">
                 <div className="text-xs text-muted-foreground uppercase">Direct Team Members</div>
                 <div className="mt-2 text-3xl font-black text-foreground">{directTeam.length}</div>
@@ -2539,8 +2539,8 @@ export function UserDashboard() {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold font-mono text-foreground">You don't have any direct referrals yet.</h3>
-                  <p className="text-xs font-mono text-muted-foreground max-w-md mx-auto">
+                  <h3 className="text-xl font-bold font-sans text-foreground">You don't have any direct referrals yet.</h3>
+                  <p className="text-xs font-sans text-muted-foreground max-w-md mx-auto">
                     Invite friends to join. Share your unique referral code or link to start earning 10% direct referral rewards!
                   </p>
                 </div>
@@ -2553,7 +2553,7 @@ export function UserDashboard() {
                       setCopiedLink(true);
                       setTimeout(() => setCopiedLink(false), 2500);
                     }}
-                    className="w-full sm:w-auto rounded-xl bg-primary px-6 py-3 text-xs font-bold font-mono text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center justify-center gap-2 shadow-lg"
+                    className="w-full sm:w-auto rounded-xl bg-primary px-6 py-3 text-xs font-bold font-sans text-primary-foreground hover:bg-[#f3cc68] transition-all flex items-center justify-center gap-2 shadow-lg"
                   >
                     {copiedLink ? <Check size={16} /> : <Copy size={16} />}
                     {copiedLink ? 'Copied Referral Link!' : 'Copy Referral Link'}
@@ -2570,7 +2570,7 @@ export function UserDashboard() {
                         setTimeout(() => setCopiedLink(false), 2500);
                       }
                     }}
-                    className="w-full sm:w-auto rounded-xl border border-white/15 bg-white/5 px-6 py-3 text-xs font-bold font-mono text-foreground hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto rounded-xl border border-white/15 bg-white/5 px-6 py-3 text-xs font-bold font-sans text-foreground hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                   >
                     <Share2 size={16} /> Invite Friends
                   </button>
@@ -2581,13 +2581,13 @@ export function UserDashboard() {
               <div className="rounded-3xl border border-white/10 bg-[#0a0f0d] overflow-hidden shadow-2xl space-y-4">
                 <div className="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-base font-bold font-mono text-foreground">My Direct Referred Members ({directTeam.length})</h3>
-                    <p className="text-xs font-mono text-muted-foreground">Showing verified direct sponsored user accounts</p>
+                    <h3 className="text-base font-bold font-sans text-foreground">My Direct Referred Members ({directTeam.length})</h3>
+                    <p className="text-xs font-sans text-muted-foreground">Showing verified direct sponsored user accounts</p>
                   </div>
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left font-mono text-xs">
+                  <table className="w-full text-left font-sans text-xs">
                     <thead className="bg-white/5 border-b border-white/10 text-muted-foreground uppercase text-[10px]">
                       <tr>
                         <th className="px-6 py-4">User</th>
@@ -2647,14 +2647,14 @@ export function UserDashboard() {
                               <div className="flex flex-col items-end gap-1">
                                 <button
                                   onClick={() => handleOpenMemberPackages(u)}
-                                  className="group inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 font-mono text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/60 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
+                                  className="group inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 font-sans text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/60 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
                                   title="Click to view detailed packages purchased by this member"
                                 >
                                   <span>$ {packageInv.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
                                   <ExternalLink size={12} className="opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-emerald-400" />
                                 </button>
                                 {hasDeposit && activeCapAvailable === 0 && (
-                                  <span className="text-[10px] text-amber-400 font-bold font-mono">
+                                  <span className="text-[10px] text-amber-400 font-bold font-sans">
                                     ⚠️ Missed $ {(packageInv * 0.10).toFixed(2)} Bonus
                                   </span>
                                 )}
@@ -2672,7 +2672,7 @@ export function UserDashboard() {
             {/* REFERRED MEMBER PACKAGES BREAKDOWN MODAL */}
             {selectedTeamMemberModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-fadeIn">
-                <div className="w-full max-w-2xl rounded-3xl border border-primary/40 bg-[#0a0f0d] p-6 sm:p-8 shadow-2xl space-y-6 font-mono text-xs max-h-[90vh] overflow-y-auto">
+                <div className="w-full max-w-2xl rounded-3xl border border-primary/40 bg-[#0a0f0d] p-6 sm:p-8 shadow-2xl space-y-6 font-sans text-xs max-h-[90vh] overflow-y-auto">
                   {/* Modal Header */}
                   <div className="flex items-center justify-between border-b border-white/10 pb-5">
                     <div className="flex items-center gap-3">
@@ -2711,7 +2711,7 @@ export function UserDashboard() {
                       </span>
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <span className="text-[10px] text-muted-foreground uppercase block font-semibold font-mono">Active Plans Count</span>
+                      <span className="text-[10px] text-muted-foreground uppercase block font-semibold font-sans">Active Plans Count</span>
                       <span className="text-2xl font-black text-primary mt-1 block">
                         {memberPackagesList.length} {memberPackagesList.length === 1 ? 'Package' : 'Packages'}
                       </span>
@@ -2728,7 +2728,7 @@ export function UserDashboard() {
                     </div>
 
                     {loadingMemberPackages ? (
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-muted-foreground flex items-center justify-center gap-2 font-mono">
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-muted-foreground flex items-center justify-center gap-2 font-sans">
                         <RefreshCw size={16} className="animate-spin text-primary" /> Loading package details...
                       </div>
                     ) : memberPackagesList.length === 0 ? (
@@ -2752,13 +2752,13 @@ export function UserDashboard() {
                                     {pkg.status || 'ACTIVE'}
                                   </span>
                                 </div>
-                                <span className="text-[11px] text-muted-foreground font-mono mt-0.5 block">
+                                <span className="text-[11px] text-muted-foreground font-sans mt-0.5 block">
                                   Package ID: {pkg.id}
                                 </span>
                               </div>
 
                               <div className="text-right">
-                                <span className="text-lg font-black text-emerald-400 font-mono">
+                                <span className="text-lg font-black text-emerald-400 font-sans">
                                   $ {(Number(pkg.amount) || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT
                                 </span>
                               </div>
@@ -2810,10 +2810,10 @@ export function UserDashboard() {
         {activeTab === 'kyc' && (
           <div className="mt-8 max-w-4xl mx-auto space-y-8">
             <div>
-              <h2 className="text-2xl font-black text-foreground tracking-tight font-mono">
+              <h2 className="text-2xl font-black text-foreground tracking-tight font-sans">
                 KYC Identity Verification Portal
               </h2>
-              <p className="text-xs text-muted-foreground font-mono mt-1">
+              <p className="text-xs text-muted-foreground font-sans mt-1">
                 Required for unhindered withdrawals and institutional compliance under NexaTrades security governance.
               </p>
             </div>
@@ -2829,8 +2829,8 @@ export function UserDashboard() {
                   <ShieldCheck size={28} />
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground font-mono">Current Verification Status</div>
-                  <div className="text-2xl font-black font-mono text-foreground tracking-tight flex items-center gap-2 mt-0.5">
+                  <div className="text-xs text-muted-foreground font-sans">Current Verification Status</div>
+                  <div className="text-2xl font-black font-sans text-foreground tracking-tight flex items-center gap-2 mt-0.5">
                     {kycData.status === 'APPROVED' && <span className="text-accent">✓ Verified Account</span>}
                     {kycData.status === 'PENDING' && <span className="text-primary">⏳ Pending Review</span>}
                     {kycData.status === 'UNVERIFIED' && <span className="text-muted-foreground">⚠️ Not Submitted</span>}
@@ -2839,26 +2839,26 @@ export function UserDashboard() {
               </div>
 
               {kycData.submittedAt && (
-                <div className="text-xs font-mono text-muted-foreground">
+                <div className="text-xs font-sans text-muted-foreground">
                   Submitted On: <strong className="text-foreground">{kycData.submittedAt}</strong>
                 </div>
               )}
             </div>
 
             {kycMessage && (
-              <div className="rounded-2xl border border-accent/40 bg-accent/10 p-4 text-xs font-mono text-accent flex items-center gap-2">
+              <div className="rounded-2xl border border-accent/40 bg-accent/10 p-4 text-xs font-sans text-accent flex items-center gap-2">
                 <CheckCircle2 size={16} /> {kycMessage}
               </div>
             )}
 
             {kycFormError && (
-              <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-mono text-rose-400 flex items-center gap-2">
+              <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs font-sans text-rose-400 flex items-center gap-2">
                 <AlertCircle size={16} /> {kycFormError}
               </div>
             )}
 
             {/* KYC Submission Form */}
-            <form onSubmit={handleKycSubmit} className="rounded-3xl border border-white/10 bg-[#0f1412] p-6 sm:p-8 space-y-6 font-mono text-xs">
+            <form onSubmit={handleKycSubmit} className="rounded-3xl border border-white/10 bg-[#0f1412] p-6 sm:p-8 space-y-6 font-sans text-xs">
               <h3 className="text-lg font-bold text-foreground border-b border-white/10 pb-3 flex items-center gap-2">
                 <UserCheck size={18} className="text-primary" /> Identity Information & Document Upload
               </h3>
@@ -2941,12 +2941,12 @@ export function UserDashboard() {
                   <button
                     type="button"
                     onClick={startLiveCamera}
-                    className="rounded-2xl border border-primary/50 bg-primary/10 p-4 font-mono text-xs font-bold text-primary hover:bg-primary/20 hover:border-primary transition-all flex items-center justify-center gap-2 shadow-sm"
+                    className="rounded-2xl border border-primary/50 bg-primary/10 p-4 font-sans text-xs font-bold text-primary hover:bg-primary/20 hover:border-primary transition-all flex items-center justify-center gap-2 shadow-sm"
                   >
                     <Camera size={18} /> 📷 Open Live Camera Capture
                   </button>
 
-                  <label className="rounded-2xl border border-white/20 bg-white/5 p-4 font-mono text-xs font-bold text-foreground hover:bg-white/10 hover:border-white/30 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm relative overflow-hidden">
+                  <label className="rounded-2xl border border-white/20 bg-white/5 p-4 font-sans text-xs font-bold text-foreground hover:bg-white/10 hover:border-white/30 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm relative overflow-hidden">
                     <UploadCloud size={18} className="text-accent" /> 📁 Choose Photo / File
                     <input
                       type="file"
@@ -2987,7 +2987,7 @@ export function UserDashboard() {
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] transition-all hover:scale-[1.01]"
+                className="w-full rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary py-4 font-sans text-xs font-black uppercase text-primary-foreground shadow-[0_0_25px_rgba(232,185,73,0.35)] transition-all hover:scale-[1.01]"
               >
                 Submit Identity Verification Request
               </button>
@@ -2997,7 +2997,7 @@ export function UserDashboard() {
 
         {/* LIVE CAMERA CAPTURE MODAL */}
         {showCameraModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md font-mono">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md font-sans">
             <div className="w-full max-w-lg rounded-3xl border border-white/15 bg-[#0c100e] p-6 shadow-2xl space-y-5 text-center relative">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <h3 className="text-base font-bold text-foreground font-sans flex items-center gap-2">
@@ -3046,7 +3046,7 @@ export function UserDashboard() {
 
         {/* TAB 5: WITHDRAWAL */}
         {activeTab === 'withdraw' && (
-          <div className="mt-8 max-w-3xl mx-auto space-y-8 font-mono">
+          <div className="mt-8 max-w-3xl mx-auto space-y-8 font-sans">
             <div>
               <h2 className="text-2xl font-black text-foreground tracking-tight">
                 BNB Smart Chain (BEP20) Withdrawal Portal
@@ -3092,7 +3092,7 @@ export function UserDashboard() {
                       </div>
                       <div>
                         <strong className="block text-foreground text-sm font-sans">USDT - BEP20</strong>
-                        <span className="text-[10px] text-accent font-mono">BNB Smart Chain (BSC) Only</span>
+                        <span className="text-[10px] text-accent font-sans">BNB Smart Chain (BSC) Only</span>
                       </div>
                     </div>
                     <span className="rounded-full bg-accent/20 text-accent border border-accent/40 px-3 py-1 text-[10px] font-bold uppercase">
@@ -3123,7 +3123,7 @@ export function UserDashboard() {
                       MAX
                     </button>
                   </div>
-                  <span className="text-[11px] text-accent mt-1.5 block font-mono">
+                  <span className="text-[11px] text-accent mt-1.5 block font-sans">
                     ✓ Minimum withdrawal amount: <strong>$15.00 USDT</strong>
                   </span>
                 </div>
@@ -3136,7 +3136,7 @@ export function UserDashboard() {
                     value={withdrawWallet}
                     onChange={e => setWithdrawWallet(e.target.value)}
                     placeholder="Enter your USDT BEP20 wallet address (e.g. 0x...)..."
-                    className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3.5 text-foreground text-xs font-mono outline-none focus:border-primary"
+                    className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3.5 text-foreground text-xs font-sans outline-none focus:border-primary"
                   />
                 </div>
 
@@ -3170,7 +3170,7 @@ export function UserDashboard() {
 
         {/* TAB 6: TRANSACTIONS LEDGER */}
         {activeTab === 'transactions' && (
-          <div className="mt-8 space-y-6 font-mono text-xs">
+          <div className="mt-8 space-y-6 font-sans text-xs">
             <div>
               <h2 className="text-2xl font-black text-foreground tracking-tight font-sans">
                 Complete Transaction Ledger
@@ -3230,11 +3230,11 @@ export function UserDashboard() {
       {/* BUY PACKAGE CONFIRMATION MODAL */}
       {selectedPlanForBuy && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-lg rounded-3xl border border-primary/50 bg-[#0d1210] p-6 sm:p-8 shadow-[0_0_50px_rgba(232,185,73,0.3)] font-mono text-xs relative overflow-hidden">
+          <div className="w-full max-w-lg rounded-3xl border border-primary/50 bg-[#0d1210] p-6 sm:p-8 shadow-[0_0_50px_rgba(232,185,73,0.3)] font-sans text-xs relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
                 <span className="text-[10px] uppercase text-primary font-bold">PACKAGE ACTIVATION</span>
-                <h3 className="text-xl font-black text-foreground font-mono">{selectedPlanForBuy.name} Arbitrage Plan</h3>
+                <h3 className="text-xl font-black text-foreground font-sans">{selectedPlanForBuy.name} Arbitrage Plan</h3>
               </div>
               <button
                 onClick={() => setSelectedPlanForBuy(null)}
@@ -3253,7 +3253,7 @@ export function UserDashboard() {
             ) : (
               <div className="mt-6 space-y-5">
                 {/* FIXED PLAN SPECIFICATIONS & DETAILS */}
-                <div className="rounded-2xl border border-primary/30 bg-gradient-to-b from-[#141b18] to-[#0a0f0d] p-5 space-y-3 font-mono text-xs shadow-inner">
+                <div className="rounded-2xl border border-primary/30 bg-gradient-to-b from-[#141b18] to-[#0a0f0d] p-5 space-y-3 font-sans text-xs shadow-inner">
                   <div className="flex justify-between items-center border-b border-white/10 pb-2.5">
                     <span className="text-muted-foreground">Investment Capital (Fixed)</span>
                     <strong className="text-primary text-base font-black">${(selectedPlanForBuy.min || selectedPlanForBuy.price || 100).toLocaleString()}.00 USDT</strong>
@@ -3288,11 +3288,11 @@ export function UserDashboard() {
                 {/* PROMO CODE INPUT BOX */}
                 <div className="rounded-2xl border border-primary/40 bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10 p-4 space-y-2.5 shadow-md">
                   <div className="flex items-center justify-between">
-                    <label className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    <label className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 font-sans">
                       <Gift size={15} className="text-primary animate-pulse" /> Add Promo Code
                     </label>
                     {(appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI') && (
-                      <span className="text-[9px] font-black text-accent bg-accent/20 border border-accent/40 rounded-full px-2.5 py-0.5 uppercase tracking-wider font-mono">
+                      <span className="text-[9px] font-black text-accent bg-accent/20 border border-accent/40 rounded-full px-2.5 py-0.5 uppercase tracking-wider font-sans">
                         +5% EXTRA ROI ACTIVE
                       </span>
                     )}
@@ -3313,23 +3313,23 @@ export function UserDashboard() {
                         }
                       }}
                       placeholder="ENTER PROMO CODE (e.g. CRYPTOEXPODUBAI)"
-                      className="flex-1 rounded-xl border border-white/20 bg-black/60 px-3.5 py-2.5 text-xs text-foreground font-mono uppercase tracking-wider outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
+                      className="flex-1 rounded-xl border border-white/20 bg-black/60 px-3.5 py-2.5 text-xs text-foreground font-sans uppercase tracking-wider outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
                     />
                     <button
                       type="button"
                       onClick={handleApplyPromoCode}
-                      className="rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-4 py-2.5 text-xs font-black text-primary-foreground uppercase font-mono shadow-md hover:scale-[1.03] transition-all"
+                      className="rounded-xl bg-gradient-to-r from-primary via-[#f5c542] to-primary px-4 py-2.5 text-xs font-black text-primary-foreground uppercase font-sans shadow-md hover:scale-[1.03] transition-all"
                     >
                       Apply
                     </button>
                   </div>
                   {promoError && (
-                    <p className="text-[11px] text-rose-400 font-mono flex items-center gap-1 mt-1">
+                    <p className="text-[11px] text-rose-400 font-sans flex items-center gap-1 mt-1">
                       <AlertCircle size={13} className="flex-shrink-0" /> {promoError}
                     </p>
                   )}
                   {(promoSuccessMsg || appliedPromo === 'CRYPTOEXPODUBAI' || promoCodeInput.trim().toUpperCase() === 'CRYPTOEXPODUBAI') && (
-                    <p className="text-[11px] text-accent font-mono flex items-center gap-1.5 mt-1 font-bold">
+                    <p className="text-[11px] text-accent font-sans flex items-center gap-1.5 mt-1 font-bold">
                       <CheckCircle2 size={13} className="flex-shrink-0 text-accent" /> Code CRYPTOEXPODUBAI Applied! You get +5% Extra Total ROI Bonus!
                     </p>
                   )}
@@ -3372,7 +3372,7 @@ export function UserDashboard() {
                         <Zap size={14} /> Official BEP20 Deposit Address (BNB Smart Chain)
                       </span>
                     </div>
-                    <div className="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 px-3 py-2 font-mono text-[11px] text-foreground">
+                    <div className="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 px-3 py-2 font-sans text-[11px] text-foreground">
                       <span className="truncate mr-2 font-bold">{DEFAULT_DEPOSIT_WALLET}</span>
                       <button
                         type="button"
@@ -3393,18 +3393,18 @@ export function UserDashboard() {
                         value={bep20TxHash}
                         onChange={e => setBep20TxHash(e.target.value)}
                         placeholder="0x..."
-                        className="w-full rounded-xl border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-foreground font-mono outline-none focus:border-primary"
+                        className="w-full rounded-xl border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-foreground font-sans outline-none focus:border-primary"
                       />
                     </div>
 
                     {bep20VerifyError && (
-                      <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-[11px] text-rose-400 font-mono flex items-center gap-2">
+                      <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-[11px] text-rose-400 font-sans flex items-center gap-2">
                         <AlertCircle size={14} className="flex-shrink-0" /> {bep20VerifyError}
                       </div>
                     )}
 
                     {bep20VerifySuccess && (
-                      <div className="rounded-xl border border-accent/40 bg-accent/10 p-3 text-[11px] text-accent font-mono flex items-center gap-2">
+                      <div className="rounded-xl border border-accent/40 bg-accent/10 p-3 text-[11px] text-accent font-sans flex items-center gap-2">
                         <CheckCircle2 size={14} className="flex-shrink-0" /> {bep20VerifySuccess}
                       </div>
                     )}
@@ -3413,7 +3413,7 @@ export function UserDashboard() {
                       type="button"
                       disabled={isVerifyingBep20}
                       onClick={handleVerifyBep20Payment}
-                      className="w-full rounded-xl bg-gradient-to-r from-accent via-primary to-accent py-3 font-mono text-xs font-black uppercase text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                      className="w-full rounded-xl bg-gradient-to-r from-accent via-primary to-accent py-3 font-sans text-xs font-black uppercase text-primary-foreground shadow-[0_0_20px_rgba(232,185,73,0.3)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
                     >
                       {isVerifyingBep20 ? (
                         <>
@@ -3452,7 +3452,7 @@ export function UserDashboard() {
 
       {/* DAILY ROI ACCRUAL FLOATING TOAST NOTIFICATION */}
       {roiAccrualToast && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-2xl border border-accent/50 bg-[#0a1410] px-5 py-4 text-xs font-mono text-accent shadow-2xl flex items-center gap-3">
+        <div className="fixed bottom-6 right-6 z-50 rounded-2xl border border-accent/50 bg-[#0a1410] px-5 py-4 text-xs font-sans text-accent shadow-2xl flex items-center gap-3">
           <Zap size={20} className="text-accent animate-pulse" />
           <span className="font-bold text-sm text-foreground">{roiAccrualToast}</span>
         </div>

@@ -24,14 +24,14 @@ export function AdminTransactions({ transactions }: AdminTransactionsProps) {
   });
 
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 font-sans text-xs">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <h2 className="text-2xl font-black font-sans tracking-tight text-foreground flex items-center gap-2">
             <DollarSign className="text-accent" size={24} /> Financial Transaction Ledger
           </h2>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Cryptographic ledger logging deposits, withdrawals, package subscriptions, and ROI distributions.
           </p>
         </div>
@@ -124,7 +124,7 @@ export function AdminTransactions({ transactions }: AdminTransactionsProps) {
                           href={`https://bscscan.com/tx/${txHashStr}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 mt-1 text-[10px] font-mono text-accent hover:underline bg-accent/10 border border-accent/30 px-2 py-0.5 rounded"
+                          className="inline-flex items-center gap-1 mt-1 text-[10px] font-sans text-accent hover:underline bg-accent/10 border border-accent/30 px-2 py-0.5 rounded"
                         >
                           BscScan Proof <ExternalLink size={10} />
                         </a>

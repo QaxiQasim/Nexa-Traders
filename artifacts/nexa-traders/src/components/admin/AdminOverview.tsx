@@ -99,14 +99,14 @@ export function AdminOverview({
   ].sort((a, b) => new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime()).slice(0, 8);
 
   return (
-    <div className="space-y-8 font-mono text-xs">
+    <div className="space-y-8 font-sans text-xs">
       {/* Header & Date Range Selector */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <h2 className="text-2xl font-black font-sans tracking-tight text-foreground flex items-center gap-2">
             <Activity className="text-primary" size={24} /> Executive Command Overview
           </h2>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-sans">
             Live telemetry calculated in real-time from active Supabase database records.
           </p>
         </div>
@@ -145,7 +145,7 @@ export function AdminOverview({
               <Users size={18} />
             </div>
           </div>
-          <div className="mt-3 text-3xl font-black text-foreground font-mono tracking-tight">
+          <div className="mt-3 text-3xl font-black text-foreground font-sans tracking-tight">
             {totalUsersCount}
           </div>
           <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground">
@@ -161,7 +161,7 @@ export function AdminOverview({
               <DollarSign size={18} />
             </div>
           </div>
-          <div className="mt-3 text-3xl font-black text-primary font-mono tracking-tight">
+          <div className="mt-3 text-3xl font-black text-primary font-sans tracking-tight">
             ${totalPlatformBalanceSum.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
           <div className="mt-2 text-[10px] text-muted-foreground">
@@ -177,7 +177,7 @@ export function AdminOverview({
               <ArrowDownRight size={18} />
             </div>
           </div>
-          <div className="mt-3 text-3xl font-black text-accent font-mono tracking-tight">
+          <div className="mt-3 text-3xl font-black text-accent font-sans tracking-tight">
             ${totalDepositsSum.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
           <div className="mt-2 text-[10px] text-muted-foreground">
@@ -193,7 +193,7 @@ export function AdminOverview({
               <Package size={18} />
             </div>
           </div>
-          <div className="mt-3 text-3xl font-black text-purple-400 font-mono tracking-tight">
+          <div className="mt-3 text-3xl font-black text-purple-400 font-sans tracking-tight">
             ${totalPackageValueSum.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
           <div className="mt-2 text-[10px] text-muted-foreground">
@@ -212,7 +212,7 @@ export function AdminOverview({
               {pendingWithdrawalsCount} Action Required
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-foreground font-mono">
+          <div className="mt-3 text-2xl font-black text-foreground font-sans">
             {pendingWithdrawalsCount} Requests
           </div>
           <div className="mt-1 text-[10px] text-muted-foreground">
@@ -228,7 +228,7 @@ export function AdminOverview({
               <ArrowUpRight size={16} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-foreground font-mono">
+          <div className="mt-3 text-2xl font-black text-foreground font-sans">
             ${totalWithdrawalsSum.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
           <div className="mt-1 text-[10px] text-muted-foreground">
@@ -244,7 +244,7 @@ export function AdminOverview({
               <Clock size={16} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-foreground font-mono">
+          <div className="mt-3 text-2xl font-black text-foreground font-sans">
             {pendingKycCount} Submissions
           </div>
           <div className="mt-1 text-[10px] text-muted-foreground">
@@ -260,7 +260,7 @@ export function AdminOverview({
               <ShieldCheck size={16} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-foreground font-mono">
+          <div className="mt-3 text-2xl font-black text-foreground font-sans">
             {totalUsersCount > 0 ? Math.round((approvedKycCount / totalUsersCount) * 100) : 0}% Verified
           </div>
           <div className="mt-1 text-[10px] text-muted-foreground">
@@ -318,7 +318,7 @@ export function AdminOverview({
                   </div>
 
                   {item.amount !== null && item.amount !== undefined && (
-                    <span className={`font-bold font-mono text-xs ${
+                    <span className={`font-bold font-sans text-xs ${
                       Number(item.amount) > 0 ? 'text-accent' : 'text-rose-400'
                     }`}>
                       {Number(item.amount) > 0 ? `+$${Number(item.amount).toFixed(2)}` : `-$${Math.abs(Number(item.amount)).toFixed(2)}`}
@@ -336,7 +336,7 @@ export function AdminOverview({
             Security & System Health
           </h3>
 
-          <div className="space-y-4 font-mono text-xs">
+          <div className="space-y-4 font-sans text-xs">
             <div className="rounded-2xl border border-accent/30 bg-accent/5 p-4 space-y-2">
               <span className="text-accent font-bold flex items-center gap-2">
                 <CheckCircle2 size={16} /> Database Online

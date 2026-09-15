@@ -65,7 +65,7 @@ function AnimatedNumber({ value, prefix = '', suffix = '' }: { value: string; pr
   }, [isInView, value]);
 
   return (
-    <span ref={ref} className="font-mono">
+    <span ref={ref} className="font-sans">
       {prefix}{displayValue}{suffix}
     </span>
   );
@@ -74,7 +74,7 @@ function AnimatedNumber({ value, prefix = '', suffix = '' }: { value: string; pr
 // Clean Hero AI Arbitrage Visual Image Component
 function HeroNetworkVisual() {
   return (
-    <div className="relative w-full rounded-3xl border border-primary/30 bg-gradient-to-b from-[#0e1411]/95 via-[#090e0c]/95 to-[#060807]/98 p-2 sm:p-3 backdrop-blur-2xl shadow-[0_0_70px_rgba(232,185,73,0.25)] font-mono select-none overflow-hidden group">
+    <div className="relative w-full rounded-3xl border border-primary/30 bg-gradient-to-b from-[#0e1411]/95 via-[#090e0c]/95 to-[#060807]/98 p-2 sm:p-3 backdrop-blur-2xl shadow-[0_0_70px_rgba(232,185,73,0.25)] font-sans select-none overflow-hidden group">
       {/* Specular Top Line Accent */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent z-10" />
       
@@ -195,7 +195,7 @@ export function AboutPage() {
             <div className="grid gap-10 lg:grid-cols-2 items-center">
               {/* Left Side */}
               <div>
-                <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest block mb-3">
+                <span className="font-sans text-xs font-bold text-primary uppercase tracking-widest block mb-3">
                   OUR ORIGINS
                 </span>
 
@@ -209,7 +209,7 @@ export function AboutPage() {
                     <div className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-primary shrink-0 mt-0.5">
                       <Quote size={18} />
                     </div>
-                    <p className="font-mono text-xs sm:text-sm font-semibold text-primary leading-relaxed italic">
+                    <p className="font-sans text-xs sm:text-sm font-semibold text-primary leading-relaxed italic">
                       “Markets move fast. Intelligence needs to move faster.”
                     </p>
                   </div>
@@ -230,10 +230,10 @@ export function AboutPage() {
                 {/* Stepper Evolution Timeline */}
                 <div className="pt-6 border-t border-white/10 font-sans">
                   <div className="flex items-center justify-between mb-6">
-                    <span className="font-mono text-xs uppercase tracking-widest text-foreground font-bold flex items-center gap-2">
+                    <span className="font-sans text-xs uppercase tracking-widest text-foreground font-bold flex items-center gap-2">
                       <Activity size={14} className="text-primary" /> EVOLUTION TIMELINE
                     </span>
-                    <span className="font-mono text-[10px] text-muted-foreground">Select milestone</span>
+                    <span className="font-sans text-[10px] text-muted-foreground">Select milestone</span>
                   </div>
 
                   {/* Connected Stepper */}
@@ -260,11 +260,11 @@ export function AboutPage() {
                                 ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_15px_rgba(232,185,73,0.4)] scale-110'
                                 : 'border-white/20 bg-[#08090a] text-muted-foreground group-hover:border-white/40 group-hover:text-foreground'
                             }`}>
-                              <span className="font-mono text-xs font-bold">{idx + 1}</span>
+                              <span className="font-sans text-xs font-bold">{idx + 1}</span>
                             </div>
 
                             {/* Year */}
-                            <span className={`mt-2 font-mono text-xs font-bold tracking-tight transition-colors ${
+                            <span className={`mt-2 font-sans text-xs font-bold tracking-tight transition-colors ${
                               isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
                             }`}>
                               {step.year}
@@ -291,7 +291,7 @@ export function AboutPage() {
                     >
                       <div className="flex items-center justify-between mb-2 border-b border-white/5 pb-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-primary">
+                          <span className="font-sans text-xs font-bold text-primary">
                             {TIMELINE_STEPS[activeTimelineStep].year}
                           </span>
                           <span className="text-white/20">•</span>
@@ -299,7 +299,7 @@ export function AboutPage() {
                             {TIMELINE_STEPS[activeTimelineStep].title}
                           </span>
                         </div>
-                        <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full border border-white/15 bg-white/5 text-foreground font-medium">
+                        <span className="font-sans text-[10px] px-2.5 py-0.5 rounded-full border border-white/15 bg-white/5 text-foreground font-medium">
                           {TIMELINE_STEPS[activeTimelineStep].badge}
                         </span>
                       </div>
@@ -320,7 +320,7 @@ export function AboutPage() {
       <section className="relative overflow-hidden py-24 lg:py-32 bg-[#0a0d0c] border-b border-white/10 font-sans">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">EDUCATIONAL OVERVIEW</span>
+            <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">EDUCATIONAL OVERVIEW</span>
             <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
               What Is AI Arbitrage Trading?
             </h2>
@@ -332,21 +332,21 @@ export function AboutPage() {
           {/* 3 Step Process Breakdown */}
           <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto font-sans">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl hover:border-primary/40 transition-colors">
-              <span className="font-mono text-xs text-primary font-bold block mb-2">01 — Detect</span>
+              <span className="font-sans text-xs text-primary font-bold block mb-2">01 — Detect</span>
               <h3 className="font-bold text-foreground mb-2">Market Scanning</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Monitor markets continuously and identify real-time price differences across exchanges.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl hover:border-primary/40 transition-colors">
-              <span className="font-mono text-xs text-primary font-bold block mb-2">02 — Analyze</span>
+              <span className="font-sans text-xs text-primary font-bold block mb-2">02 — Analyze</span>
               <h3 className="font-bold text-foreground mb-2">Liquidity Analysis</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Evaluate orderbook liquidity, latency, fees, and predefined risk boundaries.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl hover:border-primary/40 transition-colors">
-              <span className="font-mono text-xs text-primary font-bold block mb-2">03 — Route</span>
+              <span className="font-sans text-xs text-primary font-bold block mb-2">03 — Route</span>
               <h3 className="font-bold text-foreground mb-2">Smart Capital Routing</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Determine potential execution routes based on predefined strategies and account parameters.
@@ -361,7 +361,7 @@ export function AboutPage() {
       <section className="relative overflow-hidden py-20 lg:py-28 font-sans border-b border-white/10">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold block mb-2">
+            <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold block mb-2">
               PLATFORM TELEMETRY
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
@@ -425,7 +425,7 @@ export function AboutPage() {
                   >
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <span className="font-mono text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">
+                        <span className="font-sans text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">
                           0{idx + 1} / METRIC
                         </span>
                         <div className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-muted-foreground group-hover:text-primary group-hover:border-primary/30 transition-colors">
@@ -433,7 +433,7 @@ export function AboutPage() {
                         </div>
                       </div>
 
-                      <p className="text-3xl sm:text-4xl font-black text-foreground tracking-tight font-mono group-hover:text-primary transition-colors">
+                      <p className="text-3xl sm:text-4xl font-black text-foreground tracking-tight font-sans group-hover:text-primary transition-colors">
                         <AnimatedNumber value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
                       </p>
 
@@ -457,7 +457,7 @@ export function AboutPage() {
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 items-center">
             <div>
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">GLOBAL INITIATIVE</span>
+              <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">GLOBAL INITIATIVE</span>
               <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
                 Built Globally. Designed for Digital Markets.
               </h2>
@@ -465,7 +465,7 @@ export function AboutPage() {
                 Nexa Traders is a Panama-based company focused on AI-powered crypto trading technology.
               </p>
 
-              <div className="mt-8 space-y-4 font-mono text-sm">
+              <div className="mt-8 space-y-4 font-sans text-sm">
                 <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                   <span className="text-2xl">🇵🇦</span>
                   <div>
@@ -489,12 +489,12 @@ export function AboutPage() {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 blur-3xl pointer-events-none rounded-full" />
               <Globe2 size={64} className="mx-auto text-primary animate-spin-slow mb-4 opacity-80" />
               <div>
-                <strong className="text-lg font-bold text-foreground block font-mono">GLOBAL LIQUIDITY MATRIX</strong>
+                <strong className="text-lg font-bold text-foreground block font-sans">GLOBAL LIQUIDITY MATRIX</strong>
                 <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
                   Cross-border technical infrastructure connecting servers across European and Latin American data hubs.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/10 text-[10px] font-mono text-emerald-400 uppercase">
+              <div className="mt-6 pt-4 border-t border-white/10 text-[10px] font-sans text-emerald-400 uppercase">
                 ● 2 REGISTERED JURISDICTIONS ACTIVE
               </div>
             </div>
@@ -510,7 +510,7 @@ export function AboutPage() {
       <section className="relative overflow-hidden py-24 lg:py-32 font-sans border-b border-white/10">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">NEXT GENERATION PRODUCTS</span>
+            <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">NEXT GENERATION PRODUCTS</span>
             <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
               Upcoming Products
             </h2>
@@ -520,9 +520,9 @@ export function AboutPage() {
             {/* Product 1 */}
             <div className="rounded-3xl border border-primary/40 bg-gradient-to-b from-[#131b17] to-[#0a0f0d] p-8 backdrop-blur-2xl flex flex-col justify-between shadow-2xl relative overflow-hidden">
               <div>
-                <span className="font-mono text-xs text-primary font-bold block">01</span>
+                <span className="font-sans text-xs text-primary font-bold block">01</span>
                 <h3 className="text-2xl font-extrabold text-foreground mt-2">Spot Marketplace</h3>
-                <span className="inline-block mt-2 rounded-full bg-primary/20 border border-primary/50 px-3 py-1 font-mono text-[10px] font-bold text-primary">
+                <span className="inline-block mt-2 rounded-full bg-primary/20 border border-primary/50 px-3 py-1 font-sans text-[10px] font-bold text-primary">
                   Coming Soon
                 </span>
                 <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
@@ -543,9 +543,9 @@ export function AboutPage() {
             {/* Product 2 */}
             <div className="rounded-3xl border border-emerald-500/40 bg-gradient-to-b from-[#131b17] to-[#0a0f0d] p-8 backdrop-blur-2xl flex flex-col justify-between shadow-2xl relative overflow-hidden">
               <div>
-                <span className="font-mono text-xs text-emerald-400 font-bold block">02</span>
+                <span className="font-sans text-xs text-emerald-400 font-bold block">02</span>
                 <h3 className="text-2xl font-extrabold text-foreground mt-2">AI Perpetual Futures</h3>
-                <span className="inline-block mt-2 rounded-full bg-emerald-500/20 border border-emerald-500/50 px-3 py-1 font-mono text-[10px] font-bold text-emerald-400">
+                <span className="inline-block mt-2 rounded-full bg-emerald-500/20 border border-emerald-500/50 px-3 py-1 font-sans text-[10px] font-bold text-emerald-400">
                   Coming Soon
                 </span>
                 <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
@@ -574,7 +574,7 @@ export function AboutPage() {
 
         <div className="relative z-10 mx-auto max-w-6xl px-5 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[11px] font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_12px_rgba(232,185,73,0.15)]">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-sans text-[11px] font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_12px_rgba(232,185,73,0.15)]">
               <Smartphone size={13} className="text-primary animate-pulse" />
               MOBILE ECOSYSTEM
             </div>
@@ -595,7 +595,7 @@ export function AboutPage() {
               </div>
 
               {/* Mobile Status Bar */}
-              <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground pt-0.5 px-2 z-20">
+              <div className="flex items-center justify-between font-sans text-[10px] text-muted-foreground pt-0.5 px-2 z-20">
                 <span className="font-bold text-foreground">17:50</span>
                 <span className="text-[9px] text-emerald-400 font-bold">5G</span>
               </div>
@@ -607,7 +607,7 @@ export function AboutPage() {
                   alt="Nexa Trades Logo"
                   className="h-8 w-auto object-contain mx-auto drop-shadow-[0_0_12px_rgba(232,185,73,0.4)]"
                 />
-                <div className="mt-1.5 inline-flex items-center gap-1 font-mono text-[9px] text-emerald-400 font-bold uppercase tracking-widest">
+                <div className="mt-1.5 inline-flex items-center gap-1 font-sans text-[9px] text-emerald-400 font-bold uppercase tracking-widest">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   ANDROID OS NATIVE APP
                 </div>
@@ -617,13 +617,13 @@ export function AboutPage() {
               <div className="my-3 space-y-2.5 z-20 font-sans">
                 {/* Live Arbitrage Card Mockup */}
                 <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left backdrop-blur-md">
-                  <div className="flex items-center justify-between font-mono text-[9px]">
+                  <div className="flex items-center justify-between font-sans text-[9px]">
                     <span className="text-emerald-400 font-bold flex items-center gap-1">
                       <Zap size={11} /> AI ROUTER ACTIVE
                     </span>
                     <span className="text-muted-foreground">8.4ms</span>
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between font-mono">
+                  <div className="mt-1.5 flex items-center justify-between font-sans">
                     <div>
                       <span className="text-[9px] text-muted-foreground block">BINANCE</span>
                       <strong className="text-[11px] text-foreground">$94,180</strong>
@@ -638,7 +638,7 @@ export function AboutPage() {
 
                 {/* Launch & Description Info */}
                 <div className="text-center">
-                  <div className="inline-block rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 font-mono text-[10px] font-extrabold text-emerald-400">
+                  <div className="inline-block rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 font-sans text-[10px] font-extrabold text-emerald-400">
                     Launching Nov 2026
                   </div>
                   <p className="mt-1.5 text-[11px] text-muted-foreground leading-snug px-1">
@@ -663,7 +663,7 @@ export function AboutPage() {
               </div>
 
               {/* Mobile Status Bar */}
-              <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground pt-0.5 px-2 z-20">
+              <div className="flex items-center justify-between font-sans text-[10px] text-muted-foreground pt-0.5 px-2 z-20">
                 <span className="font-bold text-foreground">17:50</span>
                 <span className="text-[9px] text-primary font-bold">5G</span>
               </div>
@@ -675,7 +675,7 @@ export function AboutPage() {
                   alt="Nexa Trades Logo"
                   className="h-8 w-auto object-contain mx-auto drop-shadow-[0_0_12px_rgba(232,185,73,0.4)]"
                 />
-                <div className="mt-1.5 inline-flex items-center gap-1 font-mono text-[9px] text-primary font-bold uppercase tracking-widest">
+                <div className="mt-1.5 inline-flex items-center gap-1 font-sans text-[9px] text-primary font-bold uppercase tracking-widest">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   iOS NATIVE APPLICATION
                 </div>
@@ -685,13 +685,13 @@ export function AboutPage() {
               <div className="my-3 space-y-2.5 z-20 font-sans">
                 {/* Live Arbitrage Card Mockup */}
                 <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left backdrop-blur-md">
-                  <div className="flex items-center justify-between font-mono text-[9px]">
+                  <div className="flex items-center justify-between font-sans text-[9px]">
                     <span className="text-primary font-bold flex items-center gap-1">
                       <ShieldCheck size={11} /> FACEID ENCRYPTED
                     </span>
                     <span className="text-muted-foreground">PRO V1</span>
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between font-mono">
+                  <div className="mt-1.5 flex items-center justify-between font-sans">
                     <div>
                       <span className="text-[9px] text-muted-foreground block">YIELD ROUTE</span>
                       <strong className="text-[11px] text-foreground">BTC / USDT</strong>
@@ -706,7 +706,7 @@ export function AboutPage() {
 
                 {/* Launch & Description Info */}
                 <div className="text-center">
-                  <div className="inline-block rounded-full border border-primary/40 bg-primary/10 px-3 py-0.5 font-mono text-[10px] font-extrabold text-primary">
+                  <div className="inline-block rounded-full border border-primary/40 bg-primary/10 px-3 py-0.5 font-sans text-[10px] font-extrabold text-primary">
                     Launching Feb 2027
                   </div>
                   <p className="mt-1.5 text-[11px] text-muted-foreground leading-snug px-1">
@@ -733,7 +733,7 @@ export function AboutPage() {
       {/* 👁️ 14. OUR VISION */}
       <section className="relative overflow-hidden py-24 lg:py-32 bg-[#090c0b] border-b border-white/10 font-sans">
         <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
-          <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">OUR MISSION</span>
+          <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">OUR MISSION</span>
           <h2 className="mt-6 text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-tight">
             Making Crypto Markets More Intelligent.
           </h2>
