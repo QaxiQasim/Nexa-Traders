@@ -1982,8 +1982,7 @@ function PackagesPage() {
         <div className="mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">SIMPLE ONBOARDING</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                 Transaction Flow
               </h2>
             </div>
@@ -2017,10 +2016,7 @@ function PackagesPage() {
 
         <div className="relative z-10 mx-auto max-w-4xl px-5 text-center lg:px-8">
           <Reveal>
-            <span className="font-sans text-xs font-black uppercase tracking-widest text-primary">
-              ENTER THE FUTURE OF CRYPTO
-            </span>
-            <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
+            <h2 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
               Ready to Trade Smarter?
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-sm text-muted-foreground sm:text-base leading-relaxed">
