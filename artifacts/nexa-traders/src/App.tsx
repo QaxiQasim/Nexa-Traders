@@ -2010,42 +2010,7 @@ function PackagesPage() {
         </div>
       </section>
 
-      {/* 8. FINAL CTA */}
-      <section className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#08090a] via-[#0e1210] to-[#050606] py-28 lg:py-36">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(232,185,73,0.22)_0%,transparent_70%)] pointer-events-none" />
 
-        <div className="relative z-10 mx-auto max-w-4xl px-5 text-center lg:px-8">
-          <Reveal>
-            <h2 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
-              Ready to Trade Smarter?
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-sm text-muted-foreground sm:text-base leading-relaxed">
-              Choose your NexaTrades subscription and enter the next generation of intelligent crypto trading.
-            </p>
-            
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <button
-                onClick={() => {
-                  document.getElementById('package-cards')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="rounded-full bg-gradient-to-r from-primary via-[#f5c542] to-primary px-9 py-4 font-sans text-xs font-black uppercase tracking-wider text-primary-foreground shadow-[0_0_35px_rgba(232,185,73,0.45)] hover:scale-105 transition-all"
-                data-testid="button-final-choose-plan"
-              >
-                Choose Your Plan →
-              </button>
-              <button
-                onClick={() => {
-                  document.getElementById('deposit-section')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="rounded-full border border-white/20 bg-white/[0.05] px-9 py-4 font-sans text-xs font-semibold uppercase tracking-wider text-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary backdrop-blur-md"
-                data-testid="button-final-deposit-usdt"
-              >
-                Deposit USDT
-              </button>
-            </div>
-          </Reveal>
-        </div>
-      </section>
 
       {/* TERMINAL DETAIL MODAL */}
       <AnimatePresence>
