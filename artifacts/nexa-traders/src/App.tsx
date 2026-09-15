@@ -1259,14 +1259,14 @@ function AiArbitrageInteractiveFullBg() {
 
   const sideNodes = [
     // Left side margin nodes
-    { id: 'binance', name: 'Binance AI Core', pos: 'left-[2.5%] top-[15%]', ping: '12ms', rate: '1,842 ops/s' },
-    { id: 'neural', name: 'Neural Signal V4', pos: 'left-[2%] top-[45%]', ping: '8ms', rate: '99.84% Edge' },
-    { id: 'risk', name: 'Bounded Risk Gate', pos: 'left-[3%] bottom-[15%]', ping: '0ms', rate: '100% Protected' },
+    { id: 'binance', name: 'Binance Spot Hub', pos: 'left-[2.5%] top-[15%]', ping: '12ms', rateLabel: 'Rate', rate: '1,842 ops/s' },
+    { id: 'neural', name: 'Arbitrage Signal Matrix', pos: 'left-[2%] top-[45%]', ping: '8ms', rateLabel: 'Spread', rate: '+2.84%' },
+    { id: 'risk', name: 'Automated Risk Guard', pos: 'left-[3%] bottom-[15%]', ping: '0ms', rateLabel: 'Protection', rate: '100% Active' },
 
     // Right side margin nodes
-    { id: 'kraken', name: 'Kraken Speed HFT', pos: 'right-[2.5%] top-[18%]', ping: '14ms', rate: '+0.48% Spread' },
-    { id: 'bybit', name: 'Bybit Yield Engine', pos: 'right-[2%] top-[48%]', ping: '11ms', rate: 'Zero Slippage' },
-    { id: 'vault', name: 'Settlement Vault', pos: 'right-[3%] bottom-[18%]', ping: '16ms', rate: '$142.8M Routed' },
+    { id: 'kraken', name: 'Kraken Liquidity Pool', pos: 'right-[2.5%] top-[18%]', ping: '14ms', rateLabel: 'Spread', rate: '+0.48%' },
+    { id: 'bybit', name: 'Bybit Execution Router', pos: 'right-[2%] top-[48%]', ping: '11ms', rateLabel: 'Slippage', rate: '0.00%' },
+    { id: 'vault', name: 'Instant Settlement Vault', pos: 'right-[3%] bottom-[18%]', ping: '16ms', rateLabel: 'Routed', rate: '$142.8M' },
   ];
 
   return (
@@ -1286,13 +1286,13 @@ function AiArbitrageInteractiveFullBg() {
         style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%` }}
       />
 
-      {/* 2. Full-Width Sci-Fi Cyber Neural Grid */}
+      {/* 2. Full-Width Cyber Neural Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b94912_1px,transparent_1px),linear-gradient(to_bottom,#e8b94912_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_90%_80%_at_50%_50%,#000_80%,transparent_100%)] opacity-80" />
 
       {/* 3. Glowing Center Ambient Flares anchored behind cards */}
       <div className="absolute left-1/2 top-1/2 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,185,73,0.22)_0%,rgba(16,185,129,0.07)_50%,transparent_80%)] blur-3xl pointer-events-none" />
 
-      {/* 4. Interactive Floating AI Nodes in Left & Right Side Margins */}
+      {/* 4. Interactive Floating Telemetry Nodes in Left & Right Side Margins */}
       {sideNodes.map((node) => {
         const isActive = activeNode === node.id;
         return (
@@ -1301,25 +1301,25 @@ function AiArbitrageInteractiveFullBg() {
             onMouseEnter={() => setActiveNode(node.id)}
             onMouseLeave={() => setActiveNode(null)}
             className={`absolute hidden xl:block cursor-pointer transition-all duration-300 ${node.pos} ${
-              isActive ? 'scale-110 z-30' : 'hover:scale-105 z-20'
+              isActive ? 'scale-105 z-30' : 'hover:scale-102 z-20'
             }`}
           >
-            <div className={`rounded-xl border p-3 font-sans text-[10px] backdrop-blur-xl transition-all shadow-xl ${
+            <div className={`rounded-2xl border p-4 font-sans text-xs backdrop-blur-2xl transition-all duration-200 shadow-xl ${
               isActive
-                ? 'border-primary bg-[#0d1010]/95 text-primary shadow-[0_0_30px_rgba(232,185,73,0.4)]'
-                : 'border-primary/40 bg-[#0d1010]/80 text-muted-foreground hover:border-primary/70 hover:text-foreground'
+                ? 'border-primary/70 bg-[#121815]/95 text-foreground shadow-[0_0_35px_rgba(232,185,73,0.3)]'
+                : 'border-white/10 bg-[#0c100e]/85 text-muted-foreground hover:border-white/25 hover:text-foreground'
             }`}>
-              <div className="flex items-center gap-2 font-bold text-xs text-primary">
-                <span className={`h-2 w-2 rounded-full ${isActive ? 'bg-accent animate-ping' : 'bg-primary animate-pulse-signal'}`} />
+              <div className="flex items-center gap-2.5 font-bold text-xs text-foreground">
+                <span className={`h-2.5 w-2.5 rounded-full ${isActive ? 'bg-emerald-400 shadow-[0_0_10px_#10b981] animate-pulse' : 'bg-primary'}`} />
                 {node.name}
               </div>
-              <div className="mt-1.5 flex justify-between gap-3 text-[9px]">
-                <span>Rate: <strong className="text-foreground">{node.rate}</strong></span>
-                <span className="text-accent">{node.ping}</span>
+              <div className="mt-2.5 flex items-center justify-between gap-4 text-[11px]">
+                <span className="text-muted-foreground">{node.rateLabel}: <strong className="text-foreground font-semibold">{node.rate}</strong></span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20 text-[10px]">{node.ping}</span>
               </div>
               {isActive && (
-                <div className="mt-2 border-t border-primary/30 pt-1.5 text-[9px] text-accent animate-pulse">
-                  ⚡ Connected to HFT Yield Engine
+                <div className="mt-2.5 border-t border-white/10 pt-2 text-[10px] text-emerald-400 font-semibold flex items-center gap-1 animate-pulse">
+                  ✓ Connected to HFT Execution Router
                 </div>
               )}
             </div>
