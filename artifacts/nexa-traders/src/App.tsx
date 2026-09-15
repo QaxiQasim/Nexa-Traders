@@ -1740,52 +1740,7 @@ function PackagesPage() {
         </div>
       </section>
 
-      {/* 4. SUBSCRIPTION RULES */}
-      <section className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#08090a] via-[#0c100e] to-[#08090a] py-24 lg:py-32 font-sans">
-        {/* Ambient Radial Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-primary/10 blur-[150px] pointer-events-none rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,185,73,0.12)_0%,transparent_70%)] pointer-events-none" />
 
-        <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8">
-          <Reveal>
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Subscription Rules
-              </h2>
-              <p className="mt-4 text-sm text-muted-foreground sm:text-base leading-relaxed max-w-xl mx-auto">
-                Essential compliance protocols and active management guidelines for all NexaTrades subscription plans.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* 5 Ultra-Premium Numbered Rule Cards in Clean Grid */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 items-stretch max-w-7xl mx-auto">
-            {subscriptionRules.map((item) => (
-              <Reveal key={item.num} className="h-full">
-                <div className="group relative h-full rounded-3xl border border-white/12 bg-gradient-to-b from-[#141c18]/90 via-[#0f1412]/85 to-[#090c0b]/95 p-7 backdrop-blur-2xl flex flex-col justify-between shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/70 hover:shadow-[0_0_40px_rgba(232,185,73,0.3)] overflow-hidden">
-                  {/* Top Specular Gold Edge Light */}
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent group-hover:via-primary transition-all duration-500" />
-                  
-                  <div>
-                    {/* Glowing Number Badge */}
-                    <div className="flex items-center justify-between">
-                      <div className="grid h-11 w-11 place-items-center rounded-2xl border border-primary/60 bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10 text-primary font-black text-sm shadow-[0_0_20px_rgba(232,185,73,0.35)] group-hover:scale-110 transition-transform">
-                        {item.num}
-                      </div>
-                      <div className="h-2 w-2 rounded-full bg-primary/40 group-hover:bg-primary group-hover:shadow-[0_0_10px_#e8b949] transition-all" />
-                    </div>
-
-                    {/* Premium Clean Sans-Serif Rule Text */}
-                    <p className="mt-6 text-sm font-semibold text-foreground/95 leading-relaxed tracking-wide">
-                      {item.rule}
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 5 & 6. DEPOSIT & WITHDRAWAL SECTION */}
       <section id="deposit-section" className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-[#090c0b] via-[#0d1210] to-[#08090a] py-24 lg:py-32 font-sans">
