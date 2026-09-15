@@ -564,10 +564,6 @@ export function AboutPage() {
 
         <div className="relative z-10 mx-auto max-w-6xl px-5 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-sans text-[11px] font-bold text-primary uppercase tracking-widest mb-3 shadow-[0_0_12px_rgba(232,185,73,0.15)]">
-              <Smartphone size={13} className="text-primary animate-pulse" />
-              MOBILE ECOSYSTEM
-            </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-foreground">
               Nexa Traders. Wherever You Trade.
             </h2>
@@ -723,8 +719,7 @@ export function AboutPage() {
       {/* 👁️ 14. OUR VISION */}
       <section className="relative overflow-hidden py-24 lg:py-32 bg-[#090c0b] border-b border-white/10 font-sans">
         <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
-          <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">OUR MISSION</span>
-          <h2 className="mt-6 text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-tight">
             Making Crypto Markets More Intelligent.
           </h2>
           <p className="mt-6 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
