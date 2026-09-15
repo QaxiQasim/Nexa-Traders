@@ -505,6 +505,148 @@ export async function insertPackageToDb(email: string, pkg: any) {
   }
 }
 
+export async function manuallyCreditPackageRoiInDb(pkgId: string, customAmount?: number) {
+  try {
+    const pkgIdClean = (pkgId || '').trim();
+    if (!pkgIdClean) return { success: false, message: 'Invalid Package ID' };
+
+    // 1. Fetch Package from Supabase
+    let pkgData: any = null;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages?id=eq.${encodeURIComponent(pkgIdClean)}`, {
+        headers: getHeaders()
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          pkgData = rows[0];
+        }
+      }
+    } catch (e) {
+      console.warn('Fetch package error:', e);
+    }
+
+    // Fallback: search in-memory or localStorage if REST returned empty
+    if (!pkgData) {
+      try {
+        const localPkgs = JSON.parse(localStorage.getItem('nexa_all_packages') || '[]');
+        pkgData = localPkgs.find((p: any) => p.id === pkgIdClean);
+      } catch (e) {}
+    }
+
+    if (!pkgData) {
+      return { success: false, message: `Package ID ${pkgIdClean} not found` };
+    }
+
+    const userEmail = (pkgData.user_email || pkgData.userEmail || pkgData.email || '').toLowerCase().trim();
+    const dailyRoiAmount = Number(pkgData.daily_roi ?? pkgData.dailyRoi) || 0;
+    const amountToCredit = (customAmount !== undefined && Number(customAmount) > 0) ? Number(customAmount) : dailyRoiAmount;
+
+    if (amountToCredit <= 0) {
+      return { success: false, message: 'ROI credit amount must be greater than $0' };
+    }
+
+    const currentEarned = Number(pkgData.earned_roi ?? pkgData.earnedRoi) || 0;
+    const totalCap = Number(pkgData.total_roi_cap ?? pkgData.totalRoiCap) || (Number(pkgData.amount || 0) * 1.85);
+    const newEarned = Number((currentEarned + amountToCredit).toFixed(2));
+    const newRemaining = Math.max(0, Number((totalCap - newEarned).toFixed(2)));
+    const newStatus = newRemaining <= 0 ? 'COMPLETED' : 'ACTIVE';
+    const nowIso = new Date().toISOString();
+
+    // 2. Update purchased_packages table
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/purchased_packages?id=eq.${encodeURIComponent(pkgIdClean)}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          earned_roi: newEarned,
+          remaining_roi: newRemaining,
+          status: newStatus,
+          last_roi_payout: nowIso
+        })
+      });
+    } catch (e) {
+      console.warn('Package PATCH warning:', e);
+    }
+
+    // 3. Update User Wallet Balance in Supabase
+    let updatedWallet = 0;
+    try {
+      const userRes = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(userEmail)}`, {
+        headers: getHeaders()
+      });
+      if (userRes.ok) {
+        const uRows = await userRes.json();
+        if (Array.isArray(uRows) && uRows.length > 0) {
+          const uObj = uRows[0];
+          const oldBalance = Number(uObj.wallet_balance || 0);
+          updatedWallet = Number((oldBalance + amountToCredit).toFixed(2));
+          await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(userEmail)}`, {
+            method: 'PATCH',
+            headers: getHeaders(),
+            body: JSON.stringify({
+              wallet_balance: updatedWallet
+            })
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('User wallet update warning:', e);
+    }
+
+    // 4. Create Transaction Record
+    try {
+      const txId = `TX-ROI-${Math.floor(100000 + Math.random() * 900000)}`;
+      await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+        method: 'POST',
+        headers: {
+          ...getHeaders(),
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          id: txId,
+          user_email: userEmail,
+          type: 'ROI_PAYOUT',
+          amount: amountToCredit,
+          status: 'COMPLETED',
+          description: `Manual Admin Daily ROI Payout for Package ${pkgIdClean} (${pkgData.package_name || pkgData.name || 'Plan'})`,
+          created_at: nowIso
+        })
+      });
+    } catch (e) {
+      console.warn('Transaction record warning:', e);
+    }
+
+    // 5. Update local storage states if applicable
+    try {
+      const allPkgsStr = localStorage.getItem('nexa_all_packages');
+      if (allPkgsStr) {
+        const pArr = JSON.parse(allPkgsStr);
+        const idx = pArr.findIndex((p: any) => p.id === pkgIdClean);
+        if (idx !== -1) {
+          pArr[idx].earned_roi = newEarned;
+          pArr[idx].remaining_roi = newRemaining;
+          pArr[idx].status = newStatus;
+          localStorage.setItem('nexa_all_packages', JSON.stringify(pArr));
+        }
+      }
+    } catch (e) {}
+
+    return {
+      success: true,
+      userEmail,
+      amountCredited: amountToCredit,
+      newEarned,
+      newRemaining,
+      newStatus,
+      updatedWallet
+    };
+  } catch (err: any) {
+    console.error('Error in manuallyCreditPackageRoiInDb:', err);
+    return { success: false, message: err?.message || 'Error executing manual ROI credit' };
+  }
+}
+
 export async function processDirectReferralCommission(purchaserEmail: string, packageAmount: number, packageName: string) {
   try {
     const emailLower = (purchaserEmail || '').toLowerCase().trim();
@@ -949,7 +1091,7 @@ export async function fetchAllUsersFromDb() {
     const map = new Map<string, any>();
 
     // 1. ALL_KNOWN_USERS (All 16 registered user accounts)
-    ALL_KNOWN_USERS.forEach(u => map.set(u.email.toLowerCase(), { ...u, created_at: u.created_at || '2026-06-10T00:00:00Z' }));
+    ALL_KNOWN_USERS.forEach((u: any) => map.set(u.email.toLowerCase(), { ...u, created_at: u.created_at || '2026-06-10T00:00:00Z' }));
 
     // 2. DB Users
     dbUsers.forEach(u => {

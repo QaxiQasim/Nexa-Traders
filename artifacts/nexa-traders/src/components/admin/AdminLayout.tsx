@@ -399,7 +399,7 @@ export function AdminLayout() {
           )}
 
           {activeTab === 'packages' && (
-            <AdminPackages packages={packages} />
+            <AdminPackages packages={packages} onRefreshData={loadDatabaseData} />
           )}
 
           {activeTab === 'audit' && (

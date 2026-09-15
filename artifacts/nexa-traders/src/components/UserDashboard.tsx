@@ -715,7 +715,7 @@ export function UserDashboard() {
 
       fetchUserPackagesFromDb(email).then(pkgs => {
         if (Array.isArray(pkgs) && pkgs.length > 0) {
-          setPurchasedPackages(pkgs);
+          setPurchasedPackages(pkgs as any);
           localStorage.setItem(`nexa_packages_${email}`, JSON.stringify(pkgs));
         }
       }).catch(() => {});
