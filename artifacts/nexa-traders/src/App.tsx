@@ -1710,8 +1710,7 @@ function PackagesPage() {
           <div>
             <Reveal>
               <div className="text-center max-w-3xl mx-auto mb-16">
-                <span className="font-sans text-xs uppercase tracking-widest text-primary font-bold">TECHNOLOGY INFRASTRUCTURE</span>
-                <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                   Flagship Solutions
                 </h2>
               </div>
@@ -1732,11 +1731,6 @@ function PackagesPage() {
                       <h3 className="mt-6 text-2xl font-extrabold text-foreground tracking-tight">{sol.title}</h3>
                       <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{sol.desc1}</p>
                       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{sol.desc2}</p>
-                    </div>
-
-                    <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-sans text-primary font-bold">
-                      <span>NEXATRADES CORE</span>
-                      <span>ACTIVE ⚡</span>
                     </div>
                   </div>
                 </Reveal>
@@ -1786,28 +1780,10 @@ function PackagesPage() {
                       {item.rule}
                     </p>
                   </div>
-
-                  <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between font-sans text-[10px] text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
-                    <span>RULE {item.num}</span>
-                    <span className="font-bold">COMPLIANCE</span>
-                  </div>
                 </div>
               </Reveal>
             ))}
           </div>
-
-          {/* Elevated Premium Compliance Notice Box */}
-          <Reveal delay={0.2}>
-            <div className="mt-14 max-w-3xl mx-auto rounded-3xl border-2 border-primary/50 bg-gradient-to-r from-primary/20 via-[#18211c]/90 to-primary/20 p-6 sm:p-7 text-center backdrop-blur-2xl shadow-[0_0_40px_rgba(232,185,73,0.25)] relative overflow-hidden">
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#e8b9490a_1px,transparent_1px)] bg-[size:1.5rem] opacity-30 pointer-events-none" />
-              <div className="relative z-10 flex items-center justify-center gap-3 text-sm sm:text-base font-bold text-primary tracking-wide">
-                <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/20 border border-primary/60 shrink-0">
-                  <ShieldCheck size={18} className="text-primary" />
-                </div>
-                <span>Minimum KYC approval is required before purchasing a subscription.</span>
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
 
@@ -1819,11 +1795,7 @@ function PackagesPage() {
         <div className="relative z-10 mx-auto max-w-[1500px] px-5 lg:px-8">
           <Reveal>
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 font-sans text-[11px] uppercase tracking-widest text-primary font-bold shadow-[0_0_20px_rgba(232,185,73,0.2)]">
-                <Coins size={14} className="text-primary animate-pulse" />
-                FINANCIAL GATEWAY
-              </div>
-              <h2 className="mt-4 text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Deposit & Withdrawal
               </h2>
               <p className="mt-4 text-sm text-muted-foreground sm:text-base leading-relaxed max-w-xl mx-auto">
